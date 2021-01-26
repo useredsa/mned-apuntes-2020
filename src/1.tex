@@ -122,6 +122,74 @@ Puede encontrarse en el libro de Atkinson, pero no entra.
 
 \subsection{Estimación general del error}
 
-% \begin{definition}
-%
-% \end{definition}
+Como hemos visto, a partir de conocer el error cometido en cada paso hemos logrado estimar globalmente el error de la solución generada por el método de Euler. La idea es hacer esto de manera general, pero de momento nos conformamos con formalizar la idea de error local.
+
+\begin{definition}
+Dado un método de diferencias
+\begin{equation} \label{eqn:diffmet}
+\begin{cases}
+    w_0=\alpha \\
+    w_{i+1}=w_i + h\cdot \phi(t_i, w_i), \forall i=0,\dots, n-1
+\end{cases}
+\end{equation}
+    que devuelva una solución de \ref{eqn:pvi} con solución real $Y$, se define su \textbf{error local de truncamiento (e.l.t.)} como
+    $$
+    T_{i+1}(h) = \frac{Y(t_{i+1})-Y(t_i)-h\phi(t_i,Y(t_i))}{h}
+    = \frac{Y(t_{i+1})-Y(t_i)}{h} -h\phi(t_i,Y(t_i))
+    $$
+\end{definition}
+
+
+En el caso concreto del método de Euler se tiene:
+    $$
+    T_{i+1}(h)
+    = \frac{Y(t_{i+1})-Y(t_i)}{h} -h\cdot f(t_i,Y(t_i))= \frac{h}{2} Y''(\xi_i),
+    \xi_i\in[t_i,t_{i+1}], \forall i=0,\dots, n-1
+    $$
+
+    y si $|Y''(t)|\leq C,\forall t\in[a,b]$ entonces
+    $$
+    |T_{i+1}(h)|\leq \frac{C}{2} \cdot h
+    $$
+    que es $\theta(h)$.
+
+Lo que nos interesa es que este error decrezca lo más rápido posible con h, es decir, que sea $\theta(h^p)$ con $p$ lo más grande posible. En esta búsqueda llegamos al siguiente método, el de Taylor.
+
+\subsection{Método de Taylor}
+ 
+De aquí en adelante asumiré el PVI general del principio, y cualquier método que considere intentará aproximar una solución suya.
+
+\begin{definition}
+Se define el método de Taylor de orden p como:
+\begin{equation} \label{eqn:diffmet}
+\begin{cases}
+    w_0=\alpha \\
+    w_{i+1}=w_i + h\cdot T^{(p)}(t_i, w_i), \forall i=0,\dots, n-1
+\end{cases}
+\end{equation}
+
+    dónde $T^{(p)}(t_i,w_i)=\sum_{i=0}^{p-1} \frac{h^i}{(i+1)!}f^{(i)}(t_i,w_i)$, y $f^{(i)}(t_i,w_i)$ viene dado po $Y^{(i+1)}(t)=(f(t,Y(t)))^{(i)}$.
+\end{definition}
+
+Unas pocas cuentas son suficientes para darse cuenta de que calcular estas derivadas de manera genérica es realmente costoso, y normalmente se suelen hace las cuentas de manera \textit{adhoc} para un problema concreto.
+
+El siguiente teorema era de esperar:
+
+\begin{theorem}
+    Si Y es de clase $C^{(p+1)}([a,b])$, el e.l.t. del método de Taylor de orden p es $\theta(h^p)$.
+\end{theorem}
+\begin{proof}
+En estas condiciones el e.l.t. no es más que el resto de Lagrange:
+
+$$
+    T_{i+1}(h)=\frac{h^p}{(p+1)!} f^{(p)}(\xi_i,Y(\xi_i)),\xi_i\in [t_i,t_{i+1}]\subset[a,b]
+$$
+    Por ser $f(t,Y(t))$ contínua en compacto está acotada en $[a,b]$, y eso es por lo tanto $\theta(h^p)$.
+\end{proof}
+
+%TODO esto solo para una dimensión?
+
+A pesar de este gran resultado respecto al error, la dificultad para aplicarlo de manera genérica y los problemas que conlleva la derivación numérica no lo hace muy práctico. Buscamos entonces métodos que no necesiten estas derivadas y que tengan órdenes similares.
+
+\subsection{Métodos de Runge-Kutta}
+
