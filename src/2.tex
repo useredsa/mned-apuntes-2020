@@ -1,0 +1,251 @@
+\section{Rigidez}
+
+La rigidez es un fenómeno que asociamos a un problema de valor inicial.
+Más que una característica matemática,
+que podría ser definida de forma precisa,
+es un conjunto de complicaciones que surgen
+en la resolución de ciertos problemas.
+
+\subsection{Un primer problema rígido}
+
+Consideremos el problema de valor inicial
+%
+\begin{equation}\label{prb:rigid1}
+    \begin{cases}
+        y\prime(t) = 5\nume^{5t}(y-t)^2 + 1 \\
+        y(0)
+    \end{cases}
+    \qq{para $t$ en $[0,1]$ o $[0,8]$}
+\end{equation}
+%
+cuya solución analítica es $y(t) = t - \nume^{-5t}$.
+Si intentamos resolverlo con el método de RK4
+podemos construir la tabla \cref{tab:rigid-problem-rk4-step-error-comparison}.
+Observamos un fenómeno extraño.
+Si el paso es menor que $0.2419$
+el método obtiene unas cotas de error razonables
+que se van reduciendo conforme disminuímos el tamaño del paso.
+Sin embargo, si el paso es mayor o igual que $0.2419$,
+el error del método se dispara.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lll}
+        \textbf{Tam. paso} & \textbf{Error Abs.} & \textbf{Error Rel.} \\
+        \hline \\
+        0.2001 & 0.0192308 & 0.00123008 \\
+        0.2101 & 0.0463702 & 0.00266692 \\
+        0.2201 & 0.0914377 & 0.00529422 \\
+        0.2301 & 0.163178  & 0.0101477 \\
+        0.2411 & 0.287569  & 0.0215778 \\
+        0.2413 & 0.290396  & 0.0220027 \\
+        0.2415 & 0.293245  & 0.0224769 \\
+        0.2417 & 0.296118  & 0.0230281 \\
+        0.2419 & inf       & inf \\
+        0.2421 & inf       & inf \\
+        0.2423 & inf       & inf
+    \end{tabular}
+    \caption{Error del método de RK4 para resolver el \cref{prb:rigid1}}
+    \label{tab:rigid-problem-rk4-step-error-comparison}
+\end{table}
+
+Cuando integramos una ecuación diferencial cuyas derivadas tenemos acotadas,
+la intuición\footnote{
+    Justificada por las fórmulas de error que hemos obtenido,
+    ya que una aproximación del error es $Cy^{(p)}(\xi)h^p$.
+}
+nos dice que el tamaño del paso
+podría ser grande en zonas donde la variación de la curva es pequeña
+y debería ser más pequeño en intervalos donde la variación es grande.
+También asumimos que podemos controlar el error
+eligiendo un tamaño de paso adecuado o
+obtener una aproximación del mismo
+comparando una solución con otra donde hemos reducido el tamaño del paso.
+Sin embargo, en el problema anterior vemos que el error,
+si el paso no es más pequeño que un umbral\footnote{
+    Podemos probar con otros métodos de paso fijo.
+    Veremos que el umbral cambia en función del método.
+},
+se dispara.
+Y por tanto la solución que estamos calculando
+no converge paulatinamente hasta ese valor.
+
+\subsection{Definición}
+
+La característica que hemos visto no es atribuíble a la solución
+$y(t) = t - \nume^{-5t}$,
+puesto que podemos cambiar el problema para que siga teniendo la misma solución
+y no se dispare el error.
+Por tanto, la rigidez es una característica de un problema de valor inicial,
+y no de una solución a ese problema.
+
+Aparte del fenómeno anterior,
+hay otros que habitualmente se atribuyen a los problemas que llamamos rígidos.
+Enumeramos tres.
+%
+\begin{enumerate}
+    \item Si el paso no está por debajo de un umbral,
+    el error se dispara.
+    \item Si utilizamos un método de paso adaptativo para resolver el problema,
+    el método acaba porque sobreestima el error y determina que
+    el paso que necesitaría utilizar sería menor que el mínimo permitido.
+    Es un fenómeno que también se da en el problema anterior,
+    pero si comparamos con la solución analítica vemos que en realidad
+    el error del método cumple la tolerancia pedida.
+    \item Si utilizamos un método de paso fijo tradicional,
+    obtenemos una solución que oscila alrededor de la solución analítica.
+    Por tanto, aunque la aproxime bien lo hace con un comportamiento diferente.
+\end{enumerate}
+
+Querríamos dar una definición precisa de problema rígido
+basada en estos fenómenos.
+Sin embargo, para cualquiera de ellos, podemos encontrar problemas
+que nuestra definición tiene que considerar rígidos porque
+presentan el resto de los fenómenos
+pero que excluirían ese.
+Lo que sí podemos es reconocer características que son comunes
+a los problemas que presenten estos fenómenos.
+
+Por ejemplo,
+un sistema lineal de coeficientes constantes podría definirse como rígido
+cuando todos sus valores propios, $\lambda_1,\ldots,\lambda_n$,
+tienen parte real negativa y el coeficiente
+%
+\begin{equation*}
+    \frac{\abs{\Re\lambda_M}}{\abs{\Re\lambda_m}}
+    \qq{siendo $M$ y $m$ tales que
+    $\abs{\Re\lambda_M} \ge \abs{\Re\lambda_k} \ge \abs{\Re\lambda_m}$
+    para todo $1 \le k \le n$.}
+\end{equation*}
+%
+es ``grande''.
+
+De ahora en adelante utilizaremos la definición proporcionada por
+Don Francisco Esquembre,
+que se basa en la idea de que los problemas rígidos sean aquellos
+para los que no podamos asegurar que el error relativo sea pequeño.
+
+\begin{definition}
+    Dado un problema de valor inicial con derivada $y$
+    que proporcione una estimación del error de la forma
+    %
+    \begin{equation*}
+        Cy^{(p)}(\xi)h^p
+    \end{equation*}
+    %
+    donde $C$ y $p$ son constantes que dependen del método,
+    $h$ el tamaño del paso y $\xi$ un punto del intervalo solución,
+    diremos que estamos antes un \emph{problema rígido} si
+    $y^{(p)}(t)$ crece de forma no acotada y en mayor proporción que $y(t)$.
+\end{definition}
+
+\subsection{Tamaño de paso umbral}
+
+Siguiendo la definición de problema rígido,
+un ejemplo de solución que tiende a cero rápidamente
+pero cuyas derivadas no tanto es
+$y(t) = \nume^{\lambda t}$ con $\lambda < 0$\footnote{
+    Cuanto más grande sea el valor de $\lambda$ mejor será el ejemplo.
+    Don Francisco sugiere que $\lambda$ debería ser grande.
+    Pone como ejemplo $-30$.
+}.
+$y^{(p)} = \lambda^p\nume^{\lambda t}$.
+El lector encontrará sencillo
+escribir una ecuación diferencial con esa solución.
+
+Para este problema concreto,
+podemos estudiar cómo se comportan los métodos que conocemos.
+
+\subsubsection{Método de Euler}
+
+Para el método de Euler tendríamos una ecuación de la forma
+%
+\begin{equation*}
+    \begin{cases}
+        w_{i+1} = w_i + hf(t_i, w_i) = (1 + h\lambda)w_i \\
+        w_0 = \alpha
+    \end{cases}
+\end{equation*}
+%
+de manera que $w_n = (1 + h\lambda)^w_0$,
+mientras que la solución $y(t_n) = \nume^{\lambda t_n} = \nume^{n\lambda h}$.
+
+Si queremos que el método de Euler se comporte como la solución analítica,
+$w_n$ debería tender a $0$,
+pero eso solo pasará si $\abs{1 + h\lambda} < 1$.
+El lector sabrá que eso equivale a que $h < \frac{2}{\abs{\lambda}}$.
+
+También podemos llegar a la misma conclusión
+sin conocer el comportamiento de la solución analítica.
+Si suponemos que hay un error de redondeo en el valor inicial,
+de forma que iniciamos el método con $w_0 = \alpha + \epsilon$,
+entonces el error de aproximación del $w_n$ teórico del método sería
+$\epsilon_n = (1 + h\lambda)^n\epsilon$.
+Por tanto, también obtendríamos el límite $h < \frac{2}{\abs{\lambda}}$
+si quisiésemos que el error no creciese de manera exponencial.
+
+\subsubsection{Otros métodos de paso fijo}
+
+Visto el ejemplo del método de Euler,
+podemos plantearnos repetirlo con otros métodos de paso fijo.
+En ese caso dado un método obtendríamos
+%
+\begin{equation*}
+    w_{i+1} = Q(h\lambda)w_i
+\end{equation*}
+%
+en función de un polinomio $Q(x)$,
+y querríamos que $\abs{Q(h\lambda} < 1$.
+Por ejemplo, para el método de Taylor de orden $n$ se tendría que
+$Q(x) = 1 + x + \frac{x^2}{2} + \cdots + \frac{x^n}{n}$.
+Y en general, obtener el umbral para $h$ sería más laborioso.
+
+\subsubsection{Métodos multipaso}
+
+Para un método multipaso general, tendríamos
+%
+\begin{equation*}
+    \begin{cases}
+        w_i =
+        a_0w_{i-m} + \cdots + a_{m-1}w_{i-1} + h\qty[
+            b_0f(t_{i-m}, w_{i-m}) + \cdots + b_mf(t_i, w_i)
+        ]
+        w_0 = \alpha
+    \end{cases}.
+\end{equation*}
+%
+Aplicado al problema de prueba tendríamos que considerarlo como
+una sucesión de recurrencia
+%
+\begin{equation*}
+    (1 - h\lambda b_m)w_i
+    - (a_{m-1} - h\lambda b_{m-1})w_{i-1}
+    - \cdots
+    - (a_0 + h\lambda b_0)w_{i-m} = 0,
+\end{equation*}
+%
+cuyo polinomio característico sería
+%
+\begin{equation*}
+    Q(z, h\lambda) =
+    (1 - h\lambda b_m)z^m
+    - (a_{m-1} - h\lambda b_{m-1})z^{m-1}
+    - \cdots
+    - (a_0 - h\lambda b_0).
+\end{equation*}
+
+Si conocemos $w_0,\ldots,w_{n-1}$
+y las raíces $\beta_1,\ldots,\beta_m$ de $Q(x, y)$
+y son todas diferentes %TODO esto de qué teorema señores? DE QUÉ TEOREMA?
+entonces las soluciones a esa sucesión serían de la forma
+%
+\begin{equation*}
+    w_n = \sum_{i=1}^m C_i\beta_i^n,
+\end{equation*}
+%
+para una constantes $C_1,\ldots,C_n$
+que dependerían también de la condición inicial,
+y tenderían a $0$ si $\abs{\beta_k} < 1$ para todo $1 \le k \le m$.
+
+\subsection{Estabilidad}
+
