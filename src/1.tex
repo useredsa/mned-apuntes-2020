@@ -1,47 +1,127 @@
 
 \section{Resolución numérica de problemas de valor inicial para EDO}
 
-\begin{equation}
-(PVI)
+\begin{definition}
+    Llamamos problema de valor inicial a una EDO junto a una condición inicial:
+\begin{equation} \label{eqn:pvi}
 \begin{cases}
     y'(t)=f(t.y(t)) \\
     y(a) = y_0 \\
     t\in[a,b]
 \end{cases}
 \end{equation}
-\begin{itemize}
-        \item Los problemas que trataremos serán de orden 1 siempre.
-        \item Se resolverán discretizando el intervalo: $a=t_0<t_1<\dots < t_n\geq b$. Se aproxima $y(t_i)\approx w_i$, buscando un error aceptable en todo punto. Si queremos el valor exacto en puntos intermedios usamos una interpolación adecuada.
-\end{itemize}
+\end{definition}
 
-\section{Métodos de paso fijo. Método de Euler}
+\begin{remark}Los problemas que trataremos serán de orden 1 siempre, en otro caso los transformaremos en problemas de mayor dimensión \end{remark}
+\begin{remark}Sería más correcto escribir $\vec y$, pues pueden ser funciones vectoriales, pero por facilidad lo omitiré. \end{remark}
 
-\begin{definition} Decimos que un método es de paso fijo si $t_i-t_{i-1}=h,\forall i=1,\dots n$ para cierto $h>0$ constante, siendo $n=\lceil \frac{b-a}{2} \rceil$. \end{definition}
+    Los métodos que veremos calcularán soluciones del PVI \ref{eqn:pvi} como una lista de pares $[(t_0,w_0), \dots, (t_n,w_n)]$, dónde los $t_i$ son reales de forma que $a=t_0<t_1<\dots < t_n\geq b$ y los $w_i$ son vectores que aproximan a la solución real en los $t_i$: $y(t_i)\approx w_i,\forall i=0,\dots, n$.
 
+\begin{remark} Por supuesto, al implementarlo usaremos números máquina, no reales matemáticos.  \end{remark}
+\begin{remark} Si queremos obtener una aproximación en cualquier punto del intervalo tenemos que usar una interpolación adecuada. \end{remark}
+
+\section{Métodos de paso fijo}
+
+\begin{definition}  Un método es de paso fijo si la solución que genera cumple $t_i-t_{i-1}=h,\forall i=1,\dots n$ para cierto $h>0$ constante. \end{definition}
+
+En este caso se tendrá $n=\lceil \frac{b-a}{2} \rceil$, y supondré este valor mientras trate con métodos de paso fijo.
+
+\subsection{Método de Euler}
 \begin{definition} 
-El método de Euler de paso fijo viene dado por:
+    El método de Euler de paso fijo genera, dado el problema \ref{eqn:pvi} y un paso $h>0$:
+
+\begin{equation} \label{eqn:eulersol}
+\begin{cases}
+    w_0=y_0 \\
+    w_{i+1}=w_i + h\cdot f(t_i, w_i), \forall i=0,\dots, n-1
+\end{cases}
+\end{equation}
+
+Siendo $t_i =t_0+i\cdot h,\forall i=0,\dots, n$.
+\end{definition}
+
+\subsubsection{Estimación del error con el método de Euler}
+
+\begin{theorem}[Convergencia del método de Euler]
+    Sea $f:D\subset \mathbb{R}^2\rightarrow \mathbb{R}$ con $D$ abierto, e $Y(t)$ una solución de $(1)$ con $(t,Y(t))\in D,\forall t\in[a,b]$. Sea también la solución \ref{eqn:eulersol} para cierto $h$ fijo. Si se cumple
+    \begin{enumerate}[label=(\alph*)]
+        \item f Lipschitziana respecto de la segunda variable en $D$, con constante de Lipschitz $K$.
+        \item $Y''$ existe en todo $[a,b]$ y está acotada por una constante $C\geq 0$.
+        \item $(t_i,w_i)\in D,\forall i=0,\dots,n$.
+    \end{enumerate}
+    entonces $$\max_{0\leq i \leq n}|Y(t_i)-w_i| \leq e^{(b-a)K}\cdot |Y(a)-w_0| + \frac{e^{(b-a)K}-1}{2K}ch$$
+
+\end{theorem}
+\begin{proof}
+% TODO
+\end{proof}
+
+\begin{theorem}[Convergencia del método de Euler con error de redondeo]
+    Sea $f:D\subset \mathbb{R}^2\rightarrow \mathbb{R}$ con $D$ abierto, e $Y(t)$ una solución de $(1)$ con $(t,Y(t))\in D,\forall t\in[a,b]$.
+
+    Fijado $h>0$, sea la solución numérica
 
 \begin{equation}
 \begin{cases}
     w_0=y_0 \\
-    w_{i+1}=w_i + h\cdot f(t_i, w_i)
+    w_{i+1}=w_i + h\cdot f(t_i, w_i) + \delta_i
 \end{cases}
 \end{equation}
 
-Para $t_i =t_0+i\cdot h,\forall i=0,\dots, n=\lceil \frac{b-a}{2} \rceil$ para cierto $h>0$.
+con $\delta_i<\delta,\forall i=0,\dots,n$.
 
-\end{definition}
-
-\begin{theorem}[Convergencia del método de Euler]
-    Sea $f:D\subset \mathbb{R}^2\rightarrow \mathbb{R}$ con $D$ abierto, e $Y(t)$ una solución de $(1)$ con $(t,Y(t))\in D,\forall t\in[a,b]$. Sea también la solución numérica $(2)$ para cierto $h$ fijo. Si se cumple
+    Si se cumple
     \begin{enumerate}[label=(\alph*)]
         \item f Lipschitziana respecto de la segunda variable en $D$, con constante de Lipschitz $K$.
         \item $Y''$ existe en todo $[a,b]$ y está acotada por una constante $C\geq 0$.
-        \item 
+        \item $(t_i,w_i)\in D,\forall i=0,\dots,n$.
     \end{enumerate}
-    Entonces $$\max_{0\leq i \leq n}|Y(t_i)-y_h(t_i)| \leq e^{(b-a)K}\cdot |Y(a)-y_0| + \frac{e^{(b-a)K}-1}{2K}ch$$
+    entonces $$\max_{0\leq i \leq n}|Y(t_i)-w_i| \leq e^{(b-a)K}\cdot |Y(a)-w_0| + \frac{e^{(b-a)K}-1}{K}\left(\frac{1}{2}ch+\frac{\delta}{h}\right)$$
 
 \end{theorem}
+
+Se puede estimar el error de otra forma bajo ciertas condiciones, que nos será muy útil para estimar numéricamente el error e incluse obtener soluciones mejores a partir del método de Euler.
+
+\begin{theorem}
+    Dado el PVI \ref{eqn:pvi} y la solución \ref{eqn:eulersol}, si la solución $Y(t)$ real es de clase $C^3$ y $\frac{\partial f}{\partial y},\frac{\partial^2f}{\partial y^2}$ constantes, entonces
+    \begin{equation}
+    Y(t_i)-w_i=h\cdot D(t_i)+\theta(h^2),\forall t\in[t_0,b]
+    \end{equation}
+    dónde $D$ es solución del siguiente PVI:
+\begin{equation}
+\begin{cases}
+    d'(t)=g(t)d(t) + \frac{1}{2} Y''(t), g(t)=\frac{\partial f(t,y)}{\partial y}(t,Y(t)) \\
+    d(a) = 0 \\
+    t\in[a,b]
+\end{cases}
+\end{equation}
+\end{theorem}
 \begin{proof}
+Puede encontrarse en el libro de Atkinson, pero no entra.
+\end{proof}
+
+\begin{theorem}
+    En condiciones similares a las del teorema anterior, tomando $(t_i^h,w_i^h)$ y $(t_i^{h/2},w_i^{h/2})$ soluciones obtenidas con el método de Euler con pasos $h$ y $\frac{h}{2}$ respectivamente:
+    \begin{enumerate}[label=(\alph*)]
+        \item $Y(t_i^h)-w_{2i}^{h/2} = (w_{2i}^{h/2}-w_i^h) + \theta(h^2)$.
+        \item $w_i := 2\cdot w_{2i}^{h/2}-w_i^h$ es una aproximación de $Y(t)$ de orden $\theta(h^2)$.
+    \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+    Aplicando el teorema anterior obtenemos:
+    $$
+    Y(t_i^h)-w_i^h=h\cdot D(t_i^h)+\theta(h^2),\forall t\in[t_0,b]
+    $$
+    $$
+    Y(t_{2i}^{h/2})-w_{2i}^{h/2}=h\cdot D(t_{2i}^{h/2})+\theta(h^2),\forall t\in[t_0,b]
+    $$
+    Basta observar que $t_i^h = t_{2i}^{h/2}$ y restar la primera ecuación a la segunda multiplicada por 2. Despejando se obtiene tanto (a) como (b).
 
 \end{proof}
+
+\subsection{Estimación general del error}
+
+% \begin{definition}
+%
+% \end{definition}
