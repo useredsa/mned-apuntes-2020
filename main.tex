@@ -9,7 +9,7 @@
 \usepackage{geometry}
 \usepackage{amsmath}
 \usepackage{amsfonts}
-\geometry{verbose,tmargin=2cm,bmargin=2cm,lmargin=1.5cm,rmargin=1.5cm}
+\geometry{verbose,tmargin=2cm,bmargin=2cm,lmargin=2cm,rmargin=2cm}
 \usepackage{multicol}
 % \usepackage{graphicx}
 \usepackage{array}
@@ -33,6 +33,7 @@
 
 \newtheorem{definition}{Definición}[section]
 \newtheorem{theorem}{Teorema}[section]
+\newtheorem{remark}{Observación}[section]
 \newtheorem{corollary}{Corolario}[theorem]
 \newtheorem{lemma}{Lema}[theorem]
 
@@ -106,10 +107,12 @@
 
 \makeatother
 \begin{document}
-\begin{center}
-  \Large\textbf{Métodos Numéricos de las Ecuaciones Diferenciales}\\
-  \line(1,0){450}
-\end{center}
+\hypersetup{pageanchor=false}
+\subfile{src/cover}
+\hypersetup{pageanchor=true}
+\tableofcontents{}
+\newpage{}
+
 \input{src/1}
 \input{src/2}
 \input{src/3}

@@ -3,5 +3,8 @@
 Para generar y abrir:
 
 ```Bash
-./gen.sh
+# OSX
+./gen.sh ; open main.pdf
+# Linux
+./gen.sh ; xdg-open main.pdf
 ```

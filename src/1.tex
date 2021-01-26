@@ -1,47 +1,294 @@
 
 \section{Resolución numérica de problemas de valor inicial para EDO}
 
-\begin{equation}
-(PVI)
+\begin{definition}
+    Llamamos problema de valor inicial a una EDO junto a una condición inicial:
+\begin{equation} \label{eqn:pvi}
 \begin{cases}
     y'(t)=f(t.y(t)) \\
     y(a) = y_0 \\
     t\in[a,b]
 \end{cases}
 \end{equation}
-\begin{itemize}
-        \item Los problemas que trataremos serán de orden 1 siempre.
-        \item Se resolverán discretizando el intervalo: $a=t_0<t_1<\dots < t_n\geq b$. Se aproxima $y(t_i)\approx w_i$, buscando un error aceptable en todo punto. Si queremos el valor exacto en puntos intermedios usamos una interpolación adecuada.
-\end{itemize}
+\end{definition}
 
-\section{Métodos de paso fijo. Método de Euler}
+\begin{remark}Los problemas que trataremos serán de orden 1 siempre, en otro caso los transformaremos en problemas de mayor dimensión \end{remark}
+\begin{remark}Sería más correcto escribir $\vec y$, pues pueden ser funciones vectoriales, pero por facilidad lo omitiré. \end{remark}
 
-\begin{definition} Decimos que un método es de paso fijo si $t_i-t_{i-1}=h,\forall i=1,\dots n$ para cierto $h>0$ constante, siendo $n=\lceil \frac{b-a}{2} \rceil$. \end{definition}
+    Los métodos que veremos calcularán soluciones del PVI \ref{eqn:pvi} como una lista de pares $[(t_0,w_0), \dots, (t_n,w_n)]$, dónde los $t_i$ son reales de forma que $a=t_0<t_1<\dots < t_n\geq b$ y los $w_i$ son vectores que aproximan a la solución real en los $t_i$: $y(t_i)\approx w_i,\forall i=0,\dots, n$.
 
+\begin{remark} Por supuesto, al implementarlo usaremos números máquina, no reales matemáticos.  \end{remark}
+\begin{remark} Si queremos obtener una aproximación en cualquier punto del intervalo tenemos que usar una interpolación adecuada. \end{remark}
+
+\section{Métodos de paso fijo}
+
+\begin{definition}  Un método es de paso fijo si la solución que genera cumple $t_i-t_{i-1}=h,\forall i=1,\dots n$ para cierto $h>0$ constante. \end{definition}
+
+En este caso se tendrá $n=\lceil \frac{b-a}{2} \rceil$, y supondré este valor mientras trate con métodos de paso fijo.
+
+\subsection{Método de Euler}
 \begin{definition} 
-El método de Euler de paso fijo viene dado por:
+    El método de Euler de paso fijo genera, dado el problema \ref{eqn:pvi} y un paso $h>0$:
+
+\begin{equation} \label{eqn:eulersol}
+\begin{cases}
+    w_0=y_0 \\
+    w_{i+1}=w_i + h\cdot f(t_i, w_i), \forall i=0,\dots, n-1
+\end{cases}
+\end{equation}
+
+Siendo $t_i =t_0+i\cdot h,\forall i=0,\dots, n$.
+\end{definition}
+
+\subsubsection{Estimación del error con el método de Euler}
+
+\begin{theorem}[Convergencia del método de Euler]
+    Sea $f:D\subset \mathbb{R}^2\rightarrow \mathbb{R}$ con $D$ abierto, e $Y(t)$ una solución de $(1)$ con $(t,Y(t))\in D,\forall t\in[a,b]$. Sea también la solución \ref{eqn:eulersol} para cierto $h$ fijo. Si se cumple
+    \begin{enumerate}[label=(\alph*)]
+        \item f Lipschitziana respecto de la segunda variable en $D$, con constante de Lipschitz $K$.
+        \item $Y''$ existe en todo $[a,b]$ y está acotada por una constante $C\geq 0$.
+        \item $(t_i,w_i)\in D,\forall i=0,\dots,n$.
+    \end{enumerate}
+    entonces $$\max_{0\leq i \leq n}|Y(t_i)-w_i| \leq e^{(b-a)K}\cdot |Y(a)-w_0| + \frac{e^{(b-a)K}-1}{2K}ch$$
+
+\end{theorem}
+\begin{proof}
+% TODO
+\end{proof}
+
+\begin{theorem}[Convergencia del método de Euler con error de redondeo]
+    Sea $f:D\subset \mathbb{R}^2\rightarrow \mathbb{R}$ con $D$ abierto, e $Y(t)$ una solución de $(1)$ con $(t,Y(t))\in D,\forall t\in[a,b]$.
+
+    Fijado $h>0$, sea la solución numérica
 
 \begin{equation}
 \begin{cases}
     w_0=y_0 \\
-    w_{i+1}=w_i + h\cdot f(t_i, w_i)
+    w_{i+1}=w_i + h\cdot f(t_i, w_i) + \delta_i
 \end{cases}
 \end{equation}
 
-Para $t_i =t_0+i\cdot h,\forall i=0,\dots, n=\lceil \frac{b-a}{2} \rceil$ para cierto $h>0$.
+con $\delta_i<\delta,\forall i=0,\dots,n$.
 
-\end{definition}
-
-\begin{theorem}[Convergencia del método de Euler]
-    Sea $f:D\subset \mathbb{R}^2\rightarrow \mathbb{R}$ con $D$ abierto, e $Y(t)$ una solución de $(1)$ con $(t,Y(t))\in D,\forall t\in[a,b]$. Sea también la solución numérica $(2)$ para cierto $h$ fijo. Si se cumple
+    Si se cumple
     \begin{enumerate}[label=(\alph*)]
         \item f Lipschitziana respecto de la segunda variable en $D$, con constante de Lipschitz $K$.
         \item $Y''$ existe en todo $[a,b]$ y está acotada por una constante $C\geq 0$.
-        \item 
+        \item $(t_i,w_i)\in D,\forall i=0,\dots,n$.
     \end{enumerate}
-    Entonces $$\max_{0\leq i \leq n}|Y(t_i)-y_h(t_i)| \leq e^{(b-a)K}\cdot |Y(a)-y_0| + \frac{e^{(b-a)K}-1}{2K}ch$$
+    entonces $$\max_{0\leq i \leq n}|Y(t_i)-w_i| \leq e^{(b-a)K}\cdot |Y(a)-w_0| + \frac{e^{(b-a)K}-1}{K}\left(\frac{1}{2}ch+\frac{\delta}{h}\right)$$
 
 \end{theorem}
+
+Se puede estimar el error de otra forma bajo ciertas condiciones, que nos será muy útil para estimar numéricamente el error e incluse obtener soluciones mejores a partir del método de Euler.
+
+\begin{theorem}
+    Dado el PVI \ref{eqn:pvi} y la solución \ref{eqn:eulersol}, si la solución $Y(t)$ real es de clase $C^3$ y $\frac{\partial f}{\partial y},\frac{\partial^2f}{\partial y^2}$ constantes, entonces
+    \begin{equation}
+    Y(t_i)-w_i=h\cdot D(t_i)+\theta(h^2),\forall t\in[t_0,b]
+    \end{equation}
+    dónde $D$ es solución del siguiente PVI:
+\begin{equation}
+\begin{cases}
+    d'(t)=g(t)d(t) + \frac{1}{2} Y''(t), g(t)=\frac{\partial f(t,y)}{\partial y}(t,Y(t)) \\
+    d(a) = 0 \\
+    t\in[a,b]
+\end{cases}
+\end{equation}
+\end{theorem}
 \begin{proof}
+Puede encontrarse en el libro de Atkinson, pero no entra.
+\end{proof}
+
+\begin{theorem}
+    En condiciones similares a las del teorema anterior, tomando $(t_i^h,w_i^h)$ y $(t_i^{h/2},w_i^{h/2})$ soluciones obtenidas con el método de Euler con pasos $h$ y $\frac{h}{2}$ respectivamente:
+    \begin{enumerate}[label=(\alph*)]
+        \item $Y(t_i^h)-w_{2i}^{h/2} = (w_{2i}^{h/2}-w_i^h) + \theta(h^2)$.
+        \item $w_i := 2\cdot w_{2i}^{h/2}-w_i^h$ es una aproximación de $Y(t)$ de orden $\theta(h^2)$.
+    \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+    Aplicando el teorema anterior obtenemos:
+    $$
+    Y(t_i^h)-w_i^h=h\cdot D(t_i^h)+\theta(h^2),\forall t\in[t_0,b]
+    $$
+    $$
+    Y(t_{2i}^{h/2})-w_{2i}^{h/2}=h\cdot D(t_{2i}^{h/2})+\theta(h^2),\forall t\in[t_0,b]
+    $$
+    Basta observar que $t_i^h = t_{2i}^{h/2}$ y restar la primera ecuación a la segunda multiplicada por 2. Despejando se obtiene tanto (a) como (b).
 
 \end{proof}
+
+\subsection{Estimación general del error}
+
+Como hemos visto, a partir de conocer el error cometido en cada paso hemos logrado estimar globalmente el error de la solución generada por el método de Euler. La idea es hacer esto de manera general, pero de momento nos conformamos con formalizar la idea de error local.
+
+\begin{definition}
+Dado un método de diferencias
+\begin{equation} \label{eqn:diffmet}
+\begin{cases}
+    w_0=\alpha \\
+    w_{i+1}=w_i + h\cdot \phi(t_i, w_i), \forall i=0,\dots, n-1
+\end{cases}
+\end{equation}
+    que devuelva una solución de \ref{eqn:pvi} con solución real $Y$, se define su \textbf{error local de truncamiento (e.l.t.)} como
+    $$
+    T_{i+1}(h) = \frac{Y(t_{i+1})-Y(t_i)-h\phi(t_i,Y(t_i))}{h}
+    = \frac{Y(t_{i+1})-Y(t_i)}{h} -h\phi(t_i,Y(t_i))
+    $$
+\end{definition}
+
+
+En el caso concreto del método de Euler se tiene:
+    $$
+    T_{i+1}(h)
+    = \frac{Y(t_{i+1})-Y(t_i)}{h} -h\cdot f(t_i,Y(t_i))= \frac{h}{2} Y''(\xi_i),
+    \xi_i\in[t_i,t_{i+1}], \forall i=0,\dots, n-1
+    $$
+
+    y si $|Y''(t)|\leq C,\forall t\in[a,b]$ entonces
+    $$
+    |T_{i+1}(h)|\leq \frac{C}{2} \cdot h
+    $$
+    que es $\theta(h)$.
+
+Lo que nos interesa es que este error decrezca lo más rápido posible con h, es decir, que sea $\theta(h^p)$ con $p$ lo más grande posible. En esta búsqueda llegamos al siguiente método, el de Taylor.
+
+\subsection{Método de Taylor}
+ 
+De aquí en adelante asumiré el PVI general del principio, y cualquier método que considere intentará aproximar una solución suya.
+
+\begin{definition}
+Se define el método de Taylor de orden p como:
+\begin{equation} \label{eqn:diffmet}
+\begin{cases}
+    w_0=\alpha \\
+    w_{i+1}=w_i + h\cdot T^{(p)}(t_i, w_i), \forall i=0,\dots, n-1
+\end{cases}
+\end{equation}
+
+    dónde $T^{(p)}(t_i,w_i)=\sum_{i=0}^{p-1} \frac{h^i}{(i+1)!}f^{(i)}(t_i,w_i)$, y $f^{(i)}(t_i,w_i)$ viene dado po $Y^{(i+1)}(t)=(f(t,Y(t)))^{(i)}$.
+\end{definition}
+
+Unas pocas cuentas son suficientes para darse cuenta de que calcular estas derivadas de manera genérica es realmente costoso, y normalmente se suelen hace las cuentas de manera \textit{adhoc} para un problema concreto.
+
+El siguiente teorema era de esperar:
+
+\begin{theorem}
+    Si Y es de clase $C^{(p+1)}([a,b])$, el e.l.t. del método de Taylor de orden p es $\theta(h^p)$.
+\end{theorem}
+\begin{proof}
+En estas condiciones el e.l.t. no es más que el resto de Lagrange:
+
+$$
+    T_{i+1}(h)=\frac{h^p}{(p+1)!} f^{(p)}(\xi_i,Y(\xi_i)),\xi_i\in [t_i,t_{i+1}]\subset[a,b]
+$$
+    Por ser $f(t,Y(t))$ contínua en compacto está acotada en $[a,b]$, y eso es por lo tanto $\theta(h^p)$.
+\end{proof}
+
+%TODO esto solo para una dimensión?
+
+A pesar de este gran resultado respecto al error, la dificultad para aplicarlo de manera genérica y los problemas que conlleva la derivación numérica no lo hace muy práctico. Buscamos entonces métodos que no necesiten estas derivadas y que tengan órdenes similares.
+
+\subsection{Métodos de Runge-Kutta}
+
+Comenzamos buscando métodos de orden 2, para lo cual queremos aproximar $T^{(2)}(t,y)=f(t,y)+\frac{h}{2} f'(t,y)$ con un error de orden $\theta(h^2)$. Una idea feliz es considerar una aproximación de la forma $a_1f(t+\alpha_1, y+\beta_1)$. Aproximando esto último por Taylor tenemos:
+
+$$
+a_1f(t+\alpha_1, y+\beta_1)=a_1\left(
+f(t,y)+
+\frac{\partial f}{\partial t}(t,y)\cdot \alpha_1+
+\frac{\partial f}{\partial y}(t,y)\cdot \beta_1+
+\frac{\partial^2 f}{\partial t^2}(\xi,\mu)\cdot \frac{\alpha_1^2}{2}+
+\frac{\partial^2 f}{\partial t \partial y}(\xi,\mu)\cdot \alpha_1\beta_1+
+\frac{\partial^2 f}{\partial y^2}(\xi,\mu)\cdot \frac{\beta_1^2}{2}
+\right)
+$$
+
+Nótese que suponemos suficiente regularidad en f para que las parciales cruzadas sean iguales. Haciendo $a_1=1,\alpha_1=\frac{h}{2}, \beta_1=\frac{h}{2} f(t,y)$ la igualdad anterior se traduce en:
+
+$$
+f(t+\frac{h}{2}, y+\beta_1)=
+f(t,y)+
+\frac{\partial f}{\partial t}(t,y)\cdot \frac{h}{2}+
+\frac{\partial f}{\partial y}(t,y)\cdot \frac{h}{2} f(t,y)+
+\frac{\partial^2 f}{\partial t^2}(\xi,\mu)\cdot \frac{h^2}{8}+
+\frac{\partial^2 f}{\partial t \partial y}(\xi,\mu)\cdot \frac{h^2}{4}f(t,y)+
+\frac{\partial^2 f}{\partial y^2}(\xi,\mu)\cdot \frac{h^2}{8}f(t,y)
+$$
+
+$$
+=T^{(2)}(t,y)+
+h^2 \left(
+\frac{\partial^2 f}{\partial t^2}(\xi,\mu)\cdot \frac{1}{8}+
+\frac{\partial^2 f}{\partial t \partial y}(\xi,\mu)\cdot \frac{1}{4}f(t,y)+
+\frac{\partial^2 f}{\partial y^2}(\xi,\mu)\cdot \frac{1}{8}f(t,y)
+\right)
+$$
+
+De nuevo bajo buenas condiciones de $f$ lo que hay entre paréntesis está acotado, y al multiplicar por $h^2$ tenemos el orden de error buscado. Esto nos da nuestro primer método de Runge-Kutta:
+
+\begin{definition}
+    El método del Punto Medio viene dado por
+\begin{equation} \label{eqn:diffmet}
+\begin{cases}
+    w_0=\alpha \\
+    w_{i+1}=w_i + h\cdot f(t+\frac{h}{2}, y+\frac{h}{2}f(t,y)) , \forall i=0,\dots, n-1
+\end{cases}
+\end{equation}
+\end{definition}
+
+\begin{remark}
+    En este método no necesitamos solo necesitamos la función $f$, pero necesitamos dos evaluaciones en cada paso, que puede ser costoso.
+\end{remark}
+
+\begin{remark}
+    Al ser $ f(t+\frac{h}{2}, y+\beta_1)=T^{(2)}(t,y)+\theta(h^2) $, el e.l.t. será:
+    $$
+    T_{i+1}(h)= \left(\frac{}{h} - T^{(2)}(t_i, y(t_i))\right) - \theta(h^2)
+    =\theta(h^2)+ \theta(h^2)
+    =\theta(h^2)
+    $$
+\end{remark}
+
+%TODO reflexión para orden 3
+
+Es fácil ver que si queremos más precisión tenemos que utilizar más evaluaciones de $f$. Una pregunta interesante es el número mínimos de evaluaciones en cada paso para conseguir una aproximación de cierto orden. La siguiente tabla relaciona ambos conceptos:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l||l|l|l|l|}
+    \hline
+Evaluaciones & $1\leq p \leq 4$ & $5\leq p\leq 7$ & $8\leq p\leq 9$  & $10\leq p$ \\
+    \hline
+Mejor e.l.t. & $\theta(h^p)$ & $\theta(h^{p-1})$ & $\theta(h^{p-2})$ & $\theta(h^{p-3})$ \\
+    \hline
+\end{tabular}
+\caption{Tabla de Butcher de evaluaciones y órdenes del e.l.t.}
+\end{table}
+
+Muchas veces utilizamos el número de evaluaciones de la función $f$ como medida de complejidad, pues puede se muy costosa.
+
+Tenemos también dos formas de mejora la precisión de la solución numérica: reducir el paso y usar un método de orden mayor. Veamos la comparación de estas dos formas con los métodos de Runge-Kutta vistos hasta el momento, fijando el número de evaluaciones a $40$ y suponiendo un intervalo con $b-a=1$:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+    \hline
+Método           & Paso  & Precisión aproximada \\
+    \hline
+    \hline
+RK4              & 0.1   & $10^{-4}$ \\
+    \hline
+Euler Modificado & 0.05  & $2.5\cdot 10^{-3}$ \\
+    \hline
+Euler            & 0.025 & $2.5\cdot 10^{-2}$ \\
+    \hline
+\end{tabular}
+\end{table}
+
+En general obtenemos mejores resultados aumentando el orden del método.
+
+
+\section{Métodos de paso adaptativo}
