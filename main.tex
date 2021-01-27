@@ -35,7 +35,8 @@
 \newtheorem{theorem}{Teorema}[section]
 \newtheorem{remark}{Observación}[section]
 \newtheorem{corollary}{Corolario}[theorem]
-\newtheorem{lemma}{Lema}[theorem]
+\newtheorem{lemma}{Lema}[section]
+\newtheorem{example}{Ejemplo}[section]
 
 \makeatletter
 
@@ -113,9 +114,14 @@
 \tableofcontents{}
 \newpage{}
 
-\input{src/1}
+\input{src/introduccion}
+\newpage
+\input{src/pasofijo}
+\newpage
 \input{src/2}
+\newpage
 \input{src/3}
+\newpage
 \input{src/4}
 
 

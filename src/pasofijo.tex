@@ -1,25 +1,3 @@
-
-\section{Resolución numérica de problemas de valor inicial para EDO}
-
-\begin{definition}
-    Llamamos problema de valor inicial a una EDO junto a una condición inicial:
-\begin{equation} \label{eqn:pvi}
-\begin{cases}
-    y'(t)=f(t.y(t)) \\
-    y(a) = y_0 \\
-    t\in[a,b]
-\end{cases}
-\end{equation}
-\end{definition}
-
-\begin{remark}Los problemas que trataremos serán de orden 1 siempre, en otro caso los transformaremos en problemas de mayor dimensión \end{remark}
-\begin{remark}Sería más correcto escribir $\vec y$, pues pueden ser funciones vectoriales, pero por facilidad lo omitiré. \end{remark}
-
-    Los métodos que veremos calcularán soluciones del PVI \ref{eqn:pvi} como una lista de pares $[(t_0,w_0), \dots, (t_n,w_n)]$, dónde los $t_i$ son reales de forma que $a=t_0<t_1<\dots < t_n\geq b$ y los $w_i$ son vectores que aproximan a la solución real en los $t_i$: $y(t_i)\approx w_i,\forall i=0,\dots, n$.
-
-\begin{remark} Por supuesto, al implementarlo usaremos números máquina, no reales matemáticos.  \end{remark}
-\begin{remark} Si queremos obtener una aproximación en cualquier punto del intervalo tenemos que usar una interpolación adecuada. \end{remark}
-
 \section{Métodos de paso fijo}
 
 \begin{definition}  Un método es de paso fijo si la solución que genera cumple $t_i-t_{i-1}=h,\forall i=1,\dots n$ para cierto $h>0$ constante. \end{definition}
@@ -42,6 +20,23 @@ Siendo $t_i =t_0+i\cdot h,\forall i=0,\dots, n$.
 
 \subsubsection{Estimación del error con el método de Euler}
 
+\begin{lemma}
+\label{lema2}
+\begin{enumerate}
+    \item $\forall t \in \mathbb{R}$, $1+t \leq e^t$.
+    \item Si $t\geq -1$, entonces $\forall m > 0$ se cumple que  $0\leq (1+t)^m \leq e^{mt}.$
+\end{enumerate} 
+\end{lemma}
+\begin{proof}
+\begin{enumerate}
+    \item Utilizando el desarrollo de Taylor para la exponencial:
+    $$
+    e^t = 1+t+\frac{t^2}{2}e^{\xi} \textnormal{ con }\xi\in(0,t) \overset{\frac{t^2}{2}e^{\xi} \geq 0}{\implies} e^t \geq 1+t
+    $$
+    \item Como $t\geq -1$, $1+x \geq 0$, y entonces aplicando lo anterior tenemos que $$ 0\leq 1+t \leq e^t \overset{m\geq 0}{\implies} 0 \leq (1+t)^m \leq (e^t)^m = e^{tm} $$
+\end{enumerate}
+\end{proof}
+
 \begin{theorem}[Convergencia del método de Euler]
     Sea $f:D\subset \mathbb{R}^2\rightarrow \mathbb{R}$ con $D$ abierto, e $Y(t)$ una solución de $(1)$ con $(t,Y(t))\in D,\forall t\in[a,b]$. Sea también la solución \ref{eqn:eulersol} para cierto $h$ fijo. Si se cumple
     \begin{enumerate}[label=(\alph*)]
@@ -53,7 +48,46 @@ Siendo $t_i =t_0+i\cdot h,\forall i=0,\dots, n$.
 
 \end{theorem}
 \begin{proof}
-% TODO
+    \begin{equation}
+\label{eq1}
+\left\{
+\begin{array}{l}
+Y(t_{n+1}) = Y(t_n) + hY'(t_n) + \frac{1}{2}h^2Y''(\xi) = Y(t_n) + hf(t_n, Y(t_n)) + \frac{1}{2}h^2Y''(\xi)\\
+\\
+y_h(t_{n+1}) = y_h(t_n) + hf(t_n, y_h(t_n))
+\end{array}
+\right. 
+\end{equation}
+\begin{equation}
+\label{eq2}
+\implies Y(t_{n+1}) - y_h(t_{n+1}) = (Y(t_n) - y_h(t_n)) + h(f(t_n, Y(t_n)) - f(t_n, y_h(t_n))) + \frac{1}{2}h^2Y''(\xi)
+\end{equation}
+De esta última expresión se deduce, tomando normas y usando que $|\frac{1}{2}h^2Y''(\xi)|\geq 0$:
+$$
+\|Y(t_{n+1}) - y_h(t_{n+1})\| \leq \|Y(t_n) - y_h(t_n)\| + h\overset{\leq k\| Y(t_n) - y_h(t_n)\|}{\overbrace{\|f(t_n, Y(t_n)) - f(t_n, y_h(t_n))\|}} \leq
+$$
+$$
+\leq (1-hk)\|Y(t_n) - y_h(t_n)\|
+$$
+Llamando entonces $error_i = \|Y(t_i) - y_h(t_i)\|$ para $0\leq i \leq N$ y teniendo en cuenta que $\left|\frac{1}{2}h^2Y''(\xi)\right| \leq \frac{1}{2}h^2c$, si tomamos normas en  (\ref{eq2}) tenemos que:
+$$
+error_{n+1} \leq (1+hk)error_n + \frac{1}{2}h^2c
+$$
+Si ahora utilizamos esta última expresión recursivamente como sigue
+$$
+error_{n+1} \leq (1+hk)error_n + \frac{1}{2}h^2c \leq (1+hk)\left[(1+hk)error_{n-1} + \frac{1}{2}h^2c\right] + \frac{1}{2}h^2c
+$$
+Llegamos a que
+$$
+error_{n+1} \leq (1+hk)error_0 + \overset{\textnormal{serie geométrica entre 0 y n}}{\overbrace{\left[ 1 + (1+hk) + (1+hk)^2 + \cdots + (1+hk)^{n}\right]}}\frac{1}{2}h^2c =  
+$$
+$$
+= (1+hk)error_0 + \left[\frac{(1+hk)^n - 1}{hk}\right]\frac{1}{2}h^2c = (1+hk)error_0 + \left[\frac{(1+hk)^n - 1}{k}\right]\frac{1}{2}hc \overset{\ref{lema2}}{\leq} 
+$$
+$$
+\leq e^{hkn}error_0 + \left[\frac{e^{hkn} - 1}{k}\right]\frac{1}{2}hc =  e^{(b-a)k}\|Y(t_0) - y_h(t_0)\| + \left[\frac{e^{(b-a)k} - 1}{k}\right]\frac{1}{2}hc
+$$
+
 \end{proof}
 
 \begin{theorem}[Convergencia del método de Euler con error de redondeo]
@@ -100,6 +134,11 @@ Se puede estimar el error de otra forma bajo ciertas condiciones, que nos será 
 Puede encontrarse en el libro de Atkinson, pero no entra.
 \end{proof}
 
+\begin{remark}
+Cuando $D(t)$ se puede obtener explícitamente, el término $hD(t_i)$ de la fórmula  (\ref{eq3}) normalmente proporciona una estimación bastante buena del error real cometido ($Y(t_i) - y_h(t_i)$), y la precisión de la estimación mejora si se disminuye el tamaño del paso $h$.
+\end{remark}
+ No suele ser muy práctico encontrar $D$, pero el resultado nos ayuda a demostrar lo siguiente:
+
 \begin{theorem}
     En condiciones similares a las del teorema anterior, tomando $(t_i^h,w_i^h)$ y $(t_i^{h/2},w_i^{h/2})$ soluciones obtenidas con el método de Euler con pasos $h$ y $\frac{h}{2}$ respectivamente:
     \begin{enumerate}[label=(\alph*)]
@@ -140,6 +179,7 @@ Dado un método de diferencias
 \end{definition}
 
 
+\begin{example}
 En el caso concreto del método de Euler se tiene:
     $$
     T_{i+1}(h)
@@ -154,6 +194,7 @@ En el caso concreto del método de Euler se tiene:
     que es $\theta(h)$.
 
 Lo que nos interesa es que este error decrezca lo más rápido posible con h, es decir, que sea $\theta(h^p)$ con $p$ lo más grande posible. En esta búsqueda llegamos al siguiente método, el de Taylor.
+\end{example}
 
 \subsection{Método de Taylor}
  
@@ -161,7 +202,7 @@ De aquí en adelante asumiré el PVI general del principio, y cualquier método 
 
 \begin{definition}
 Se define el método de Taylor de orden p como:
-\begin{equation} \label{eqn:diffmet}
+\begin{equation}
 \begin{cases}
     w_0=\alpha \\
     w_{i+1}=w_i + h\cdot T^{(p)}(t_i, w_i), \forall i=0,\dots, n-1
@@ -229,9 +270,8 @@ $$
 
 De nuevo bajo buenas condiciones de $f$ lo que hay entre paréntesis está acotado, y al multiplicar por $h^2$ tenemos el orden de error buscado. Esto nos da nuestro primer método de Runge-Kutta:
 
-\begin{definition}
-    El método del Punto Medio viene dado por
-\begin{equation} \label{eqn:diffmet}
+\begin{definition}[Método del Punto Medio]
+\begin{equation}
 \begin{cases}
     w_0=\alpha \\
     w_{i+1}=w_i + h\cdot f(t+\frac{h}{2}, y+\frac{h}{2}f(t,y)) , \forall i=0,\dots, n-1
@@ -246,13 +286,60 @@ De nuevo bajo buenas condiciones de $f$ lo que hay entre paréntesis está acota
 \begin{remark}
     Al ser $ f(t+\frac{h}{2}, y+\beta_1)=T^{(2)}(t,y)+\theta(h^2) $, el e.l.t. será:
     $$
-    T_{i+1}(h)= \left(\frac{}{h} - T^{(2)}(t_i, y(t_i))\right) - \theta(h^2)
-    =\theta(h^2)+ \theta(h^2)
+    T_{i+1}(h)= \left(\frac{Y(t_{i+1})-Y(t_i)-h\phi(t_i,Y(t_i))}{h} - T^{(2)}(t_i, y(t_i))\right) - \theta(h^2)
+    =\theta(h^2)- \theta(h^2)
     =\theta(h^2)
     $$
 \end{remark}
 
-%TODO reflexión para orden 3
+Podríamos intentar una estrategia parecida para $T^{(3)}(t,y)$:
+
+\begin{equation}
+\label{eq5}
+T^{(3)}(t,y) = f(t,y) + \frac{h}{2}f'(t,y) + \frac{h^2}{6}f''(t,y) \approx a_1f(t,y) + a_2f(t+\alpha_2, y+\delta_2f(t,y))
+\end{equation}
+pero ni siquiera esto basta para igualar el término $ \frac{h^2}{6}\left[ \frac{\partial f}{\partial y}(t,y)\right]^2f(t,y)$, que resulta al desarrollar $\frac{h^2}{6}f''(t,y)$.
+Obtenemos sin embargo más métodos de orden 2:
+
+\begin{definition}[Método modificado de Euler]
+Se obtiene al tomar $a_1 = a_2 = \frac{1}{2}$ y $\alpha_2 = \delta_2 = h$ en la ecuación  (\ref{eq5}).
+\begin{equation}
+\begin{cases}
+    w_0=\alpha \\
+    w_{i+1}=w_i + \frac{h}{2}\left[f(t_i, w_i) + f(t_{i+1}, w_i+hf(t_i,w_i))\right]  , \forall i=0,\dots, n-1
+\end{cases}
+\end{equation}
+
+\end{definition}
+
+\begin{definition}[Método de Heun]
+Este método se obtiene al tomar $a_1 = \frac{1}{4}$, $a_2 = \frac{3}{4}$ y $\alpha_2 = \delta_2 = \frac{2}{3}h$ en la ecuación  (\ref{eq5}).
+\begin{equation}
+\begin{cases}
+    w_0=\alpha \\
+    w_{i+1}=w_i + \frac{h}{4}\left[f(t_i, w_i) + 3f(t_i + \frac{2}{3}h, w_i+\frac{2}{3}hf(t_i,w_i))\right] , \forall i=0,\dots, n-1
+\end{cases}
+\end{equation}
+
+\end{definition}
+
+El método más utilizado de Runge-Kutta es el siguiente, de orden 4:
+
+\begin{definition}[Método de Runge-Kutta de orden 4]
+\begin{equation}
+\begin{cases}
+    w_0=\alpha \\
+    K_1^{i+1} = hf(t,w_i)\\
+    K_2^{i+1} = hf(t + h/2,w_i+ K_1^{i+1}/2)\\
+    K_3^{i+1} = hf(t + h/2,w_i+ K_2^{i+1}/2)\\
+    K_4^{i+1} = hf(t + h,w_i + K_3^{i+1})\\
+
+    w_{i+1}=w + \frac{K_1^{i+1} + 2K_2^{i+1} + 2K_3^{i+1} + K_4^{i+1}}{6}
+\end{cases}
+\end{equation}
+
+\end{definition}
+
 
 Es fácil ver que si queremos más precisión tenemos que utilizar más evaluaciones de $f$. Una pregunta interesante es el número mínimos de evaluaciones en cada paso para conseguir una aproximación de cierto orden. La siguiente tabla relaciona ambos conceptos:
 

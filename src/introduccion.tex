@@ -1,0 +1,85 @@
+\section{Introducción}
+\begin{theorem}
+Sean $A,B \in \mathbb{R}_{\ne 0}$\footnote{$\mathbb{R}_{\ne 0} = \mathbb{R} - \{0\}$}. Entonces $S(A,B) = \{ (x_n)_{n\in \mathbb{N}}:\textnormal{ } x_{n+1} = Ax_n + Bx_{n-1}\}$ es un espacio vectorial real de dimensión 2.
+\end{theorem}
+
+\begin{proof}
+
+Como $S(A,B)$ es un subconjunto del conjunto de las sucesiones reales, que es un espacio vectorial sobre $\mathbb{R}$, sabemos que  $S(A,B)$ es subespacio vectorial (y, por tanto, satisface las propiedades de espacio vectorial sobre $\mathbb{R}$) si y solo si para cualesquiera sucesiones $(x_n)_{n\in \mathbb{N}}, (y_n)_{n\in \mathbb{N}} \in S(A,B)$ y escalares $\alpha, \beta \in \mathbb{R}$ se cumple que $\alpha (x_n)_{n\in \mathbb{N}} + \beta (y_n)_{n\in \mathbb{N}} \in S(A,B).$\footnote{Resultado visto en Álgebra Lineal.}
+\\\\Sabiendo que las operaciones en $S(A,B)$ de suma vectorial y producto por escalares están definidas como:
+
+$$
+\begin{matrix}
++ : S(A,B) \times S(A,B) & \longrightarrow & S(A,B) \\
+((x_n)_{n\in \mathbb{N}}, (y_n)_{n\in \mathbb{N}}) & \longmapsto & (x_n + y_n)_{n\in \mathbb{N}}
+\end{matrix}
+$$\\
+$$
+\begin{matrix}
+\cdot : \mathbb{R} \times S(A,B) & \longrightarrow & S(A,B) \\
+(\alpha, (x_n)_{n\in \mathbb{N}}) & \longmapsto & (\alpha x_n)_{n\in \mathbb{N}}
+\end{matrix}
+$$
+\\Es fácil ver que, dadas las sucesiones $(x_n)_{n\in \mathbb{N}}, (y_n)_{n\in \mathbb{N}} \in S(A,B)$ y los escalares $\alpha, \beta \in \mathbb{R}$ se tiene que
+$$
+\alpha (x_n)_{n\in \mathbb{N}} + \beta (y_n)_{n\in \mathbb{N}} = (\alpha x_n)_{n\in \mathbb{N}} + (\beta y_n)_{n\in \mathbb{N}} = (\alpha x_n + \beta y_n)_{n\in \mathbb{N}}
+$$
+Y, por tanto, basta comprobar que $\alpha x_{n+1} + \beta y_{n+1} = A(\alpha x_n + \beta y_n) + B(\alpha x_{n-1} + \beta y_{n-1})$ para poder afirmar que $\alpha (x_n)_{n\in \mathbb{N}} + \beta (y_n)_{n\in \mathbb{N}}\in S(A,B)$:
+$$
+\alpha x_{n+1} + \beta y_{n+1} \overset{\textnormal{Asociatividad del producto}}{=} (A\cdot \alpha) x_n + (B\cdot \alpha)x_{n-1} + (A\cdot \beta) y_n + (B\cdot \beta)y_{n-1} =
+$$
+$$
+\overset{\textnormal{Asociatividad del producto}}{=} A(\alpha x_n + \beta y_n) + B(\alpha x_{n-1} + \beta y_{n-1}) \implies \alpha (x_n)_{n\in \mathbb{N}} + \beta (y_n)_{n\in \mathbb{N}} \in S(A,B)
+$$
+Podemos concluir entonces, por el resultado indicado anteriormente, que $S(A,B)$ es espacio vectorial real de dimensión 2.
+
+\end{proof}
+
+\subsection{Sucesiones geométricas en el espacio}
+Sea $(x_n)_{n\in\mathbb{N}} = (r^n)_{n\in\mathbb{N}}$ ($r \ne 0$). Si ponemos la condición $(x_n)_{n\in\mathbb{N}} \in S(A,B)$ se deberá cumplir que
+$$
+r^{n+1} = Ar^n + Br^{n-1} \iff r^2-Ar-B=0
+$$
+De donde obtenemos dos soluciones, $\overrightarrow{v_1} = (r^1_n)_{n\in\mathbb{N}}$ y $\overrightarrow{v_2} = (r^2_n)_{n\in\mathbb{N}}$, de manera que todas las sucesiones geométricas del espacio que pertenezcan a $S(A,B)$ serán del tipo $(x_n)_{n\in\mathbb{N}} = a(r^1_n)_{n\in\mathbb{N}} + b(r^2_n)_{n\in\mathbb{N}}$ con $a,b\in \mathbb{R}$, $a+b\ne 0$.
+\begin{example}
+Veamos que se cumple para la sucesión $x_n = \frac{13}{3}x_{n-1} - \frac{4}{3}x_{n-2}$ (con ccii $x_0 = 1, x_1 = \frac{1}{3}$).\\
+$r^2-\frac{13}{3}r+\frac{4}{3} = 0 \iff 
+\left\{\begin{matrix}
+r^1 = 4 \\
+r^2 = \frac{1}{3}
+\end{matrix}\right.$
+Por tanto, nuestra sucesión recurrente es de la forma $x_n = a4^n + b\frac{1}{3^3}$.\\
+
+Resolviendo entonces el sistema de ecuaciones 
+$$\left\{\begin{matrix}
+x_0 = a+b = 1 \\
+x_1 = 4a + \frac{b}{3} = \frac{1}{3}
+\end{matrix}\right.$$
+tenemos que $a=0$ y $b=1$, por lo que la sucesión queda como $x_n = \frac{1}{3^n}$ $n\in\mathbb{N}$.
+\end{example}
+Nosotros trabajaremos en $S\subset \mathbb{Q}$\footnote{$S(A,B)$ con $A,B\in \mathbb{Q}$} (números representables por la máquina), que es finito, no igualmente distribuido y, además, no tiene estructura de cuerpo.
+
+
+
+\subsection{Resolución numérica de problemas de valor inicial para EDO}
+
+\begin{definition}
+    Llamamos problema de valor inicial a una EDO junto a una condición inicial:
+\begin{equation} \label{eqn:pvi}
+\begin{cases}
+    y'(t)=f(t.y(t)) \\
+    y(a) = y_0 \\
+    t\in[a,b]
+\end{cases}
+\end{equation}
+\end{definition}
+
+\begin{remark}Los problemas que trataremos serán de orden 1 siempre, en otro caso los transformaremos en problemas de mayor dimensión \end{remark}
+\begin{remark}Sería más correcto escribir $\vec y$, pues pueden ser funciones vectoriales, pero por facilidad lo omitiré. \end{remark}
+
+    Los métodos que veremos calcularán soluciones del PVI \ref{eqn:pvi} como una lista de pares $[(t_0,w_0), \dots, (t_n,w_n)]$, dónde los $t_i$ son reales de forma que $a=t_0<t_1<\dots < t_n\geq b$ y los $w_i$ son vectores que aproximan a la solución real en los $t_i$: $y(t_i)\approx w_i,\forall i=0,\dots, n$.
+
+\begin{remark} Por supuesto, al implementarlo usaremos números máquina, no reales matemáticos.  \end{remark}
+\begin{remark} Si queremos obtener una aproximación en cualquier punto del intervalo tenemos que usar una interpolación adecuada. \end{remark}
+
+
