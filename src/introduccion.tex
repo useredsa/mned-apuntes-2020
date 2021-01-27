@@ -40,7 +40,7 @@ Sea $(x_n)_{n\in\mathbb{N}} = (r^n)_{n\in\mathbb{N}}$ ($r \ne 0$). Si ponemos la
 $$
 r^{n+1} = Ar^n + Br^{n-1} \iff r^2-Ar-B=0
 $$
-De donde obtenemos dos soluciones, $\overrightarrow{v_1} = (r^1_n)_{n\in\mathbb{N}}$ y $\overrightarrow{v_2} = (r^2_n)_{n\in\mathbb{N}}$, de manera que todas las sucesiones geométricas del espacio que pertenezcan a $S(A,B)$ serán del tipo $(x_n)_{n\in\mathbb{N}} = a(r^1_n)_{n\in\mathbb{N}} + b(r^2_n)_{n\in\mathbb{N}}$ con $a,b\in \mathbb{R}$, $a+b\ne 0$.
+De donde obtenemos dos soluciones, $\overrightarrow{v_1} = (r^n_1)_{n\in\mathbb{N}}$ y $\overrightarrow{v_2} = (r^n_2)_{n\in\mathbb{N}}$, de manera que todas las demás sucesiones de $S(A,B)$ serán del tipo $(x_n)_{n\in\mathbb{N}} = a(r^n_1)_{n\in\mathbb{N}} + b(r^n_2)_{n\in\mathbb{N}}$ con $a,b\in \mathbb{R}$, $a+b\ne 0$.
 \begin{example}
 Veamos que se cumple para la sucesión $x_n = \frac{13}{3}x_{n-1} - \frac{4}{3}x_{n-2}$ (con ccii $x_0 = 1, x_1 = \frac{1}{3}$).\\
 $r^2-\frac{13}{3}r+\frac{4}{3} = 0 \iff 
@@ -48,7 +48,7 @@ $r^2-\frac{13}{3}r+\frac{4}{3} = 0 \iff
 r^1 = 4 \\
 r^2 = \frac{1}{3}
 \end{matrix}\right.$
-Por tanto, nuestra sucesión recurrente es de la forma $x_n = a4^n + b\frac{1}{3^3}$.\\
+Por tanto, nuestra sucesión recurrente es de la forma $x_n = a4^n + b\frac{1}{3^n}$.\\
 
 Resolviendo entonces el sistema de ecuaciones 
 $$\left\{\begin{matrix}
