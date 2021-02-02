@@ -11,7 +11,7 @@
 \usepackage{amsfonts}
 \geometry{verbose,tmargin=2cm,bmargin=2cm,lmargin=2cm,rmargin=2cm}
 \usepackage{multicol}
-% \usepackage{graphicx}
+\usepackage{graphicx}
 \usepackage{array}
 \usepackage{framed}
 \usepackage{listings}
@@ -32,11 +32,16 @@
 
 
 \newtheorem{definition}{Definición}[section]
+\newtheorem{proposition}{Proposición}[section]
 \newtheorem{theorem}{Teorema}[section]
 \newtheorem{remark}{Observación}[section]
 \newtheorem{corollary}{Corolario}[theorem]
 \newtheorem{lemma}{Lema}[section]
 \newtheorem{example}{Ejemplo}[section]
+
+\newenvironment{method}[1]{%
+\noindent \textbf{#1}. %
+}{}
 
 \makeatletter
 
