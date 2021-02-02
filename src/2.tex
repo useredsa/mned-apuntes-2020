@@ -449,3 +449,108 @@ es el siguiente punto de una solución.
 \end{proof}
 \end{proposition}
 
+\subsection{Fórmulas de diferenciación hacia atrás}
+
+Dado un método a $m$-pasos genérico
+\begin{equation*}
+    w_i = a_0w_{i-m} + \dots + a_{m-1}w_{i-1} + h\qty[
+        b_0f(t_{i-m}, w_{i-m}) + \dots + b_{m-1}f(t_{i-1}, w_{i-1})
+        + b_mf(t_i, w_i)
+    ]
+\end{equation*}
+vamos a definir los polinomios
+\begin{align*}
+    \rho(z) = z^m -& a_{m-1}z^{m-1} + \dots - a_0 \qq{y} \\
+    \sigma(z) = b_mz^m +& b_{m-1}z^{m-1} + \dots + b_0.
+\end{align*}
+
+\begin{definition}
+    Un método a $m$-pasos es una fórmula de diferenciación (BDF) hacia atrás si
+    \begin{itemize}
+        \item el método es de orden $m$ y
+        \item $\sigma(z) = \beta w^m$ con $\beta \ne 0$.
+    \end{itemize}
+\end{definition}
+
+\begin{lemma}\label{lmm:bdf-parameters}
+    Si un método es una BDF, entonces,
+    siendo $\beta$ en las condiciones de la definición anterior,
+    \begin{equation*}
+        \beta = \qty(\sum_{i=1}^m \frac{1}{i})^{-1} \qq{y}
+        \rho(z) = \beta\sum_{i=1}^m \frac{1}{j}z^{m-j}(z-1)^j.
+    \end{equation*}
+\end{lemma}
+
+\begin{theorem}
+    Una BDF de orden $m$ es estable y convergente si y solo si $1 \le m \le 6$.
+\end{theorem}
+
+\subsubsection{Fórmulas de diferenciación hacia atrás de orden 2 y 3}
+
+Usaremos el \cref{lmm:bdf-parameters} para obtener los coeficientes.
+Para orden $2$,
+\begin{gather*}
+    \beta = \qty(1 + \frac{1}{2})^{-1} = \frac{2}{3} \qq{y} \\
+    \rho(z) = \frac{2}{3}\qty[z(z-1) + \frac{1}{2}(z-1)^2] =
+    \frac{2}{3}\qty[\frac{3}{2}z^2 - 2z + \frac{1}{2}] =
+    z^2 - \frac{4}{3} + \frac{1}{3}.
+\end{gather*}
+Lo que nos da proporciona el siguiente método.
+
+\begin{method}{Fórmula de diferenciación hacia atrás de orden $2$}
+    \begin{equation*}
+        w_i = - \frac{1}{3}w_{i-2} + \frac{4}{3}w_{i-1}
+            + \frac{2}{3}hf(t_i, w_i).
+    \end{equation*}
+\end{method}
+
+Podemos repetir los cálculos para el orden $3$.
+
+\begin{method}{Fórmula de diferenciación hacia atrás de orden $3$}
+    \begin{equation*}
+        w_i = \frac{2}{11}w_{i-3} - \frac{9}{11}w_{i-2} + \frac{18}{11}w_{i-1}
+            + \frac{11}{6}hf(t_i, wi).
+    \end{equation*}
+\end{method}
+
+\begin{remark}
+    El método de Euler hacia atrás es la BDF de orden $1$.
+\end{remark}
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{media/BDF1-A-stability-region.svg.png}
+        \caption{BDF1}
+    \end{subfigure}
+    \begin{subfigure}{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{media/BDF2-A-stability-region.svg.png}
+        \caption{BDF2}
+    \end{subfigure}
+    \begin{subfigure}{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{media/BDF3-A-stability-region.svg.png}
+        \caption{BDF3}
+    \end{subfigure}
+
+    \begin{subfigure}{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{media/BDF4-A-stability-region.svg.png}
+        \caption{BDF4}
+    \end{subfigure}
+    \begin{subfigure}{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{media/BDF5-A-stability-region.svg.png}
+        \caption{BDF5}
+    \end{subfigure}
+    \begin{subfigure}{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{media/BDF6-A-stability-region.svg.png}
+        \caption{BDF6}
+    \end{subfigure}
+    \caption{Región de convergencia para las $6$ BDF estables}
+\end{figure}
+
+%TODO hay que poner métodos de Runge-Kutta implícitos?
