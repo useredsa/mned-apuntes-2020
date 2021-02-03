@@ -29,19 +29,19 @@ de 4 pasos \ref{eqn:AB4steps} y el método implícito de Adams-Moulton de
 \end{method}
     
 Este método necesita para empezar los 4 primeros pasos y 
-tiene un e.l.t $T_{i+1}(h) = \frac{251}{720}y^5(\xi)h^4$. 
+tiene un e.l.t $T_{i+1}(h) = \frac{251}{720}y^5(\xi)h^4$. %TODO calcular
 
 
 \begin{method} 
     Método implícito de Adams-Moulton de 3 pasos
     \begin{equation} \label{eqn:AM3steps}
         w_{i+1} = w_i + \frac{h}{24}[
-                            9f(t_{i+1},w_{i+1}) + 19f(t_i,w_i) - 5f(t_{i-2}w_{i-2}) + f(t_{i-2}),w_{i-2})
-                            ]
+            9f(t_{i+1},w_{i+1}) + 19f(t_i,w_i) - 5f(t_{i-2}w_{i-2}) + f(t_{i-2}),w_{i-2})
+            ]
     \end{equation}   
 \end{method}
 Este método necesita para empezar los 3 primeros pasos y 
-tiene un e.l.t $T_{i+1}(h) = \frac{19}{720}y^5(\xi)h^4$. 
+tiene un e.l.t $T_{i+1}(h) = \frac{19}{720}y^5(\xi)h^4$. %TODO Calcular
 
 Podemos ver que ambos métodos requieren de una única evaluación de f 
 en cada paso y que A-M \ref{eqn:AM3steps} tiene un menor e.l.t sin embargo 
@@ -86,5 +86,80 @@ Por ello introducimos las siguientes definiciones:
 	El método se dice de orden p, $p \geq 1$, si p es el mayor entero
 	tq $\max{\norm*{T_{i+1}(h)}} = O(h^p)$
 \end{definition}
+
 Naturalmente solo consideraremos los métodos consistentes y de orden tan
+alto como podamos encontrar teniendo un coste razonable.
+
+\begin{definition}
+    Un método en diferencias 
+    \begin{equation} \label{eqn:diff}
+        w_{i+1} = \sum_{j=1}^m {a_{j-1}w_{i-m+j}} + h F(t_i,w_{i-m+j}, \dots, w_i,w_{i+1},h)
+    \end{equation}
+    se dice convergente si 
+    \begin{equation} \label{eqn:conv}
+        \lim\nolimits_{h \to 0} \max{\norm{Y(t_i)-w_i}} = 0
+    \end{equation}
+\end{definition}
+
+Un método convergente nos resuelve el problema en caso de una 
+implementacion de "aritmética infinita"
+
+Lamentablemente solo disponemos de ordenadores de aritmética finitia,
+luego nuestros métodos no son los deseados sino los aproximados. %TODO EIN?
+Por eso, introducimos la noción de método estable. 
+
+\begin{definition}
+    Un método en diferencias \ref{eqn:diff} se dice estable si al generar
+    una segunda solución aproximada de la forma:
+    \begin{equation}
+        w'_{i+1} = \sum_{j=1}^m {a_{j-1}w'_{i-m+j}} + h F(t_i,w'_{i-m+j}, \dots, w'_i,w'_{i+1},h) + \epsilon'_i
+    \end{equation}
+    existe una constante M, independiente de h, tal que
+    \begin{equation} \label{stab}
+        \max_{m \leq n \leq N}{\norm{w'_n - w_n}} \leq M[
+            \max_{0 \leq i \ m-1}{\norm{w'_i - w_i}} + \sum_{m-1 \leq j \leq N} \norm{\epsilon'_j}
+            ]
+    \end{equation}
+\end{definition}
+
+\begin{remark}
+    Esto no contradice el resultado que obtuvimos para Euler%TODO una referencia estaría increible en vd
+    Pues $\sum\norm{\epsilon_j} \approx n\epsilon \approx \frac{b-a}{h}\epsilon$%TODO esto pq?
+\end{remark}
+
+\begin{theorem}
+    Si un método en diferencias \ref{eqn:diff} de la forma:
+    \begin{equation}
+        w_{i+1} = \sum_{j=1}^m {a_{j-1}w_{i-m+j}} + h F(t_i,w_{i-m+j}, \dots, w_i,w_{i+1},h)
+    \end{equation}
+    Es estable y consistente, entonces es convergente.
+    Si, además, es de orden $p \geq 1$, se tiene
+    \begin{equation}
+        \max_{0 \leq n \leq N}\norm{x(t_n) - w_n} \leq M[
+            \max_{0 \leq i \leq m-1} \norm{x(t_i) - w_i} + Kh
+            ]
+    \end{equation} 
+    Para constantes adecuadas M y K.
+    \begin{proof}
+        Sea $\epsilon_i = hT_i(h_i)$ y utilicemos la estabilidad 
+        con $w'_n = Y(t_n)$. Se tiene que 
+        \begin{equation}
+            \max_{0 \leq n \leq N}\norm{Y(t_n) - w_n} \leq M[
+                \max_{0 \leq i \leq m-1}\norm{Y(t_i) - w_i} + \sum_{m-1\leq n \leq N}\norm{\epsilon_n}
+                ]
+        \end{equation}
+        para algún m. pero
+        \begin{equation}
+            \sum_{m \leq n \leq N} \norm{\epsilon_n} = 
+            \sum_{m \leq n \leq N} h\norm{Tn+1(h)} \leq
+            \bigg{\sum_{m \leq n \leq N} h} \max_{m \leq n \leqw N}\norm{T_{n+1}(h)} \leq
+            \big{b-a}\max_{m \leq n \leqw N}\norm{T_{n+1}(h)} 
+        \end{equation}
+        donde esta última tiende a 0 cunado h tiende a 0 por la condición de consistencia.
+        Si además, $\max\norm{T_{n+1}(h)} = O(h^p) \implies \max\norm{T_i+1I(h)} \leq \frac{kh^p}{b-a}$
+        para algún K y de ahí el resultado.
+    \end{proof}
+\end{theorem}
+
+
 
