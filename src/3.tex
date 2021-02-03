@@ -22,26 +22,38 @@ de 4 pasos \ref{eqn:AB4steps} y el método implícito de Adams-Moulton de
 \begin{method} 
     Método explícito de Adams-Bashforth de 4 pasos
     \begin{equation} \label{eqn:AB4steps}
-        w_{i+1} = w_i + \frac{h}{24}[
-                            55f(t_i,w_i) - 59f(t_{i-1},w_{i-1}) + 37f(t_{i-2}w_{i-2}) - 9f(t_{i-3}),w_{i-3})
-                        ]
+        \begin{cases}
+            w_0 = \alpha_0  \\
+            w_1 = \alpha_1  \\
+            w_2 = \alpha_2  \\
+            w_3 = \alpha_3  \\
+            w_{i+1} = w_i + \frac{h}{24}[
+                    55f(t_i,w_i) - 59f(t_{i-1},w_{i-1}) + 37f(t_{i-2}w_{i-2}) - 9f(t_{i-3}),w_{i-3})
+                    ]
+        \end{cases}
     \end{equation}
 \end{method}
     
-Este método necesita para empezar los 4 primeros pasos y 
+Este método necesita para empezar los $4$ primeros pasos y 
 tiene un e.l.t $T_{i+1}(h) = \frac{251}{720}y^5(\xi)h^4$. %TODO calcular
 
 
 \begin{method} 
     Método implícito de Adams-Moulton de 3 pasos
     \begin{equation} \label{eqn:AM3steps}
-        w_{i+1} = w_i + \frac{h}{24}[
-            9f(t_{i+1},w_{i+1}) + 19f(t_i,w_i) - 5f(t_{i-2}w_{i-2}) + f(t_{i-2}),w_{i-2})
-            ]
+        \begin{cases}
+            w_0 = \alpha_0  \\
+            w_1 = \alpha_1  \\
+            w_2 = \alpha_2  \\
+            w_{i+1} = w_i + \frac{h}{24}[
+                9f(t_{i+1},w_{i+1}) + 19f(t_i,w_i) - 5f(t_{i-2}w_{i-2}) + f(t_{i-2}),w_{i-2})
+                ]
+        \end{cases}
     \end{equation}   
 \end{method}
-Este método necesita para empezar los 3 primeros pasos y 
-tiene un e.l.t $T_{i+1}(h) = \frac{19}{720}y^5(\xi)h^4$. %TODO Calcular
+
+Este método necesita para empezar los $3$ primeros pasos y 
+tiene un e.l.t $T_{i+1}(h) = \frac{-19}{720}y^5(\xi)h^4$. %TODO Calcular
 
 Podemos ver que ambos métodos requieren de una única evaluación de f 
 en cada paso y que A-M \ref{eqn:AM3steps} tiene un menor e.l.t sin embargo 
@@ -75,8 +87,8 @@ Con los métodos multipaso hay que tener cuidado pues usamos
 sucesiones recurrentes de orden mayor que uno, 
 lo que nos puede dar problemas por estar mal condicionada 
 (a parte de los problemas generados por el propio método). 
-Por ello introducimos las siguientes definiciones:
-
+Por ello introducimos/recordamos las siguientes definiciones:
+%TODO añadir la de e.l.t
 
 \begin{definition}
     Un método se dice consistente (o compatible) con la EDO que aproxima si 
@@ -148,12 +160,12 @@ Por eso, introducimos la noción de método estable.
                 \max_{0 \leq i \leq m-1}\norm{Y(t_i) - w_i} + \sum_{m-1\leq n \leq N}\norm{\epsilon_n}
                 ]
         \end{equation}
-        para algún m. pero
+        para algún $m$. pero
         \begin{equation}
             \sum_{m \leq n \leq N} \norm{\epsilon_n} = 
             \sum_{m \leq n \leq N} h\norm{Tn+1(h)} \leq
-            \bigg{\sum_{m \leq n \leq N} h} \max_{m \leq n \leqw N}\norm{T_{n+1}(h)} \leq
-            \big{b-a}\max_{m \leq n \leqw N}\norm{T_{n+1}(h)} 
+            (\sum_{m \leq n \leq N} h) \max_{m \leq n \leq N}\norm{T_{n+1}(h)} \leq
+            (b-a)\max_{m \leq n \leq N}\norm{T_{n+1}(h)} 
         \end{equation}
         donde esta última tiende a 0 cunado h tiende a 0 por la condición de consistencia.
         Si además, $\max\norm{T_{n+1}(h)} = O(h^p) \implies \max\norm{T_i+1I(h)} \leq \frac{kh^p}{b-a}$
@@ -161,5 +173,40 @@ Por eso, introducimos la noción de método estable.
     \end{proof}
 \end{theorem}
 
+\section{Implementación de los métodos de Adams. Predictor-corrector}
+Estos métodos sirven para obtener lo mejor de los dos métodos,
+la completitud de un método explícito y el mejor error del 
+método implicito, y se consiguen usando el implícito para corregir
+la predicción del método explícito. Por ejemplo, uno de estos métodos 
+sería usar como predictor el método de Adams-Bashforth de $4$ pasos \cref{eqn:AB4steps}
+y como corrector el método de Adams-Moulton de $3$ pasos \cref{eqn:AM3steps}.
+
+
+De manera parecida a RKF, %TODO referencia a RKF
+el método predictor-corrector obtiene, cada vez, dos aproximaciones de
+la solución, una obtenida de uno del predictor y otra del corrector. 
+Por la definición de error local de truncamiento tenemos que:
+%
+\begin{gather*}
+    y(t_{i+1}) = y(t_i) + \frac{h}{24}[
+        55f(t_i,y(t_i) - 59f(t_{i-1},y(t_{i-1})) + 37f(t_{i-2}, y(t_{i-2})) - 9f(t_{w-3},y(t_{i-3})))
+        ] + \frac{251}{720}y^{(5)}(\xi)h^5  \\
+    y(t_{i+1}) = y(t_i) + \frac{h}{24}[
+        9f(t_{w+1},y(t_{i+1})) + 19f(t_i,y(t_i) - 5f(t_{i-1},y(t_{i-1})) + f(t_{i-2}, y(t_{i-2})))
+        ] - \frac{19}{720}y^{(5)}(\mu)h^5
+\end{gather*}
+%
+Y si ahora identificamos los $w_j \approx y(t_j) \text{ para } j = 0,1,\dots, i$, tenemos
+%
+\begin{gather*}
+    y(t_{i+1} - w_{i+1}^{(0)}) \approx \frac{251}{720}y^{(5)}(\xi)h^5   \\
+    y(t_{i+1} - w_{i+1}^{(1)}) \approx \frac{-19}{720}y^{(5)}(\mu)h^5
+\end{gather*}
+%
+si además, h es suficientemente pequeño tenemos $y^{(5)}(\xi) \approx y^{(5)}(\mu)$, entonces restando
+\begin{multline}
+    w_{i+1}^{(1)} - w_{i+1}^{(0)} \approx \frac{h^6}{720}[251y^{(5)}(\xi) + 19y^{(5)}(\mu)]
+    \approx 
+\end{multline}
 
 
