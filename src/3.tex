@@ -1,212 +1,366 @@
 \section{Métodos multipaso}
-Hasta ahora, al implementar un método de resolución numérica sólo usábamos 
-$w_i$ para calcular los $w_{i+1}$ \ref{eqn:diffmet} ignorando los valores obtenidos 
-anteriormente. A pesar de que esto parezca obvio pues un p.v.i \ref{eqn:pvi} 
-depende únicamente (si f es Lipschitziana) de la condición inicial dada. 
-Sin embargo, esto solo es cierto si buscamos la solución real del problema, 
-cuando buscamos una solución computacional los valores pasados pueden ser de utilidad.
-Estos métodos multipaso se construyen, una vez obtenidos los primeros m pasos, 
-utilizando los m valores anteriores para calcular el valor $w_{i+1}$:
 
-\begin{equation} \label{eqn:multistep}
-w_{i+1} = a_0w_{i-m+1} + a_1w{i-m+2} + \dots + a_{m-1}w_i + h_iF(t_i,w_{i-m+1},w{i-m+2},\dots,w_i);
-\end{equation}
-
-Nótese que si ahora tuvieramos m = 1, tendríamos un método a un paso como hasta ahora. 
-Además ahora tenemos dos tipos de métodos multipaso, pues si usamos $w_{i+1}$ 
+Hasta ahora, al implementar un método de resolución numérica sólo usábamos
+$w_i$ para calcular los $w_{i+1}$ \eqref{eqn:diffmet}
+ignorando los valores obtenidos anteriormente.
+A pesar de que esto parezca obvio pues un p.v.i \eqref{eqn:pvi}
+depende únicamente (si $f$ es Lipschitziana) de la condición inicial dada.
+Sin embargo, esto solo es cierto si buscamos la solución real del problema,
+cuando buscamos una solución computacional
+los valores pasados pueden ser de utilidad.
+Estos métodos multipaso se construyen, una vez obtenidos los primeros $m$ pasos,
+utilizando los $m$ valores anteriores para calcular el valor $w_{i+1}$.
+\begin{equation*}
+    w_{i+1} = a_0w_{i-m+1} + a_1w{i-m+2} + \dots + a_{m-1}w_i
+        + h_iF(t_i,w_{i-m+1},w{i-m+2},\dots,w_i).
+\end{equation*}
+Nótese que si ahora tuvieramos $m = 1$,
+tendríamos un método a un paso como hasta ahora.
+Además ahora tenemos dos tipos de métodos multipaso, pues si usamos $w_{i+1}$
 será um método implícito mientras que si no lo usamos será explicito.
-Dos ejemplos de estos métodos son el método explícito de Adams-Bashforth 
-de 4 pasos \ref{eqn:AB4steps} y el método implícito de Adams-Moulton de 
-3 pasos \ref{eqn:AM3steps}:%TODO aiuda con las referensias pfvo
+Dos ejemplos de estos métodos son
+el método explícito de Adams-Bashforth de $4$ pasos
+y el método implícito de Adams-Moulton de $3$ pasos.
 
-\begin{method} 
-    Método explícito de Adams-Bashforth de 4 pasos
-    \begin{equation} \label{eqn:AB4steps}
-        \begin{cases}
-            w_0 = \alpha_0  \\
-            w_1 = \alpha_1  \\
-            w_2 = \alpha_2  \\
-            w_3 = \alpha_3  \\
-            w_{i+1} = w_i + \frac{h}{24}[
-                    55f(t_i,w_i) - 59f(t_{i-1},w_{i-1}) + 37f(t_{i-2}w_{i-2}) - 9f(t_{i-3}),w_{i-3})
-                    ]
-        \end{cases}
+\begin{method}{Método explícito de Adams-Bashforth de orden $4$}
+    El \emph{método de Adams-Bashforth} de orden $4$
+    es un método a $4$-pasos.
+    \begin{equation}\label{eqn:AB4steps}
+        w_{i+1} = w_i + \frac{h}{24}\qty\bigg[
+            55f(t_i,w_i) - 59f(t_{i-1},w_{i-1})
+            + 37f(t_{i-2}w_{i-2}) - 9f(t_{i-3}),w_{i-3})
+        ].
     \end{equation}
 \end{method}
-    
-Este método necesita para empezar los $4$ primeros pasos y 
-tiene un e.l.t $T_{i+1}(h) = \frac{251}{720}y^5(\xi)h^4$. %TODO calcular
 
+\begin{proposition}
+    El método de Adams-Bashforth de orden $4$
+    tiene un error local de truncamiento
+    de orden $T_{i+1}(h) = \frac{251}{720}y^5(\xi)h^4$.
+\end{proposition}
 
-\begin{method} 
-    Método implícito de Adams-Moulton de 3 pasos
-    \begin{equation} \label{eqn:AM3steps}
-        \begin{cases}
-            w_0 = \alpha_0  \\
-            w_1 = \alpha_1  \\
-            w_2 = \alpha_2  \\
-            w_{i+1} = w_i + \frac{h}{24}[
-                9f(t_{i+1},w_{i+1}) + 19f(t_i,w_i) - 5f(t_{i-2}w_{i-2}) + f(t_{i-2}),w_{i-2})
-                ]
-        \end{cases}
-    \end{equation}   
+\begin{method}{Método implícito de Adams-Moulton de orden $4$}
+    El \emph{método de Adams-Moulton} de orden $4$
+    es un método a $3$-pasos.
+    \begin{equation}\label{eqn:AM3steps}
+        w_{i+1} = w_i + \frac{h}{24}\qty\bigg[
+            9f(t_{i+1},w_{i+1}) + 19f(t_i,w_i)
+            - 5f(t_{i-2}w_{i-2}) + f(t_{i-2}),w_{i-2})
+        ].
+    \end{equation}
 \end{method}
 
-Este método necesita para empezar los $3$ primeros pasos y 
-tiene un e.l.t $T_{i+1}(h) = \frac{-19}{720}y^5(\xi)h^4$. %TODO Calcular
+\begin{proposition}
+    El método de Adams-Bashforth de orden $4$
+    tiene un error local de truncamiento
+    de orden $T_{i+1}(h) = \frac{19}{720}y^5(\xi)h^4$.
+\end{proposition}
 
-Podemos ver que ambos métodos requieren de una única evaluación de f 
-en cada paso y que A-M \ref{eqn:AM3steps} tiene un menor e.l.t sin embargo 
-requiere alguna forma de despejar $w_{i+1}$
+Podemos ver que ambos métodos requieren de una única evaluación de $f$
+en cada paso y que A-M \ref{eqn:AM3steps} tiene un menor e.l.t pero a cambio
+requiere alguna forma de despejar $w_{i+1}$.
 
 \begin{remark}
-Estos métodos de Adams se obtienen de lo siguiente
-    $$
-    y'(t) = f(t,y(t)) \implies y(t_{n+1}) - y(t_n) = 
-    \int\limits_{t_n}^{t_{n+1}} y'(t)dt = \int\limits_{t_n}^{t_{n+1}} f(t,y(t))dt
-    $$
-Si ahora aproximamos $f(t,y(t))$ usando un polinomio interpolador en los puntos $t_{i-m+1},\dots,t_i$, 
-la integral anterior queda como un po%/TODO No se como explicarlo sin que sea peor que mi propia existencia
-Por otra parte, los métodos implícitos usan el nodo $(t_{i+1}w_{i+1})$ a la hora de aproximar la integral.
+    Estos métodos de Adams se obtienen de lo siguiente
+    \begin{equation*}
+        y'(t) = f(t,y(t)) \implies
+        y(t_{n+1}) - y(t_n) =
+        \int\limits_{t_n}^{t_{n+1}} y'(t)dt =
+        \int\limits_{t_n}^{t_{n+1}} f(t,y(t)) \dd t
+    \end{equation*}
+    Si ahora aproximamos $f(t,y(t))$ usando un polinomio interpolador
+    en los puntos $t_{i-m+1},\dots,t_i$,
+    la integral anterior queda como un po
+    %/TODO No se como explicarlo sin que sea peor que mi propia existencia
+    Por otra parte, los métodos implícitos usan el nodo $(t_{i+1}w_{i+1})$
+    a la hora de aproximar la integral.
 \end{remark}
 
-En general, los métodos multipaso son de la forma:
-
-\begin{equation} \label{mstep}
+En general, los métodos multipaso son de la forma
+\begin{equation*}
     w_{i+1} = a_0w_{i-m+1} + \dots + a_{m-1}w_i + h[
-                    b_0f(t_{i+1-m},w_{i+1-m}) + \dots + b_{m-1}f(t_i,w_i) + b_mf(t_{i+1},w_{i+1})
-                    ]
-\end{equation}
+        b_0f(t_{i+1-m},w_{i+1-m}) + \dots + b_{m-1}f(t_i,w_i)
+        + b_mf(t_{i+1},w_{i+1})
+    ],
+\end{equation*}
+donde los $m$ primeros $w_j$ han sido calculados con otro método de un paso.
+Si $b_m = 0$ entonces el método es explícito, en otro caso es implícito.
+Resolver la ecuación implicita para $w_{i+1}$ no se puede hacer, en general,
+de forma analítica.
 
-Donde los m primeros $w_j$ han sido calculados con otro método de un paso. 
-Si $b_m = 0$ entonces el método es explícito, en otro caso es implícito. 
-Resolver la ecuación implicita para $w_{i+1}$ no se puede hacer, en general, de forma analítica.
+\section{Teoría general de Convergencia}
 
-\section[Teoría general de Convergencia]
-Con los métodos multipaso hay que tener cuidado pues usamos 
-sucesiones recurrentes de orden mayor que uno, 
-lo que nos puede dar problemas por estar mal condicionada 
-(a parte de los problemas generados por el propio método). 
-Por ello introducimos/recordamos las siguientes definiciones:
-%TODO añadir la de e.l.t
+Con los métodos multipaso hay que tener cuidado pues usamos
+sucesiones recurrentes de orden mayor que uno,
+lo que nos puede dar problemas por estar mal condicionada
+(a parte de los problemas generados por el propio método).
+Por ello introducimos las siguientes definiciones:
 
 \begin{definition}
-    Un método se dice consistente (o compatible) con la EDO que aproxima si 
-    \begin{equation} \label{consis}
-        \lim\nolimits_{h\to 0} \max{\norm{T_{i+1}(h)}} = 0
-	\end{equation}
-	El método se dice de orden p, $p \geq 1$, si p es el mayor entero
-	tq $\max{\norm*{T_{i+1}(h)}} = O(h^p)$
+    Un método se dice \emph{consistente} (o \emph{compatible})
+    con el p.v.i. que aproxima si
+    \begin{equation*}
+        \lim\nolimits_{h\to 0} \max{\norm{T_{i+1}(h)}} = 0.
+	\end{equation*}
+	El método se dice de orden $p$, $p \geq 1$, si $p$ es el mayor entero
+	tal que $\max{\norm*{T_{i+1}(h)}} = \theta(h^p)$.
 \end{definition}
 
 Naturalmente solo consideraremos los métodos consistentes y de orden tan
 alto como podamos encontrar teniendo un coste razonable.
 
 \begin{definition}
-    Un método en diferencias 
-    \begin{equation} \label{eqn:diff}
-        w_{i+1} = \sum_{j=1}^m {a_{j-1}w_{i-m+j}} + h F(t_i,w_{i-m+j}, \dots, w_i,w_{i+1},h)
-    \end{equation}
-    se dice convergente si 
-    \begin{equation} \label{eqn:conv}
-        \lim\nolimits_{h \to 0} \max{\norm{Y(t_i)-w_i}} = 0
-    \end{equation}
+    %TODO método en diferencias es multipaso o qué?
+    % Hay un lío de términos importante
+    Un método en diferencias
+    \begin{equation*}
+        w_{i+1} = \sum_{j=1}^m {a_{j-1}w_{i-m+j}}
+            + hF(t_i,w_{i-m+j}, \dots, w_i,w_{i+1},h)
+    \end{equation*}
+    se dice convergente si
+    \begin{equation*}
+        \lim\nolimits_{h \to 0} \max{\norm{Y(t_i)-w_i}} = 0.
+    \end{equation*}
 \end{definition}
 
-Un método convergente nos resuelve el problema en caso de una 
-implementacion de "aritmética infinita"
-
+Un método convergente nos resuelve el problema en caso de una
+implementacion de ``aritmética infinita''.
 Lamentablemente solo disponemos de ordenadores de aritmética finitia,
 luego nuestros métodos no son los deseados sino los aproximados. %TODO EIN?
-Por eso, introducimos la noción de método estable. 
+Por eso, introducimos la noción de método estable.
 
 \begin{definition}
-    Un método en diferencias \ref{eqn:diff} se dice estable si al generar
-    una segunda solución aproximada de la forma:
-    \begin{equation}
-        w'_{i+1} = \sum_{j=1}^m {a_{j-1}w'_{i-m+j}} + h F(t_i,w'_{i-m+j}, \dots, w'_i,w'_{i+1},h) + \epsilon'_i
-    \end{equation}
+    \newcommand{\tw}{\tilde{w}}
+
+    Un método en diferencias se dice estable
+    si al generar una segunda solución aproximada de la forma
+    \begin{equation*}
+        \tw_{i+1} = \sum_{j=1}^m {a_{j-1}\tw_{i-m+j}}
+            + h F(t_i,\tw_{i-m+j}, \dots, \tw_i,\tw_{i+1},h) + \epsilon'_i,
+    \end{equation*}
     existe una constante M, independiente de h, tal que
-    \begin{equation} \label{stab}
-        \max_{m \leq n \leq N}{\norm{w'_n - w_n}} \leq M[
-            \max_{0 \leq i \ m-1}{\norm{w'_i - w_i}} + \sum_{m-1 \leq j \leq N} \norm{\epsilon'_j}
-            ]
-    \end{equation}
+    \begin{equation*} \label{stab}
+        \max_{m \leq n \leq N}{\norm{\tw_n - w_n}} \leq M[
+            \max_{0 \leq i \ m-1}{\norm{\tw_i - w_i}}
+            + \sum_{m-1 \leq j \leq N} \norm{\epsilon'_j}
+        ]
+    \end{equation*}
 \end{definition}
 
 \begin{remark}
-    Esto no contradice el resultado que obtuvimos para Euler%TODO una referencia estaría increible en vd
-    Pues $\sum\norm{\epsilon_j} \approx n\epsilon \approx \frac{b-a}{h}\epsilon$%TODO esto pq?
+    %TODO una referencia estaría increible en vd
+    Esto no contradice el resultado que obtuvimos para Euler, pues
+    %TODO esto pq?
+    $\sum\norm{\epsilon_j} \approx n\epsilon \approx \frac{b-a}{h}\epsilon$.
 \end{remark}
 
 \begin{theorem}
-    Si un método en diferencias \ref{eqn:diff} de la forma:
-    \begin{equation}
-        w_{i+1} = \sum_{j=1}^m {a_{j-1}w_{i-m+j}} + h F(t_i,w_{i-m+j}, \dots, w_i,w_{i+1},h)
-    \end{equation}
-    Es estable y consistente, entonces es convergente.
+    Si un método en diferencias
+    \begin{equation*}
+        w_{i+1} = \sum_{j=1}^m {a_{j-1}w_{i-m+j}}
+            + hF(t_i,w_{i-m+j}, \dots, w_i,w_{i+1},h)
+    \end{equation*}
+    es estable y consistente, entonces es convergente.
     Si, además, es de orden $p \geq 1$, se tiene
-    \begin{equation}
-        \max_{0 \leq n \leq N}\norm{x(t_n) - w_n} \leq M[
+    \begin{equation*}
+        \max_{0 \leq n \leq N}\norm{x(t_n) - w_n} \leq M\qty\bigg[
             \max_{0 \leq i \leq m-1} \norm{x(t_i) - w_i} + Kh
             ]
-    \end{equation} 
+    \end{equation*}
     Para constantes adecuadas M y K.
-    \begin{proof}
-        Sea $\epsilon_i = hT_i(h_i)$ y utilicemos la estabilidad 
-        con $w'_n = Y(t_n)$. Se tiene que 
-        \begin{equation}
-            \max_{0 \leq n \leq N}\norm{Y(t_n) - w_n} \leq M[
-                \max_{0 \leq i \leq m-1}\norm{Y(t_i) - w_i} + \sum_{m-1\leq n \leq N}\norm{\epsilon_n}
-                ]
-        \end{equation}
-        para algún $m$. pero
-        \begin{equation}
-            \sum_{m \leq n \leq N} \norm{\epsilon_n} = 
-            \sum_{m \leq n \leq N} h\norm{Tn+1(h)} \leq
-            (\sum_{m \leq n \leq N} h) \max_{m \leq n \leq N}\norm{T_{n+1}(h)} \leq
-            (b-a)\max_{m \leq n \leq N}\norm{T_{n+1}(h)} 
-        \end{equation}
-        donde esta última tiende a 0 cunado h tiende a 0 por la condición de consistencia.
-        Si además, $\max\norm{T_{n+1}(h)} = O(h^p) \implies \max\norm{T_i+1I(h)} \leq \frac{kh^p}{b-a}$
-        para algún K y de ahí el resultado.
-    \end{proof}
+\end{theorem}
+
+\begin{proof}
+    Sea $\epsilon_i = hT_i(h_i)$ y utilicemos la estabilidad
+    con $\tilde{w}_n = Y(t_n)$. Se tiene que
+    \begin{equation*}
+        \max_{0 \leq n \leq N}\norm{Y(t_n) - w_n} \leq M\qty\bigg[
+            \max_{0 \leq i \leq m-1}\norm{Y(t_i) - w_i}
+            + \sum_{m-1\leq n \leq N}\norm{\epsilon_n}
+        ]
+    \end{equation*}
+    para algún $m$. Pero
+    \begin{equation*}
+        \sum_{m \leq n \leq N} \norm{\epsilon_n} =
+        \sum_{m \leq n \leq N} h\norm{Tn+1(h)} \leq
+        \qty(\sum_{m \leq n \leq N} h)
+            \max_{m \leq n \leq N}\norm{T_{n+1}(h)} \leq
+        (b-a)\max_{m \leq n \leq N}\norm{T_{n+1}(h)},
+    \end{equation*}
+    donde esta última tiende a $0$ cunado $h$ tiende a $0$
+    por la condición de consistencia.
+    Si además $\max\norm{T_{n+1}(h)} = O(h^p)$,
+    $\max\norm{T_i+1I(h)} \leq \frac{kh^p}{b-a}$ para algún $K$
+    de ahí el resultado.
+\end{proof}
+
+%TODO este teorema está fatal hay que mirarlo en el burden
+\begin{theorem}
+    Sea $w_{i+1} = w_i + h\phi(t, w_i, h)$ un método a un paso tal que
+    $\phi(t_i, w_i, h)$ es continua y lipschitziana en $w_i$.
+    Entonces existe $h_0 > 0$ tal que para todo $h < h_0$,
+    \begin{enumerate}
+        \item El método es estable
+        \item El método es convergente si es consistente,
+        lo que ocurre si $\phi(t, y, 0) = f(t, y)$ para todo $t$.
+    \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+    \newcommand{\tw}{\tilde{w}}
+    Sea $L$ la constante de lipschitz de $\phi$ y
+    sean $w_{i+1} = w_i + h\phi(t, w_i, h)$ y
+    $\tw_{i+1} = h\phi(t, \tw_i, h) + \epsilon_i$.
+    Entonces
+    \begin{align*}
+        \norm{\tw_{i+1} - w_{i+1}} & {} \le
+            (1 + hL)\norm{\tw_i - w_i} + \norm{\epsilon_i} \\
+        & \le (1 + hL)^2\norm{\tw_{i-1} - w_{i-1}}
+            + (1 + hL)\norm{\epsilon_{i-1}} + \norm{\epsilon_i} \le \ldots \\
+        \ldots & \le (1 + hL)^{i+1}\norm{\tw_0 - w_0} + \qty[
+            \norm{\epsilon_i} + (1 + hL)\norm{\epsilon_{i-1}} + \dots
+            + (1 + hL)^i\norm{\epsilon_0}
+        ] \\
+        & \le (1 + hL)^i\qty(
+            \norm{\tw_0 - w_0} + \sum_{j=0}^i \norm{\epsilon_j}
+        ).
+    \end{align*}
+    Lo que demuestra que el método es estable.
+
+    Estudiamos ahora el error de truncamiento.
+    \begin{multline*}
+        Z_i(h) = \frac{y(t_i + h) - y(t)}{h} - \phi(t, y(t_i), h) =
+        y'(\xi_i) - \phi(t, y(t_i), h) = \\
+        f(\xi_i, y(\xi_i)) - \phi(t, y(t_i), h) =
+        f(\xi_i, y(\xi_i)) - \phi(\xi_i, y(\xi_i), 0)
+            + \phi(\xi_i, y(\xi_i), 0) - \phi(t, y(t_i), h).
+    \end{multline*}
+    Por la continuidad uniforme de la función
+    $(t, h) \mapsto \phi(t, y(t), h)$
+    sobre $[a, b] \times [0, h_0]$,
+    dado $\epsilon > 0$ existe $h_0 > 0$ tal que si $h < h_0$,
+    entonces como $\abs{\delta_i - t_i} < h$,
+    \begin{equation*}
+        \norm{\phi(\xi_i, y(\xi_i), 0) - \phi(t, y(t_i), h)} < \epsilon.
+    \end{equation*}
+    Por tanto, $\lim_{h \to 0} Z_i(h) = 0$
+    si $f(t_i, y(t_i)) = \phi(t_i, y(t_i), 0)$.
+\end{proof}
+
+\subsection{Estudio de la estabilidad para métodos multipaso}
+
+Estudiar la estabilidad de los métodos a $m$ pasos es más complicado.
+En realidad, para estudiar la estabilidad basta hacerlo con el problema
+$y' = 0$, $y(0) = \alpha$,
+pero la demostración de este hecho no forma parte de estos apuntes.
+
+Dado un método multipaso estándar a $m$ pasos,
+\begin{equation*}
+    w_i = a_0w_{i-m} + \dots + a_{m-1}w_{m-1} + h\qty\bigg[
+        b_0f(t_{i-m}, w_{i-m}) + \dots + b_{m-1}f(t_{i-1}, w_{i-1})
+        + b_mf(t_i, w_i)
+    ]
+\end{equation*}
+el siguiente punto para el problema de prueba con $y' = 0$ se calcularía
+siguiendo la ecuación de recurrencia
+\begin{equation*}
+    w_i = a_0w_{i-m} + \dots + a_{m-1}w_{m-1} + a_mw_m,
+\end{equation*}
+cuyo polinomio característico tiene raíces que satisfacen
+\begin{equation*}
+    z^m = a_0 + \dots + a_{m-1}z^{m-1}.
+\end{equation*}
+Si todas las raíces reales, $\lambda_1,\dots,\lambda_n$, fuesen distintas,
+la ecuación general sería
+\begin{equation*}
+    w_n = \sum_{j=1}^m c_j\lambda_j^n
+\end{equation*}
+con los $c_j$ en función de $m$ puntos iniciales.
+
+Lo primero que podemos afirmar es que como $y(t) = \alpha$ es una solución,
+si el método tiene error local de truncamiento $\theta(h^p)$, $p \ge 1$,
+$w_n = \alpha$ debe ser una posible solución:
+\begin{equation*}
+    \alpha = a_0 + a_1\alpha + \dots + a_{m-1}\alpha.
+\end{equation*}
+Es decir, $\lambda = 1$ es una de las raíces del polinomio caracerístico.
+por lo que las soluciones son de la forma
+\begin{equation*}
+    w_n = c_1\alpha + \sum_{j=2}^m c_j\lambda_j^n,
+\end{equation*}
+y para nuestra ecuación de prueba sería $c_j = 0$ para todo $j$.
+
+Para estudiar la estabilidad,
+nos interesa que acotando los errores de redondeo en las condiciones iniciales
+se acoten también los errores en la solución calculada.
+Eso motiva la siguiente definición.
+
+\begin{definition}
+    Sean $\lambda_1,\ldots,\lambda_n$ las $n$ raíces del
+    polinomio característico
+    \begin{equation*}
+        \lambda^m - a_{m-1}z^{m-1} - a_{m-2}z^{m-2} - \dots - a_0
+    \end{equation*}
+    de un método a $m$ pasos
+    \begin{equation}\label{eqn:multistep}
+        w_{i+1} = a_0w_{i-m+1} + a_1w{i-m+2} + \dots + a_{m-1}w_i
+            + h_iF(t_i,w_{i-m+1},w{i-m+2},\dots,w_i).
+    \end{equation}
+    El método cumple la \emph{condición de raíz} si
+    $\abs{\lambda_i} \le 1$ para todo $i = 1,\ldots, m$
+    %TODO este tipo de añadidos que son necesarios si no asumimos todas distintas
+    % hay que ver si los quitamos porque con Esquembre no lo hemos visto
+    % pero especificamos que lo hemos quitado
+    % o si lo dejamos y lo marcamos con otro color por ejemplo
+    % o si lo quitamos
+    y todas las raíces de valor absoluto uno son simples.
+\end{definition}
+
+\begin{theorem}
+    Un método multipaso es estable si y solo si cumple la condición de raíz.
+    Además, si el método es consistente,
+    que sea estable es equivalente a que sea convergente.
 \end{theorem}
 
 \section{Implementación de los métodos de Adams. Predictor-corrector}
-Estos métodos sirven para obtener lo mejor de los dos métodos,
-la completitud de un método explícito y el mejor error del 
-método implicito, y se consiguen usando el implícito para corregir
-la predicción del método explícito. Por ejemplo, uno de estos métodos 
-sería usar como predictor el método de Adams-Bashforth de $4$ pasos \cref{eqn:AB4steps}
-y como corrector el método de Adams-Moulton de $3$ pasos \cref{eqn:AM3steps}.
 
+Estos métodos sirven para obtener lo mejor de los dos métodos,
+la completitud de un método explícito y el mejor error del
+método implicito, y se consiguen usando el implícito para corregir
+la predicción del método explícito.
+Por ejemplo, uno de estos métodos  sería usar como predictor
+el método de Adams-Bashforth de $4$ pasos (\cref{eqn:AB4steps})
+y como corrector el método de Adams-Moulton de $3$ pasos (\cref{eqn:AM3steps}).
 
 De manera parecida a RKF, %TODO referencia a RKF
-el método predictor-corrector obtiene, cada vez, dos aproximaciones de
-la solución, una obtenida de uno del predictor y otra del corrector. 
-Por la definición de error local de truncamiento tenemos que:
-%
+el método predictor-corrector obtiene, cada vez,
+dos aproximaciones de la solución,
+una obtenida de uno del predictor y otra del corrector.
+Por la definición de error local de truncamiento tenemos que
 \begin{gather*}
     y(t_{i+1}) = y(t_i) + \frac{h}{24}[
-        55f(t_i,y(t_i) - 59f(t_{i-1},y(t_{i-1})) + 37f(t_{i-2}, y(t_{i-2})) - 9f(t_{w-3},y(t_{i-3})))
-        ] + \frac{251}{720}y^{(5)}(\xi)h^5  \\
+        55f(t_i,y(t_i) - 59f(t_{i-1},y(t_{i-1})) + 37f(t_{i-2}, y(t_{i-2}))
+        - 9f(t_{w-3},y(t_{i-3})))
+    ] + \frac{251}{720}y^{(5)}(\xi)h^5  \\
     y(t_{i+1}) = y(t_i) + \frac{h}{24}[
-        9f(t_{w+1},y(t_{i+1})) + 19f(t_i,y(t_i) - 5f(t_{i-1},y(t_{i-1})) + f(t_{i-2}, y(t_{i-2})))
-        ] - \frac{19}{720}y^{(5)}(\mu)h^5
+        9f(t_{w+1},y(t_{i+1})) + 19f(t_i,y(t_i) - 5f(t_{i-1},y(t_{i-1}))
+        + f(t_{i-2}, y(t_{i-2})))
+    ] - \frac{19}{720}y^{(5)}(\mu)h^5
 \end{gather*}
-%
-Y si ahora identificamos los $w_j \approx y(t_j) \text{ para } j = 0,1,\dots, i$, tenemos
-%
-\begin{gather*}
-    y(t_{i+1} - w_{i+1}^{(0)}) \approx \frac{251}{720}y^{(5)}(\xi)h^5   \\
-    y(t_{i+1} - w_{i+1}^{(1)}) \approx \frac{-19}{720}y^{(5)}(\mu)h^5
-\end{gather*}
-%
-si además, h es suficientemente pequeño tenemos $y^{(5)}(\xi) \approx y^{(5)}(\mu)$, entonces restando
-\begin{multline}
-    w_{i+1}^{(1)} - w_{i+1}^{(0)} \approx \frac{h^6}{720}[251y^{(5)}(\xi) + 19y^{(5)}(\mu)]
-    \approx 
-\end{multline}
-
+Y si ahora identificamos los $w_j \approx y(t_j)$ para $j = 0,1,\dots, i$,
+tenemos que
+\begin{align*}
+    y(t_{i+1} - w_{i+1}^{(0)}) \approx {} &
+        \frac{251}{720}y^{(5)}(\xi)h^5 \qq{y} \\
+    y(t_{i+1} - w_{i+1}^{(1)}) \approx {} &
+        \frac{-19}{720}y^{(5)}(\mu)h^5.
+\end{align*}
+Si además, $h$ es suficientemente pequeño entonces
+$y^{(5)}(\xi) \approx y^{(5)}(\mu)$
+y restando
+\begin{equation*}
+    w_{i+1}^{(1)} - w_{i+1}^{(0)} \approx
+    \frac{h^6}{720}\qty[251y^{(5)}(\xi) + 19y^{(5)}(\mu)] \approx
+    %TODO seguir con `métodos multipaso y estabilidad.pdf` pág 12
+\end{equation*}
 
