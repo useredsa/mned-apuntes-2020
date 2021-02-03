@@ -1,0 +1,90 @@
+\section{Métodos multipaso}
+Hasta ahora, al implementar un método de resolución numérica sólo usábamos 
+$w_i$ para calcular los $w_{i+1}$ \ref{eqn:diffmet} ignorando los valores obtenidos 
+anteriormente. A pesar de que esto parezca obvio pues un p.v.i \ref{eqn:pvi} 
+depende únicamente (si f es Lipschitziana) de la condición inicial dada. 
+Sin embargo, esto solo es cierto si buscamos la solución real del problema, 
+cuando buscamos una solución computacional los valores pasados pueden ser de utilidad.
+Estos métodos multipaso se construyen, una vez obtenidos los primeros m pasos, 
+utilizando los m valores anteriores para calcular el valor $w_{i+1}$:
+
+\begin{equation} \label{eqn:multistep}
+w_{i+1} = a_0w_{i-m+1} + a_1w{i-m+2} + \dots + a_{m-1}w_i + h_iF(t_i,w_{i-m+1},w{i-m+2},\dots,w_i);
+\end{equation}
+
+Nótese que si ahora tuvieramos m = 1, tendríamos un método a un paso como hasta ahora. 
+Además ahora tenemos dos tipos de métodos multipaso, pues si usamos $w_{i+1}$ 
+será um método implícito mientras que si no lo usamos será explicito.
+Dos ejemplos de estos métodos son el método explícito de Adams-Bashforth 
+de 4 pasos \ref{eqn:AB4steps} y el método implícito de Adams-Moulton de 
+3 pasos \ref{eqn:AM3steps}:%TODO aiuda con las referensias pfvo
+
+\begin{method} 
+    Método explícito de Adams-Bashforth de 4 pasos
+    \begin{equation} \label{eqn:AB4steps}
+        w_{i+1} = w_i + \frac{h}{24}[
+                            55f(t_i,w_i) - 59f(t_{i-1},w_{i-1}) + 37f(t_{i-2}w_{i-2}) - 9f(t_{i-3}),w_{i-3})
+                        ]
+    \end{equation}
+\end{method}
+    
+Este método necesita para empezar los 4 primeros pasos y 
+tiene un e.l.t $T_{i+1}(h) = \frac{251}{720}y^5(\xi)h^4$. 
+
+
+\begin{method} 
+    Método implícito de Adams-Moulton de 3 pasos
+    \begin{equation} \label{eqn:AM3steps}
+        w_{i+1} = w_i + \frac{h}{24}[
+                            9f(t_{i+1},w_{i+1}) + 19f(t_i,w_i) - 5f(t_{i-2}w_{i-2}) + f(t_{i-2}),w_{i-2})
+                            ]
+    \end{equation}   
+\end{method}
+Este método necesita para empezar los 3 primeros pasos y 
+tiene un e.l.t $T_{i+1}(h) = \frac{19}{720}y^5(\xi)h^4$. 
+
+Podemos ver que ambos métodos requieren de una única evaluación de f 
+en cada paso y que A-M \ref{eqn:AM3steps} tiene un menor e.l.t sin embargo 
+requiere alguna forma de despejar $w_{i+1}$
+
+\begin{remark}
+Estos métodos de Adams se obtienen de lo siguiente
+    $$
+    y'(t) = f(t,y(t)) \implies y(t_{n+1}) - y(t_n) = 
+    \int\limits_{t_n}^{t_{n+1}} y'(t)dt = \int\limits_{t_n}^{t_{n+1}} f(t,y(t))dt
+    $$
+Si ahora aproximamos $f(t,y(t))$ usando un polinomio interpolador en los puntos $t_{i-m+1},\dots,t_i$, 
+la integral anterior queda como un po%/TODO No se como explicarlo sin que sea peor que mi propia existencia
+Por otra parte, los métodos implícitos usan el nodo $(t_{i+1}w_{i+1})$ a la hora de aproximar la integral.
+\end{remark}
+
+En general, los métodos multipaso son de la forma:
+
+\begin{equation} \label{mstep}
+    w_{i+1} = a_0w_{i-m+1} + \dots + a_{m-1}w_i + h[
+                    b_0f(t_{i+1-m},w_{i+1-m}) + \dots + b_{m-1}f(t_i,w_i) + b_mf(t_{i+1},w_{i+1})
+                    ]
+\end{equation}
+
+Donde los m primeros $w_j$ han sido calculados con otro método de un paso. 
+Si $b_m = 0$ entonces el método es explícito, en otro caso es implícito. 
+Resolver la ecuación implicita para $w_{i+1}$ no se puede hacer, en general, de forma analítica.
+
+\section[Teoría general de Convergencia]
+Con los métodos multipaso hay que tener cuidado pues usamos 
+sucesiones recurrentes de orden mayor que uno, 
+lo que nos puede dar problemas por estar mal condicionada 
+(a parte de los problemas generados por el propio método). 
+Por ello introducimos las siguientes definiciones:
+
+
+\begin{definition}
+    Un método se dice consistente (o compatible) con la EDO que aproxima si 
+    \begin{equation} \label{consis}
+        \lim\nolimits_{h\to 0} \max{\norm{T_{i+1}(h)}} = 0
+	\end{equation}
+	El método se dice de orden p, $p \geq 1$, si p es el mayor entero
+	tq $\max{\norm*{T_{i+1}(h)}} = O(h^p)$
+\end{definition}
+Naturalmente solo consideraremos los métodos consistentes y de orden tan
+
