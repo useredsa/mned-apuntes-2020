@@ -11,7 +11,7 @@ los valores pasados pueden ser de utilidad.
 Estos métodos multipaso se construyen, una vez obtenidos los primeros $m$ pasos,
 utilizando los $m$ valores anteriores para calcular el valor $w_{i+1}$.
 \begin{equation*}
-    w_{i+1} = a_0w_{i-m+1} + a_1w{i-m+2} + \dots + a_{m-1}w_i
+    w_{i+1} = a_0w_{i-m+1} + a_1w_{i-m+2} + \dots + a_{m-1}w_i
         + h_iF(t_i,w_{i-m+1},w{i-m+2},\dots,w_i).
 \end{equation*}
 Nótese que si ahora tuvieramos $m = 1$,
@@ -28,7 +28,7 @@ y el método implícito de Adams-Moulton de $3$ pasos.
     \begin{equation}\label{eqn:AB4steps}
         w_{i+1} = w_i + \frac{h}{24}\qty\bigg[
             55f(t_i,w_i) - 59f(t_{i-1},w_{i-1})
-            + 37f(t_{i-2}w_{i-2}) - 9f(t_{i-3}),w_{i-3})
+            + 37f(t_{i-1}w_{i-1}) - 9f(t_{i-3},w_{i-3})
         ].
     \end{equation}
 \end{method}
@@ -45,7 +45,7 @@ y el método implícito de Adams-Moulton de $3$ pasos.
     \begin{equation}\label{eqn:AM3steps}
         w_{i+1} = w_i + \frac{h}{24}\qty\bigg[
             9f(t_{i+1},w_{i+1}) + 19f(t_i,w_i)
-            - 5f(t_{i-2}w_{i-2}) + f(t_{i-2}),w_{i-2})
+            - 5f(t_{i-2}w_{i-2}) + f(t_{i-2},w_{i-2})
         ].
     \end{equation}
 \end{method}
@@ -68,10 +68,11 @@ requiere alguna forma de despejar $w_{i+1}$.
         \int\limits_{t_n}^{t_{n+1}} y'(t)dt =
         \int\limits_{t_n}^{t_{n+1}} f(t,y(t)) \dd t
     \end{equation*}
-    Si ahora aproximamos $f(t,y(t))$ usando un polinomio interpolador
-    en los puntos $t_{i-m+1},\dots,t_i$,
-    la integral anterior queda como un po
-    %/TODO No se como explicarlo sin que sea peor que mi propia existencia
+    Si ahora aproximamos $f(t,y(t))$ usando un polinomio interpolador $P(t)$
+    en los puntos $t_{i-m+1},\dots,t_i$, tenemos
+    \begin{equation*}
+        y(t_{n+1}) \approx y(t_n) + \int\limits_{t_n}^{t_{n+1}} P(t)dt
+    \end{equation*}
     Por otra parte, los métodos implícitos usan el nodo $(t_{i+1}w_{i+1})$
     a la hora de aproximar la integral.
 \end{remark}
@@ -125,7 +126,7 @@ alto como podamos encontrar teniendo un coste razonable.
 
 Un método convergente nos resuelve el problema en caso de una
 implementacion de ``aritmética infinita''.
-Lamentablemente solo disponemos de ordenadores de aritmética finitia,
+Lamentablemente solo disponemos de ordenadores de aritmética finita,
 luego nuestros métodos no son los deseados sino los aproximados. %TODO EIN?
 Por eso, introducimos la noción de método estable.
 
@@ -321,13 +322,12 @@ Eso motiva la siguiente definición.
 
 \section{Implementación de los métodos de Adams. Predictor-corrector}
 
-Estos métodos sirven para obtener lo mejor de los dos métodos,
-la completitud de un método explícito y el mejor error del
-método implicito, y se consiguen usando el implícito para corregir
-la predicción del método explícito.
-Por ejemplo, uno de estos métodos  sería usar como predictor
-el método de Adams-Bashforth de $4$ pasos (\cref{eqn:AB4steps})
-y como corrector el método de Adams-Moulton de $3$ pasos (\cref{eqn:AM3steps}).
+Estos métodos sirven para obtener lo mejor de los métodos explícito e implícito,
+la completitud del primero y el mejor error del segundo,y se consiguen usando
+el implícito para corregir la predicción del método explícito. Por ejemplo,
+uno de estos métodos  sería usar como predictor el método de Adams-Bashforth 
+de $4$ pasos (\cref{eqn:AB4steps}) y como corrector el método de Adams-Moulton
+de $3$ pasos (\cref{eqn:AM3steps}).
 
 De manera parecida a RKF, %TODO referencia a RKF
 el método predictor-corrector obtiene, cada vez,
