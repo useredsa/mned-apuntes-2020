@@ -1,0 +1,202 @@
+\section{Relaciones de recurrencia lineales homogéneas}
+
+Para afrontar el resto del texto vamos a necesitar
+conocer las relaciones de recurrencia lineales.
+En particular, la estructura de sus soluciones.
+
+\begin{definition}
+    Una \emph{relación de recurrencia lineal homogénea} de orden $n$
+    es una ecuación de la forma
+    \begin{equation*}
+        x_i = a_1x_{i-1} + a_2x_{i-2} + \cdots + a_nx_{i-n},
+        \quad a_n \ne 0,
+    \end{equation*}
+    donde los coeficientes $a_1,\ldots,a_n$ son constantes,
+    cuyas soluciones son las sucesiones $\{x_n\}_{n \in \N}$
+    que verifican la ecuación para todo $i \ge n$.
+
+    A las sucesiones unequívocamente determinadas por
+    $n$ valores iniciales $x_0,\ldots,x_{n-1}$
+    y una relación de recurrencia de orden $n$
+    se les llama \emph{sucesiones de recurrencia}.
+\end{definition}
+
+\begin{remark}
+    La relación de la definición anterior es lineal porque el $i$-ésimo término
+    es una combinación lineal de $1$ y los $n$ elementos anteriores
+    y es homogénea porque el coeficiente que acompañaría al $1$,
+    el término independiente,
+    es $0$.
+\end{remark}
+
+\begin{theorem}
+    El conjunto de soluciones de una
+    relación de recurrencia lineal homogénea de orden $n$
+    es un espacio vectorial de orden $n$.
+\end{theorem}
+
+\begin{proof}
+    El conjunto de las sucesiones reales o complejas
+    es un espacio vectorial de dimensión infinita.
+    Sea
+    \begin{equation*}
+        x_i = a_1x_{i-1} + a_2x_{i-2} + \cdots + a_nx_{i-n},
+        \quad a_n \ne 0,
+    \end{equation*}
+    una relación de recurrencia de orden $n$.
+    Dadas dos soluciones $\{x_m\}_{m \in \N}$ e $\{y_m\}_{m \in \N}$,
+    tanto su suma como su producto,
+    \begin{equation*}
+        \begin{array}{lcl}
+            \{x_m\}_{m \in \N} &   +   & \{y_m\}_{m \in \N} =
+                \{x_m + y_m\}_{m \in \N} \qq{y} \\
+            \{x_m\}_{m \in \N} & \cdot & \{y_m\}_{m \in \N} =
+                \{x_m \cdot y_m\}_{m \in \N},
+        \end{array}
+    \end{equation*}
+    son también soluciones de la relación.
+    Por tanto, el conjunto de soluciones es un subespacio vectorial.
+
+    Para determinar la dimensión, basta con ver que las $n$ soluciones
+    \begin{equation*}
+        x^i_m =
+        \begin{cases}
+            0 & \text{si $i \ne m < n$} \\
+            1 & \text{si $i = m$} \\
+            a_1x_{m-1} + a_2x_{m-2} + \cdots + a_nx_{m-n}
+                & \text{si $m \ge n$.}
+        \end{cases}
+    \end{equation*}
+    son linealmente independientes y generan cualquier otra solución
+    \begin{equation*}
+        \{x_m\}_{m \in \N} =
+        x_0\{x^0_m\}_{m \in \N} + x_1\{x^1_m\}_{m \in \N} + \cdots +
+        x_{m-1}\{x^{m-1}_m\}_{m \in \N}. \qedhere
+    \end{equation*}
+\end{proof}
+
+\subsection{Expresión general de una solución}
+
+Si intentamos ver cuándo una sucesión geométrica $\{z^m\}_{m \in \N}$
+es solución de una relación de recurrencia lineal homogénea,
+obtenemos una ecuación de la forma
+\begin{equation*}
+    z^i = a_1z^{i-1} + a_2z^{i-2} + \cdots + a_nz^{i-n} \iff
+    z^n = a_1z^{n-1} + a_2z^{n-2} + \cdots + a_n.
+\end{equation*}
+Por tanto, las soluciones de la segunda ecuación,
+que son las raíces de
+\begin{equation*}
+    z^n - a_1z^{n-1} - a_2z^{n-2} - \cdots - a_n,
+\end{equation*}
+dan lugar a sucesiones que cumplen la ecuación lineal homogénea.
+
+\begin{definition}
+    El \emph{polinomio característico} de 
+    una relación de recurrencia lineal homogénea
+    es el polinomio
+    \begin{equation*}
+        z^n - a_1z^{n-1} - a_2z^{n-2} - \cdots - a_n,
+    \end{equation*}
+    donde $a_i$, $i = 1,\ldots,n$, son los coeficientes de la relación.
+\end{definition}
+
+\begin{remark}
+    El $0$ no puede estar entre las soluciones del polinomio característico de
+    una relación de recurrencia lineal homogénea porque $a_n \ne 0$.
+\end{remark}
+
+\begin{proposition}
+    Si el polinomio caracerístico de
+    una relación de recurrencia lineal homogénea de orden $n$
+    tiene $n$ raíces distintas $\lambda_1,\ldots,\lambda_n$,
+    entonces las soluciones de la relación son precisamente las sucesiones
+    \begin{equation*}
+        x_m = \sum_{i=1}^n c_i\lambda_i^m
+    \end{equation*}
+    con $c_i \in \R$, $i = 1,\ldots,n$,
+    unas constantes que determinan la solución.
+\end{proposition}
+
+
+\begin{proof}
+    Sabemos que las $n$ sucesiones $\{\lambda_i^m\}_{m \in \N}$
+    son soluciones de la relación.
+    Si además son linealmente independientes,
+    habremos demostrado el enunciado.
+    Si suponemos que no son linealmente independientes entonces
+    existe una combinación lineal no nula
+    \begin{equation*}
+        \sum_{i=0}^n \alpha_i \{\lambda_i^m\}_{m \in \N} = 0 \iff
+        \sum_{i=0}^n \alpha_i \lambda_i^m = 0
+            \quad \text{para todo $m \in \N$.} \iff
+        \sum_{i=0}^n \alpha_i \lambda_i^m = 0 \qq{para todo $m < n$.}
+    \end{equation*}
+    Las últimas $n$ ecuaciones lineal forman el sistema lineal
+    \begin{equation*}
+        \begin{pmatrix}
+            1 & 1 & \cdots & 1 \\
+            \lambda_1 & \lambda_2 & \cdots & \lambda_n \\
+            \lambda_1^2 & \lambda_2^2 & \cdots & \lambda_n^2 \\
+            \vdots & \vdots & \ddots & \vdots \\
+            \lambda_1^{n-1} & \lambda_2^{n-1} & \cdots & \lambda_n^{n-1}
+        \end{pmatrix}
+        \begin{pmatrix}
+            \alpha_1 \\ \alpha_2 \\ \alpha_3 \\ \vdots \\ \alpha_n
+        \end{pmatrix}
+        = 0.
+    \end{equation*}
+    La matriz del sistema es la traspuesta de una matriz de Vandermonde.
+    Por tanto, en el caso en el que $\lambda_i \ne \lambda_j$ para $i \ne j$,
+    que es el que nos atañe,
+    es de rango máximo y la única solución al sistema es la trivial,
+    lo que termina la prueba.
+\end{proof}
+
+\begin{remark}
+    En la práctica, podemos determinar los coeficientes $c_i$
+    dados los primeros $n$ términos de la sucesión de recurrencia
+    resolviendo un sistema de ecuaciones lineales.
+\end{remark}
+
+\begin{example}
+    Consideremos la sucesión de recurrencia
+    $x_n = \frac{13}{3}x_{n-1} - \frac{4}{3}x_{n-2}$
+    con condiciones iniciales $x_0 = 1$, $x_1 = \frac{1}{3}$.
+
+    Su polinomio característico es $r^2-\frac{13}{3}r+\frac{4}{3} = 0$
+    de raíces $\lambda_1 = 4$ y $\lambda_2 = \frac{1}{3}$
+    Por tanto, nuestra sucesión recurrente es de la forma
+    $x_n = a4^n + b\frac{1}{3^n}$.
+    Resolviendo el sistema
+    \begin{equation*}
+        \left\{\begin{matrix}
+        x_0 = a+b = 1 \\
+        x_1 = 4a + \frac{b}{3} = \frac{1}{3}
+        \end{matrix}\right.
+    \end{equation*}
+    obtenemos que $a = 0$ y $b = 1$,
+    por lo que $x_n = \frac{1}{3^n}$.
+\end{example}
+
+También tenemos un resultado para el caso en el que
+el polinomio caracerístico no tiene $n$ raíces distintas.
+Invitamos al lector a demostrarlo.
+
+\begin{proposition}
+    \newcommand{\mult}[1]{\operatorname{mult}(#1)}
+
+    Si $\lambda_1,\ldots,\lambda_n$ son las raíces
+    del polinomio caracerístico de
+    una relación de recurrencia lineal homogénea de orden $n$
+    entonces las soluciones de la relación son precisamente las sucesiones
+    \begin{equation*}
+        x_m =
+        \sum_{\mult{\lambda_i} \ge 1}^n c_{j(1, i)}\lambda_i^m +
+        \sum_{\mult{\lambda_i} \ge 2}^n c_{j(2, i)}n\lambda_i^m +
+        \cdots +
+        \sum_{\mult{\lambda_i} \ge n}^n c_{j(n, i)}n^{n-1}\lambda_i^m,
+    \end{equation*}
+    con $c_j \in \R$, $n$ constantes que determinan la solución.
+\end{proposition}
+
