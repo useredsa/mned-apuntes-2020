@@ -29,8 +29,21 @@
             sorting=nyt]{biblatex} % Complete reimplementation of bibliographic facilities
 %\addbibresource{bibliography.bib}
 \usepackage{amsthm}
+
+\usepackage{tikz}
+\usepackage[all]{xy}
+
 \usepackage{parskip}
 
+
+%%evitar sangrado de la 1ª linea
+\setlength{\parindent}{0pt}
+
+%%Footnote with asterisk symbol
+\usepackage{footnote}
+\usepackage{footmisc}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\newcommand{\astfootnote}[1]{\footnote[1]{#1}}
 
 \theoremstyle{plain}
 \newtheorem{theorem}{Teorema}[section]
