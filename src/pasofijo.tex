@@ -107,10 +107,10 @@ y $b$ es $t_n$ para la solución concreta que estemos tratando.
 A continuación presentamos una desigualdad elemental que utilizaremos
 en la estimación del error del método de Euler.
 
-\begin{lemma}\label{lema2}
+\begin{lemma}\label{lma:tangent-exponential}
     Se cumplen las siguientes desigualdades:
     \begin{enumerate}
-        \item $1 + x \le e^x$ para todo $x \in \mathbb{R}$.
+        \item $1 + x \le e^x$ para todo $x \in \R$.
         \item $0 \le (1+x)^m \le e^{mx}$ para todo $m > 0$ y $x \ge -1$.
     \end{enumerate} 
 \end{lemma}
@@ -128,348 +128,574 @@ en la estimación del error del método de Euler.
     Donde hemos usado que $\frac{x^2}{2}\nume^\xi \ge 0$.
 \end{proof}
 
-%TODO follow here Emilio
+%TODO discutir sobre la convexidad en este resultado
 \begin{theorem}[Convergencia del método de Euler]
-    Sea $f:D\subset \mathbb{R}^2\rightarrow \mathbb{R}$ con $D$ abierto,
-    e $Y(t)$ una solución de $(1)$ con $(t,Y(t))\in D,\forall t\in[a,b]$.
-    Sea también la solución \ref{eqn:eulersol} para cierto $h$ fijo.
-    Si se cumple
+    Sean $f : D \subset \R \times \R \to \R$ con $D$ abierto convexo
+    y $\{(t_i, w_i)\}_{i = 0,\ldots, n}$
+    la solución calculada por el método de Euler para cierto paso fijo $h$
+    para un PVI definido por $f$.
+    Sea $y : [a, b] \to \R$ una solución del mismo PVI,
+    con $(t, y(t)) \in D$, $\forall t \in [a, b]$,
+    y $[t_0, t_n] \subset [a, b]$.
+    Si se cumple que
     \begin{enumerate}[label=(\alph*)]
-        \item f Lipschitziana respecto de la segunda variable en $D$, con constante de Lipschitz $K$.
-        \item $Y''$ existe en todo $[a,b]$ y está acotada por una constante $C\ge 0$.
-        \item $(t_i,w_i)\in D,\forall i=0,\dots,n$.
+        \item $f$ es Lipschitziana respecto de la segunda variable en $D$,
+        con constante de Lipschitz $L$.
+        \item $y''$ existe en todo $(a, b)$ y
+        su módulo está acotado por una constante $C \ge 0$.
+        \item $(t_i, w_i) \in D$ para todo $i = 0,\dots,n$.
     \end{enumerate}
     entonces
     \begin{equation*}
-        \max_{0\le i \le n}|Y(t_i)-w_i| \le e^{(b-a)K}\cdot |Y(a)-w_0| + \frac{e^{(b-a)K}-1}{2K}ch
+        \max_{0 \le i \le n} \abs{y(t_i)-w_i} \le
+        \nume^{(b-a)L}\abs{y(t_0) - w_0} + \qty[\frac{\nume^{(b-a)L}-1}{2L}]hC.
     \end{equation*}
 \end{theorem}
 
 \begin{proof}
-    \begin{equation}
-\label{eq1}
-\left\{
-\begin{array}{l}
-Y(t_{n+1}) = Y(t_n) + hY'(t_n) + \frac{1}{2}h^2Y''(\xi) = Y(t_n) + hf(t_n, Y(t_n)) + \frac{1}{2}h^2Y''(\xi)\\
-\\
-y_h(t_{n+1}) = y_h(t_n) + hf(t_n, y_h(t_n))
-\end{array}
-\right. 
-\end{equation}
-\begin{equation}
-\label{eq2}
-\implies Y(t_{n+1}) - y_h(t_{n+1}) = (Y(t_n) - y_h(t_n)) + h(f(t_n, Y(t_n)) - f(t_n, y_h(t_n))) + \frac{1}{2}h^2Y''(\xi)
-\end{equation}
-De esta última expresión se deduce, llamando $error_i = \|Y(t_i) - y_h(t_i)\|$ para $0\le i \le N$ y teniendo en cuenta que $\left\|\frac{1}{2}h^2Y''(\xi)\right\| \le \frac{1}{2}h^2c$:
-$$
-error_{n+1} = \|Y(t_{n+1}) - y_h(t_{n+1})\| \le \|Y(t_n) - y_h(t_n)\| + h\overset{\le k\| Y(t_n) - y_h(t_n)\|}{\overbrace{\|f(t_n, Y(t_n)) - f(t_n, y_h(t_n))\|}}  + \frac{1}{2}h^2c \le
-$$
-$$
-\le (1+hk)\|Y(t_n) - y_h(t_n)\| + \frac{1}{2}h^2c = (1+hk)error_n + \frac{1}{2}h^2c
-$$
-Es decir, se obtiene que $error_{n+1} \le (1+hk)error_n + \frac{1}{2}h^2c$.\\\\Si ahora utilizamos esta última expresión recursivamente como sigue
-$$
-error_{n+1} \le (1+hk)error_n + \frac{1}{2}h^2c \le (1+hk)\left[(1+hk)error_{n-1} + \frac{1}{2}h^2c\right] + \frac{1}{2}h^2c
-$$
-Llegamos a que
-$$
-error_{n+1} \le (1+hk)^{n+1}error_0 + \overset{\textnormal{serie geométrica entre 0 y n}}{\overbrace{\left[ 1 + (1+hk) + (1+hk)^2 + \cdots + (1+hk)^{n}\right]}}\frac{1}{2}h^2c =  
-$$
-$$
-= (1+hk)^{n+1}error_0 + \left[\frac{(1+hk)^{n+1} - 1}{hk}\right]\frac{1}{2}h^2c = (1+hk)^{n+1}error_0 + \left[\frac{(1+hk)^{n+1} - 1}{k}\right]\frac{1}{2}hc \overset{\ref{lema2}}{\le} 
-$$
-$$
-\le e^{hk(n+1)}error_0 + \left[\frac{e^{hk(n+1)} - 1}{k}\right]\frac{1}{2}hc =  e^{(b-a)k}\|Y(t_0) - y_h(t_0)\| + \left[\frac{e^{(b-a)k} - 1}{k}\right]\frac{1}{2}hc \qedhere
-$$
+    \newcommand{\err}{\operatorname{error}}
+
+    Haciendo un desarrollo de orden uno de $y$ en $t_i$ se tiene
+    \begin{gather*}
+        y(t_{i+1}) = y(t_i) + hy'(t_i) + \frac{1}{2}h^2y''(\xi) =
+            y(t_i) + hf(t_i, y(t_i)) + \frac{1}{2}h^2y''(\xi), \\
+        w_{i+1} = w_i + hf(t_i, w_i).
+    \end{gather*}
+    Lo que implica que la diferencia
+    \begin{equation*}
+        y(t_{i+1}) - w_{i+1} =
+        \qty\big(y(t_i) - w_i) + h\qty\big(f(t_i, y(t_i)) - f(t_i, w_i))
+            + \frac{1}{2}h^2y''(\xi).
+    \end{equation*}
+    De esta última expresión se deduce,
+    llamando $\err_i = \abs{y(t_i) - w_i}$ para $0 \le i \le n$
+    y teniendo en cuenta que $\abs{\frac{1}{2}h^2y''(\xi)} \le \frac{1}{2}h^2C$,
+    \begin{multline*}
+        \err_{i+1} = \abs{y(t_{i+1}) - w_{i+1}} \le
+        \abs{y(t_i) - w_i} + h\overset{\le L\abs{y(t_i) - w_i}}{
+            \overbrace{\abs{f(t_i, y(t_i)) - f(t_i, w_i)}}
+        }  + \frac{1}{2}h^2C \le \\
+        (1 + hL)\abs{y(t_i) - w_i} + \frac{1}{2}h^2C =
+        (1 + hL)\err_i + \frac{1}{2}h^2C.
+    \end{multline*}
+
+    Si ahora utilizamos esta desigualdad múltiples veces,
+    podemos escribir el error como
+    \begin{align*}
+        \err_i \le {} & (1 + hL)\err_{i-1} + \frac{1}{2}h^2C \\
+        \le {} & (1 + hL)\qty[(1 + hL)\err_{i-2} + \frac{1}{2}h^2C]
+            + \frac{1}{2}h^2C \le \cdots \\
+        \cdots \le {} & (1 + hL)^i\err_0
+            + \overset{\textnormal{serie geométrica entre $0$ e $i-1$}}{
+                \overbrace{\qty[
+                    1 + (1 + hL) + (1 + hL)^2 + \cdots + (1 + hL)^{i-1}
+                ]}
+            } \frac{1}{2}h^2C \\
+        = {} & (1 + hL)^i \err_0
+            + \qty[\frac{(1 + hL)^i - 1}{hL}] \frac{1}{2}h^2C \\
+        = {} & (1 + hL)^i \err_0
+            + \qty[\frac{(1 + hL)^i - 1}{2L}] hC,
+    \end{align*}
+    y usando la desigualdad del \cref{lma:tangent-exponential},
+    obtenemos la fórmula del enunciado
+    \begin{equation*}
+        \err_i \le
+        \nume^{hLi}\err_0 + \qty[\frac{\nume^{hLi} - 1}{2L}] hC \le
+        \nume^{(b-a)L}\abs{y(t_0) - w_0} + \qty[\frac{\nume^{(b-a)L}-1}{2L}]hC.
+        \qedhere
+    \end{equation*}
 \end{proof}
 
 \begin{theorem}[Convergencia del método de Euler con error de redondeo]
-    Sea $f:D\subset \mathbb{R}^2\rightarrow \mathbb{R}$ con $D$ abierto, e $Y(t)$ una solución de $(1)$ con $(t,Y(t))\in D,\forall t\in[a,b]$.
-
-    Fijado $h>0$, sea la solución numérica
-
-\begin{equation}
-\begin{cases}
-    w_0=y_0 \\
-    w_{i+1}=w_i + h\cdot f(t_i, w_i) + \delta_i
-\end{cases}
-\end{equation}
-
-con $\delta_i<\delta,\forall i=0,\dots,n$.
-
-    Si se cumple
-    \begin{enumerate}[label=(\alph*)]
-        \item f Lipschitziana respecto de la segunda variable en $D$, con constante de Lipschitz $K$.
-        \item $Y''$ existe en todo $[a,b]$ y está acotada por una constante $C\ge 0$.
-        \item $(t_i,w_i)\in D,\forall i=0,\dots,n$.
-    \end{enumerate}
-    entonces $$\max_{0\le i \le n}|Y(t_i)-w_i| \le e^{(b-a)K}\cdot |Y(a)-w_0| + \frac{e^{(b-a)K}-1}{K}\left(\frac{1}{2}ch+\frac{\delta}{h}\right)$$
-
-\end{theorem}
-
-Se puede estimar el error de otra forma bajo ciertas condiciones, que nos será muy útil para estimar numéricamente el error e incluse obtener soluciones mejores a partir del método de Euler.
-
-\begin{theorem}
-    Dado el PVI \ref{eqn:pvi} y la solución \ref{eqn:eulersol}, si la solución $Y(t)$ real es de clase $C^3$ y $\frac{\partial f}{\partial y},\frac{\partial^2f}{\partial y^2}$ constantes, entonces
+    Sean $f : D \subset \R \times \R \to \R$ con $D$ abierto convexo
+    e $y : [a, b] \to \R$ una solución del un PVI dado por $f$,
+    con $(t, y(t)) \in D$, $\forall t \in [a, b]$,
+    y $[t_0, t_n] \subset [a, b]$.
+    Fijado $h > 0$, consideramos la solución numérica
     \begin{equation}
-    Y(t_i)-w_i=h\cdot D(t_i)+\theta(h^2),\forall t\in[t_0,b]
+    \begin{cases}
+        w_0 = y_0 \\
+        w_{i+1} = w_i + hf(t_i, w_i) + \delta_i & \text{para $i = 1,\ldots,n$.}
+    \end{cases}
     \end{equation}
-    dónde $D$ es solución del siguiente PVI:
-\begin{equation}
-\begin{cases}
-    d'(t)=g(t)d(t) + \frac{1}{2} Y''(t), g(t)=\frac{\partial f(t,y)}{\partial y}(t,Y(t)) \\
-    d(a) = 0 \\
-    t\in[a,b]
-\end{cases}
-\end{equation}
+    con $\delta_i < \delta$ para todo $i = 0,\ldots,n$.
+    Si se cumple que
+    \begin{enumerate}[label=(\alph*)]
+        \item $f$ es Lipschitziana respecto de la segunda variable en $D$,
+        con constante de Lipschitz $L$.
+        \item $y''$ existe en todo $(a, b)$ y
+        su módulo está acotado por una constante $C \ge 0$.
+        \item $(t_i, w_i) \in D$ para todo $i = 0,\dots,n$.
+    \end{enumerate}
+    entonces
+    \begin{equation*}
+        \max_{0 \le i \le n} \abs{y(t_i)-w_i} \le
+        \nume^{(b-a)L}\abs{y(t_0) - w_0} + \qty[\frac{\nume^{(b-a)L}-1}{L}]\qty(
+            \frac{1}{2}hC + \frac{\delta}{h}
+        ).
+    \end{equation*}
 \end{theorem}
+
+Una idea intuitiva es que
+conforme reducimos el paso con el que resolvemos un PVI,
+el error disminuye cada vez en menor medida,
+de forma que podemos comparar dos soluciones obtenidas con pasos similares
+para intentar estimar el error de una de ellas.
+El siguiente teorema trata esta idea e incluso
+nos permite obtener un método mejor a partir del método de Euler.
+
+%TODO este teorema de dónde sale?
+\begin{theorem}
+    Dado un PVI definido por $f$
+    y la solución $\{(t_i, w_i)\}_{i = 0,\ldots, n}$
+    obtenida por el método de Euler,
+    si la solución real $y : [t_0, t_n] \to \R$ es de clase $C^3$
+    y $\pdv{f}{y},\pdv[2]{f}{y}$ son continuas,
+    entonces
+    \begin{equation}
+        y(t_i) - w_i = hd(t_i) + \vo(h^2) \qq{para todo $t \in [t_0,b]$,}
+    \end{equation}
+    dónde $d$ es solución del PVI
+    \begin{equation}
+    \begin{cases}
+        d'(t) \, = g(t)d(t) + \frac{1}{2}y''(t),
+            & g(t) = \pdv{f(t,y)}{y}\qty(t, y(t)) \\
+        d(t_0) = 0
+    \end{cases}
+    \end{equation}
+\end{theorem}
+
 \begin{proof}
-Puede encontrarse en el libro de Atkinson, pero no entra.
+    %TODO una buena referencia a la bibliografía o algo.
+    Puede encontrarse en el libro de Atkinson, pero no entra.
 \end{proof}
 
 \begin{remark}
-Cuando $D(t)$ se puede obtener explícitamente, el término $hD(t_i)$ de la fórmula  (\ref{eq3}) normalmente proporciona una estimación bastante buena del error real cometido ($Y(t_i) - y_h(t_i)$), y la precisión de la estimación mejora si se disminuye el tamaño del paso $h$.
+    Cuando $d(t)$ se puede obtener explícitamente,
+    el término $hd(t_i)$ de la fórmula normalmente proporciona
+    una estimación bastante buena del error real cometido, $\abs{y(t_i) - w_i}$,
+    y la precisión de la estimación mejora si se disminuye el tamaño del paso.
 \end{remark}
- No suele ser muy práctico encontrar $D$, pero el resultado nos ayuda a demostrar lo siguiente:
+
+%TODO el remark parece decir que es práctico... te refieres a sencillo?
+No suele ser muy práctico encontrar $d$,
+pero el resultado nos ayuda a demostrar el siguiente teorema.
 
 \begin{theorem}
-    En condiciones similares a las del teorema anterior, tomando $(t_i^h,w_i^h)$ y $(t_i^{h/2},w_i^{h/2})$ soluciones obtenidas con el método de Euler con pasos $h$ y $\frac{h}{2}$ respectivamente:
+    \newcommand{\hh}{\sfrac{h}{2}}
+
+    En condiciones similares a las del teorema anterior,
+    dadas $(t_i^h, w_i^h)$ y $(t_i^{\hh}, w_i^{\hh})$,
+    dos soluciones obtenidas con el método de Euler
+    con pasos $h$ y $\hh$ respectivamente,
+    se cumple que
     \begin{enumerate}[label=(\alph*)]
-        \item $Y(t_i^h)-w_{2i}^{h/2} = (w_{2i}^{h/2}-w_i^h) + \theta(h^2)$.
-        \item $w_i := 2\cdot w_{2i}^{h/2}-w_i^h$ es una aproximación de $Y(t)$ de orden $\theta(h^2)$.
+        \item $y(t_i^h) - w_{2i}^{\hh} = (w_{2i}^{\hh} - w_i^h) + \vo(h^2)$.
+        \item $w_i := 2\cdot w_{2i}^{\hh} - w_i^h$
+        es una aproximación de $y$ de orden $\vo(h^2)$.
     \end{enumerate}
 \end{theorem}
 
 \begin{proof}
-    Aplicando el teorema anterior obtenemos:
-    $$
-    Y(t_i^h)-w_i^h=h\cdot D(t_i^h)+\theta(h^2),\forall t\in[t_0,b]
-    $$
-    $$
-    Y(t_{2i}^{h/2})-w_{2i}^{h/2}=h\cdot D(t_{2i}^{h/2})+\theta(h^2),\forall t\in[t_0,b]
-    $$
-    Basta observar que $t_i^h = t_{2i}^{h/2}$ y restar la primera ecuación a la segunda multiplicada por 2. Despejando se obtiene tanto (a) como (b).
+    \newcommand{\hh}{\sfrac{h}{2}}
 
+    Aplicando el teorema anterior obtenemos
+    \begin{align*}
+        y(t_i^h) - w_i^h = hd(t_i^h) + \vo(h^2),
+            & \qq{para todo $i = 1,\ldots,n$,} \\
+        y(t_{2i}^{\hh}) - w_{2i}^{\hh} = \tfrac{h}{2}d(t_{2i}^{\hh})
+            + \vo((\tfrac{h}{2})^2),
+            & \qq{para todo $i = 1,\ldots,2n$.}
+    \end{align*}
+    Basta observar que $t_i^h = t_{2i}^{\hh}$
+    y restar la primera ecuación a la segunda multiplicada por $2$.
+    Despejando se obtiene tanto (a) como (b).
 \end{proof}
 
 \subsection{Estimación general del error}
 
-Como hemos visto, a partir de conocer el error cometido en cada paso hemos logrado estimar globalmente el error de la solución generada por el método de Euler. La idea es hacer esto de manera general, pero de momento nos conformamos con formalizar la idea de error local.
+Como hemos visto, a partir de conocer el error cometido en cada paso
+hemos logrado estimar globalmente
+el error de la solución generada por el método de Euler.
+Antes de continuar nuestro estudio de más métodos de paso fijo,
+vamos a definir el concepto de error local de truncamiento,
+que iremos calculando para cada método.
+A continuación incluímos la definición para un método general.
+
+% \begin{definition}
+%     Sean $f : \Omega \subset \R \times \R^n$ la función de un PVI
+%     $p_i = (t_i, \vw_i)$ un estado del dominio de $f$,
+%     $p_{i+1} = (t_{i+1}, \vw_{i+1})$
+%     el siguiente estado generado por un método numérico e
+%     $\vy_i$ una solución del PVI dado por $f$ y $p_i$.
+
+%     Se define \emph{el error local de truncamiento de la estimación} como
+%     \begin{equation*}
+%         Z_{i+1} = \frac{\vy_i(t_{i+1}) - \vw_{i+1}}{t_{i+1} - t_i}.
+%     \end{equation*}
+% \end{definition}
+
+La mayoría de métodos numéricos permiten obtener aproximaciones más precisas
+a costa de realizar más cálculos.
+Por ejemplo, el método de Euler nos permite
+obtener mejores soluciones reduciendo el tamaño del paso,
+a costa de tener que evaluar más veces la función $f$ numéricamente,
+que es lo que más tiempo de computación necesita habitualmente.
+Por tanto, el objetivo es
+comparar los errores de truncamiento de diferentes métodos
+conforme disminuye el tamaño del paso.
 
 \begin{definition}
-Dado un método de diferencias
-\begin{equation} \label{eqn:diffmet}
-\begin{cases}
-    w_0=\alpha \\
-    w_{i+1}=w_i + h\cdot \phi(t_i, w_i), \forall i=0,\dots, n-1
-\end{cases}
-\end{equation}
-    que devuelva una solución de \ref{eqn:pvi} con solución real $Y$, se define su \textbf{error local de truncamiento (e.l.t.)} como
-    $$
-    T_{i+1}(h) = \frac{Y(t_{i+1})-Y(t_i)-h\phi(t_i,Y(t_i))}{h}
-    = \frac{Y(t_{i+1})-Y(t_i)}{h} -h\phi(t_i,Y(t_i))
-    $$
+    Un \emph{método en diferencias} a un paso es un método que de paso fijo $h$
+    que a partir de un estado $(t_i, \vw_i) \approx (t_i, \vy(t_i))$,
+    aproxima $\vy(t_i + h)$ como
+    \begin{equation*}
+        w_{i+1} = w_i + h\cdot \phi(h, t_i, w_i).
+    \end{equation*}
+    para un tamaño de paso $h$.
 \end{definition}
 
+\begin{definition}
+    Sea $\{t_i, \vw_i\}_{i = 1,\ldots,n}$ una aproximación obtenida por
+    un método en diferencias de paso $h$ para un PVI
+    y $\vy$ la solución de ese PVI.
 
+    Se define \emph{el error local de truncamiento del método} como
+    \begin{equation*}
+        Z_{i+1}(h) = \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - \phi(h, t_i, \vy(t_i)).
+    \end{equation*}
+\end{definition}
+
+%TODO esta definición sería cogiendo la solución en el punto actual
+% y la anterior es fijando una solución global asumiendo que el método
+% no comete fallos
+% \begin{definition}
+%     Sean $f : \Omega \subset \R \times \R^n$ la función de un PVI
+%     $p_i = (t_i, \vw_i)$ un estado del dominio de $f$,
+%     $p_{i+1} = (t_i + h, \vw_{i+1})$
+%     el siguiente estado generado por un método numérico que depende de $h$ e
+%     $\vy_i$ una solución del PVI dada por $f$ y $p_i$.
+
+%     Se define \emph{el error local de truncamiento del método} como
+%     \begin{equation*}
+%         Z_{i+1}(h) = \frac{\vy_i(t_i + h) - \vw_{i+1}}{h}.
+%     \end{equation*}
+%     En el caso de un método en diferencias,
+%     \begin{equation*}
+%         Z_{i+1}(h) = \frac{\vy_i(t_i + h) - \vw_i}{h} - \phi(h, t_i, w_i).
+%     \end{equation*}
+% \end{definition}
+
+%TODO revisar
 \begin{example}
-En el caso concreto del método de Euler se tiene:
-    $$
-    T_{i+1}(h)
-    = \frac{Y(t_{i+1})-Y(t_i)}{h} -h\cdot f(t_i,Y(t_i))= \frac{h}{2} Y''(\xi_i),
-    \xi_i\in[t_i,t_{i+1}], \forall i=0,\dots, n-1
-    $$
+    En el caso concreto del método de Euler se tiene
+    \begin{equation*}
+        Z_{i+1}(h) =
+        \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - h\cdot f(t_i,\vy(t_i)) =
+        \frac{h}{2} \vy''(\xi_i),
+            \qq{$\xi_i \in [t_i, t_{i+1}]$ para todo $i=0,\dots, n-1$}.
+    \end{equation*}
+    $\vy$ si $\abs{y''(t)} \le C$ para todo $t \in [a, b]$ entonces
+    \begin{equation*}
+        \abs{Z_{i+1}(h)} \le \frac{C}{2}h = \vo(h).
+    \end{equation*}
 
-    y si $|Y''(t)|\le C,\forall t\in[a,b]$ entonces
-    $$
-    |T_{i+1}(h)|\le \frac{C}{2} \cdot h
-    $$
-    que es $\theta(h)$.
-
-Lo que nos interesa es que este error decrezca lo más rápido posible con h, es decir, que sea $\theta(h^p)$ con $p$ lo más grande posible. En esta búsqueda llegamos al siguiente método, el de Taylor.
+    Lo que nos interesa es que este error
+    decrezca lo más rápido posible con $h$,
+    es decir, que sea $\vo(h^p)$ con $p$ lo más grande posible.
+    En esta búsqueda llegamos al siguiente método, el de Taylor.
 \end{example}
 
-\subsection{Método de Taylor}
+\subsection{Notación para la diferenciación en varias variables}
+
+A continuación en el método utilizamos la notación
+$\pdv[2]{\vf(t_i, \vw_i)}{y}$
+para representar la matriz hessiana que saldría al considerar $\vf$
+como una función de $y$ exclusivamente.
+
+Los lectores que prefieran razonar el método
+cuando $y$ es un escalar en vez de un vector,
+pueden sustituir las evaluaciones de la diferencial y la hessiana
+por multiplicaciones.
+En el caso particular de la hessiana, saldría el término al cuadrado.
+
+\subsection{El método de Taylor}
  
-De aquí en adelante asumiré el PVI general del principio, y cualquier método que considere intentará aproximar una solución suya.
+De aquí en adelante asumiremos el PVI general del principio,
+y cualquier método que considere intentará aproximar una solución suya.
 
-\begin{definition}
-Se define el método de Taylor de orden p como:
-\begin{equation}
-\begin{cases}
-    w_0=\alpha \\
-    w_{i+1}=w_i + h\cdot T^{(p)}(t_i, w_i), \forall i=0,\dots, n-1
-\end{cases}
-\end{equation}
+\begin{method}\label{met:taylor}
+    \newcommand{\D}{\vb{D}}
 
-    dónde $T^{(p)}(t_i,w_i)=\sum_{i=0}^{p-1} \frac{h^i}{(i+1)!}f^{(i)}(t_i,w_i)$, y $f^{(i)}(t_i,w_i)$ viene dado po $Y^{(i+1)}(t)=(f(t,Y(t)))^{(i)}$.
-\end{definition}
+    El \emph{método de Taylor de orden $p$} es un es un método de paso fijo $h$
+    que a partir de un estado $(t_i, \vw_i) \approx (t_i, \vy(t_i))$,
+    aproxima $\vy(t_i + h)$ como
+    \begin{equation*}
+        \vw_{i+1} =
+        \vw_i + h\cdot \D^{(0)}(t_i, \vw_i)
+            + \frac{h^2}{2}\D^{(1)}(t_i, \vw_i)
+            + \cdots
+            + \frac{h^p}{p!}\cdot \D^{(p-1)}(t_i, \vw_i) =:
+        \vw_i + h\cdot \vb{T}^{(p)}(h, t_i, \vw_i),
+    \end{equation*}
+    donde
+    \begin{align*}
+        \D^{(0)}(t_i, \vw_i) &= \vf(t_i, \vw_i), \\
+        \D^{(1)}(t_i, \vw_i) &=
+            \pdv{\vf(t_i, \vw_i)}{t} +
+            \pdv{\vf(t_i, \vw_i)}{\vy}\qty(\vf(t_i, \vw_i)), \\
+        \D^{(2)}(t_i, \vw_i) &=
+            \pdv[2]{\vf(t_i, \vw_i)}{t} +
+            \pdv{\vf(t_i, \vw_i)}{t}{\vy}\qty(\D^{(1)}(t_i, \vw_i)) +
+            \pdv[2]{\vf(t_i, \vw_i)}{\vy}\qty(
+                \vf(t_i, \vw_i), \vf(t_i, \vw_i)
+            ) \\
+        \D^{(3)}(t_i, \vw_i) &= \cdots
+    \end{align*}
+\end{method}
 
-Unas pocas cuentas son suficientes para darse cuenta de que calcular estas derivadas de manera genérica es realmente costoso, y normalmente se suelen hace las cuentas de manera \textit{adhoc} para un problema concreto.
+\begin{remark}
+    La expresión de $\vb{D}^{(i)}$ en el método de Taylor surge
+    de de derivar la función $\vy'(t) = \vf(t, \vy(t))$ múltiples veces.
+    Mientras que por $\vb{T}^{(p)}$ denotamos al
+    polinomio de Taylor de $\vy'$.
+\end{remark}
 
-El siguiente teorema era de esperar:
+Unas pocas cuentas son suficientes para darse cuenta de que
+calcular estas derivadas de manera genérica es realmente costoso,
+y normalmente se suelen hace las cuentas de manera \emph{adhoc}
+para un problema concreto.
+
+%TODO un ejemplillo aquí taría de puta madre
+
+El siguiente teorema era de esperar.
 
 \begin{theorem}
-    Si Y es de clase $C^{(p+1)}([a,b])$, el e.l.t. del método de Taylor de orden p es $\theta(h^p)$.
+    Si $y$ es de clase $C^{(p+1)}([a, b])$,
+    el ELT del método de Taylor de orden $p$ es $\vo(h^p)$.
 \end{theorem}
-\begin{proof}
-En estas condiciones el e.l.t. no es más que el resto de Lagrange:
 
-$$
-    T_{i+1}(h)=\frac{h^p}{(p+1)!} f^{(p)}(\xi_i,Y(\xi_i)),\xi_i\in [t_i,t_{i+1}]\subset[a,b]
-$$
-    Por ser $f(t,Y(t))$ contínua en compacto está acotada en $[a,b]$, y eso es por lo tanto $\theta(h^p)$.
+\begin{proof}
+    En estas condiciones el ELT no es más que el resto de Lagrange:
+    \begin{equation*}
+        Z_{i+1}(h) = \frac{h^p}{(p+1)!} \vf^{(p)}(\xi_i, y(\xi_i)),
+            \qq{$\xi_i \in [t_i, t_{i+1}]$ para todo $i = 1,\ldots n$.}
+    \end{equation*}
+    Y si $f(t, y(t))$ está definida sobre un compacto
+    entonces está acotada en $[a,b]$,
+    y por lo tanto $Z_{i+1}(h) = \vo(h^p)$.
 \end{proof}
 
 %TODO esto solo para una dimensión?
 
-A pesar de este gran resultado respecto al error, la dificultad para aplicarlo de manera genérica y los problemas que conlleva la derivación numérica no lo hace muy práctico. Buscamos entonces métodos que no necesiten estas derivadas y que tengan órdenes similares.
+A pesar de este gran resultado respecto al error,
+la dificultad para aplicarlo de manera genérica y
+los problemas que conlleva la derivación numérica no lo hacen muy práctico.
+Buscamos entonces métodos que no necesiten estas derivadas
+y que tengan órdenes similares.
 
 \subsection{Métodos de Runge-Kutta}
 
-Comenzamos buscando métodos de orden 2, para lo cual queremos aproximar $T^{(2)}(t,y)=f(t,y)+\frac{h}{2} f'(t,y)$ con un error de orden $\theta(h^2)$. Una idea feliz es considerar una aproximación de la forma $a_1f(t+\alpha_1, y+\beta_1)$. Aproximando esto último por Taylor tenemos:
+\newcommand{\vbeta}{\vb*{\beta}}
 
-$$
-a_1f(t+\alpha_1, y+\beta_1)=a_1\left(
-f(t,y)+
-\frac{\partial f}{\partial t}(t,y)\cdot \alpha_1+
-\frac{\partial f}{\partial y}(t,y)\cdot \beta_1+
-\frac{\partial^2 f}{\partial t^2}(\xi,\mu)\cdot \frac{\alpha_1^2}{2}+
-\frac{\partial^2 f}{\partial t \partial y}(\xi,\mu)\cdot \alpha_1\beta_1+
-\frac{\partial^2 f}{\partial y^2}(\xi,\mu)\cdot \frac{\beta_1^2}{2}
-\right)
-$$
+Comenzamos buscando métodos de orden $2$,
+para lo cual queremos aproximar
+$\vb{T}^{(2)}(t, y) = f(t,y) + \frac{h}{2} f'(t,y)$
+con un error de orden $\vo(h^2)$.
+Una idea feliz es considerar una aproximación de la forma
+$a_1\vf(t + \alpha_1, \vy + \vbeta_1)$.
+Aproximando esto último por Taylor tenemos
+\begin{multline*}
+    a_1\vf(t + \alpha_1, y + \vbeta_1) = \\
+    a_1\qty(
+        \vf(t,y) +
+        \pdv{\vf(t, \vy)}{t} \cdot \alpha_1 +
+        \pdv{\vf(t, \vy)}{\vy} \qty(\vbeta_1) +
+        \frac{1}{2}\pdv[2]{\vf(\xi, \mu)}{t} \cdot \alpha_1^2 +
+        \pdv{\vf(\xi, \mu)}{t}{\vy} \qty(\vbeta_1) \cdot \alpha_1 +
+        \frac{1}{2}\pdv[2]{\vf(\xi, \mu)}{\vy} \qty(\vbeta_1, \vbeta_1)
+    ).
+\end{multline*}
 
-Nótese que suponemos suficiente regularidad en f para que las parciales cruzadas sean iguales. Haciendo $a_1=1,\alpha_1=\frac{h}{2}, \beta_1=\frac{h}{2} f(t,y)$ la igualdad anterior se traduce en:
+Nótese que suponemos suficiente regularidad en $f$
+para que las parciales cruzadas sean iguales.
+Haciendo $a_1 = 1$, $\alpha_1 = \frac{h}{2}$, $\vbeta_1 = \frac{h}{2} \vf(t,y)$
+la igualdad anterior se traduce en
+\begin{multline*}
+    f(t + \frac{h}{2}, y + \beta_1) = \\
+    \vf(t,y) +
+        \pdv{\vf(t, \vy)}{t} \cdot \frac{h}{2} +
+        \pdv{\vf(t, \vy)}{\vy} \qty(\vf(t, y)) +
+        \frac{h^2}{8}\pdv[2]{\vf(\xi, \mu)}{t} +
+        \frac{h^2}{4}\pdv{\vf(\xi, \mu)}{t}{\vy} \qty(\vf(t, y)) +
+        \frac{h^2}{8}\pdv[2]{\vf(\xi, \mu)}{\vy} \qty(\vf(t, y), \vf(t, y)) = \\
+    \vb{T}^{(2)}(t, y) + \frac{h^2}{8}\qty(
+        \pdv[2]{\vf(\xi, \mu)}{t} +
+        2\pdv{\vf(\xi, \mu)}{t}{\vy} \qty(\vf(t, y)) +
+        \pdv[2]{\vf(\xi, \mu)}{\vy} \qty(\vf(t, y), \vf(t, y))
+    ).
+\end{multline*}
 
-$$
-f(t+\frac{h}{2}, y+\beta_1)=
-f(t,y)+
-\frac{\partial f}{\partial t}(t,y)\cdot \frac{h}{2}+
-\frac{\partial f}{\partial y}(t,y)\cdot \frac{h}{2} f(t,y)+
-\frac{\partial^2 f}{\partial t^2}(\xi,\mu)\cdot \frac{h^2}{8}+
-\frac{\partial^2 f}{\partial t \partial y}(\xi,\mu)\cdot \frac{h^2}{4}f(t,y)+
-\frac{\partial^2 f}{\partial y^2}(\xi,\mu)\cdot \frac{h^2}{8}f(t,y)
-$$
+De nuevo bajo buenas condiciones de $f$
+lo que hay entre paréntesis está acotado,
+y al estar multiplicado por $h^2$ es de orden $\vo(h^2)$.
+Hemos obtenido nuestro primer método de Runge-Kutta.
 
-$$
-=T^{(2)}(t,y)+
-h^2 \left(
-\frac{\partial^2 f}{\partial t^2}(\xi,\mu)\cdot \frac{1}{8}+
-\frac{\partial^2 f}{\partial t \partial y}(\xi,\mu)\cdot \frac{1}{4}f(t,y)+
-\frac{\partial^2 f}{\partial y^2}(\xi,\mu)\cdot \frac{1}{8}f(t,y)
-\right)
-$$
-
-De nuevo bajo buenas condiciones de $f$ lo que hay entre paréntesis está acotado, y al multiplicar por $h^2$ tenemos el orden de error buscado. Esto nos da nuestro primer método de Runge-Kutta:
-
-\begin{definition}[Método del Punto Medio]
-\begin{equation}
-\begin{cases}
-    w_0=\alpha \\
-    w_{i+1}=w_i + h\cdot f(t+\frac{h}{2}, y+\frac{h}{2}f(t,y)) , \forall i=0,\dots, n-1
-\end{cases}
-\end{equation}
-\end{definition}
+\begin{method}\label{met:euler}
+    El \emph{método del punto medio} es un es un método de paso fijo $h$ que
+    a partir de un estado $(t_i, \vw_i) \approx (t_i, \vy(t_i))$,
+    aproxima $\vy(t_i + h)$ como
+    \begin{equation*}
+        \vw_{i+1} = \vw_i + h\cdot \vf\qty(
+            t + \tfrac{h}{2}, \vy + \tfrac{h}{2}\vf(t, \vy)
+        ).
+    \end{equation*}
+\end{method}
 
 \begin{remark}
-    En este método no necesitamos solo necesitamos la función $f$, pero necesitamos dos evaluaciones en cada paso, que puede ser costoso.
+    Para este método solo necesitamos la función $\vf$,
+    pero necesitamos dos evaluaciones en cada paso.
 \end{remark}
 
 \begin{remark}
-    Al ser $ f(t+\frac{h}{2}, y+\beta_1)=T^{(2)}(t,y)+\theta(h^2) $, el e.l.t. será:
-    $$
-    T_{i+1}(h)= \left(\frac{Y(t_{i+1})-Y(t_i)-h\phi(t_i,Y(t_i))}{h} - T^{(2)}(t_i, y(t_i))\right) - \theta(h^2)
-    =\theta(h^2)- \theta(h^2)
-    =\theta(h^2)
-    $$
+    Al ser $\vf\qty(
+        t + \tfrac{h}{2}, \vy + \vf(t + \tfrac{h}{2}, \vy + \tfrac{h}{2}\vy)
+    ) = \vb{T}^{(2)}(t, \vy) + \vo(h^2)$,
+    el ELT será
+    \begin{multline*}
+        Z_{i+1}(h) =
+        \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - \qty(
+            T^{(2)}(t_i, \vy(t_i)) + \vo(h^2)
+        ) =
+        \qty(
+            \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - T^{(2)}(t_i, \vy(t_i))
+        ) - \vo(h^2) = \\
+        \vo(h^2) - \vo(h^2) = \vo(h^2).
+    \end{multline*}
 \end{remark}
 
-Podríamos intentar una estrategia parecida para $T^{(3)}(t,y)$:
-
-\begin{equation}
-\label{eq5}
-T^{(3)}(t,y) = f(t,y) + \frac{h}{2}f'(t,y) + \frac{h^2}{6}f''(t,y) \approx a_1f(t,y) + a_2f(t+\alpha_2, y+\delta_2f(t,y))
+Podríamos intentar una estrategia parecida para $\vb{T}^{(3)}(t, \vy)$,
+pero nuestros intentos fracasan porque
+(haciendo las cuentas con escalares)
+si intentamos aproximarlo mediante
+\begin{equation}\label{eqn:t3-aproximation}
+    T^{(3)}(t,y) =
+    f(t,y) + \frac{h}{2}\dv{f(t,y)}{t} + \frac{h^2}{6}\dv[2]{f(t,y)}{t} \approx
+    a_1f(t,y) + a_2f(t+\alpha_2, y+\delta_2f(t,y))
 \end{equation}
-pero ni siquiera esto basta para igualar el término $ \frac{h^2}{6}\left[ \frac{\partial f}{\partial y}(t,y)\right]^2f(t,y)$, que resulta al desarrollar $\frac{h^2}{6}f''(t,y)$.
-Obtenemos sin embargo más métodos de orden 2:
+pero ni siquiera esto basta para igualar el término
+$\frac{h^2}{6}\qty[\pdv{f(t, y)}{y}]^2f(t,y)$
+que resulta al desarrollar $\frac{h^2}{6}\dv[2]{f(t, y)}{t}$.
+Invitamos al lector a hacer las cuentas.
+Obtenemos sin embargo más métodos de orden $2$.
 
-\begin{definition}[Método modificado de Euler]
-Se obtiene al tomar $a_1 = a_2 = \frac{1}{2}$ y $\alpha_2 = \delta_2 = h$ en la ecuación  (\ref{eq5}).
-\begin{equation}
-\begin{cases}
-    w_0=\alpha \\
-    w_{i+1}=w_i + \frac{h}{2}\left[f(t_i, w_i) + f(t_{i+1}, w_i+hf(t_i,w_i))\right]  , \forall i=0,\dots, n-1
-\end{cases}
-\end{equation}
+\begin{method}
+    El \emph{método modificado de Euler} se obtiene de
+    tomar $a_1 = a_2 = \frac{1}{2}$ y $\alpha_2 = \delta_2 = h$
+    en la ecuación  \eqref{eqn:t3-aproximation}.
+    \begin{equation*}
+        \vw_{i+1} = \vw_i + \frac{h}{2}\qty\Big[
+            \vf(t_i, \vw_i) + \vf(t_i + h, \vw_i + h\vf(t_i,\vw_i))
+        ].
+    \end{equation*}
+\end{method}
 
-\end{definition}
+\begin{method}
+    El \emph{método de Heun} se obtiene de tomar $a_1 = \frac{1}{4}$,
+    $a_2 = \frac{3}{4}$ y $\alpha_2 = \delta_2 = \frac{2}{3}h$
+    en la ecuación \eqref{eqn:t3-aproximation}.
+    \begin{equation*}
+        \vw_{i+1} = \vw_i + \frac{h}{4}\qty\Big[
+            \vf(t_i, \vw_i) +
+            3\vf(t_i + \tfrac{2}{3}h, \vw_i + \tfrac{2}{3}h\vf(t_i, \vw_i))
+        ].
+    \end{equation*}
 
-\begin{definition}[Método de Heun]
-Este método se obtiene al tomar $a_1 = \frac{1}{4}$, $a_2 = \frac{3}{4}$ y $\alpha_2 = \delta_2 = \frac{2}{3}h$ en la ecuación  (\ref{eq5}).
-\begin{equation}
-\begin{cases}
-    w_0=\alpha \\
-    w_{i+1}=w_i + \frac{h}{4}\left[f(t_i, w_i) + 3f(t_i + \frac{2}{3}h, w_i+\frac{2}{3}hf(t_i,w_i))\right] , \forall i=0,\dots, n-1
-\end{cases}
-\end{equation}
+\end{method}
 
-\end{definition}
+El método de Runge-Kutta más utilizado es el siguiente, de orden $4$.
 
-El método más utilizado de Runge-Kutta es el siguiente, de orden 4:
+\begin{method}\label{met:euler}
+    \newcommand{\K}{\vb{K}}
 
-\begin{definition}[Método de Runge-Kutta de orden 4]
-\begin{equation}
-\begin{cases}
-    w_0=\alpha \\
-    K_1^{i+1} = hf(t,w_i)\\
-    K_2^{i+1} = hf(t + h/2,w_i+ K_1^{i+1}/2)\\
-    K_3^{i+1} = hf(t + h/2,w_i+ K_2^{i+1}/2)\\
-    K_4^{i+1} = hf(t + h,w_i + K_3^{i+1})\\
+    El \emph{método de Runge-Kutta de orden $4$}
+    es un es un método de paso fijo $h$ que
+    a partir de un estado $(t_i, \vw_i) \approx (t_i, \vy(t_i))$,
+    aproxima $\vy(t_i + h)$ como
+    \begin{gather*}
+        \vw_{i+1} = \vw + \frac{
+            \K_1^{i+1} + 2\K_2^{i+1} + 2\K_3^{i+1} + \K_4^{i+1}
+        }{6}. \\
+        \begin{array}{ll}
+        \K_1^{i+1} = h\vf\qty\bigg(t, \vw_i), &
+        \K_2^{i+1} = h\vf\qty(t + \frac{h}{2}, \vw_i+ \frac{\K_1^{i+1}}{2}), \\
+        \K_3^{i+1} = h\vf\qty(t + \frac{h}{2}, \vw_i+ \frac{\K_2^{i+1}}{2}), &
+        \K_4^{i+1} = h\vf\qty\bigg(t + h, \vw_i + \K_3^{i+1}).
+        \end{array}
+    \end{gather*}
+\end{method}
 
-    w_{i+1}=w + \frac{K_1^{i+1} + 2K_2^{i+1} + 2K_3^{i+1} + K_4^{i+1}}{6}
-\end{cases}
-\end{equation}
-
-\end{definition}
-
-
-Es fácil ver que si queremos más precisión tenemos que utilizar más evaluaciones de $f$. Una pregunta interesante es el número mínimos de evaluaciones en cada paso para conseguir una aproximación de cierto orden. La siguiente tabla relaciona ambos conceptos:
+El lector puede haber empezado a intuir que cuanta más precisión queremos
+más evaluaciones de $f$ necesitamos.
+Una pregunta interesante es
+el número mínimo de evaluaciones que necesitaríamos en cada paso
+para conseguir una aproximación de cierto orden.
+La \cref{tab:butcher} relaciona ambos conceptos.
 
 \begin{table}[H]
-\centering
-\begin{tabular}{|l||l|l|l|l|}
-    \hline
-Evaluaciones & $1\le p \le 4$ & $5\le p\le 7$ & $8\le p\le 9$  & $10\le p$ \\
-    \hline
-Mejor e.l.t. & $\theta(h^p)$ & $\theta(h^{p-1})$ & $\theta(h^{p-2})$ & $\theta(h^{p-3})$ \\
-    \hline
-\end{tabular}
-\caption{Tabla de Butcher de evaluaciones y órdenes del e.l.t.}
+    \centering
+    \begin{tabular}{|l||l|l|l|l|}
+        \hline
+        Evaluaciones & $1\le p\le 4$ & $5\le p\le 7$ & $8\le p\le 9$
+            & $10\le p$ \\
+        \hline
+        Mejor ELT & $\vo(h^p)$ & $\vo(h^{p-1})$ & $\vo(h^{p-2})$
+            & $\vo(h^{p-3})$ \\
+        \hline
+    \end{tabular}
+    \caption{Tabla de Butcher.
+        Muestra, para un número $p$,
+        el máximo orden de un método de Runge-Kutta con $p$ evaluaciones
+    }
+    \label{tab:butcher}
 \end{table}
 
-Muchas veces utilizamos el número de evaluaciones de la función $f$ como medida de complejidad, pues puede se muy costosa.
-
-Tenemos también dos formas de mejora la precisión de la solución numérica: reducir el paso y usar un método de orden mayor. Veamos la comparación de estas dos formas con los métodos de Runge-Kutta vistos hasta el momento, fijando el número de evaluaciones a $40$ y suponiendo un intervalo con $b-a=1$:
-
-\begin{table}[H]
-\centering
-\begin{tabular}{|l|l|l|}
-    \hline
-Método           & Paso  & Precisión aproximada \\
-    \hline
-    \hline
-RK4              & 0.1   & $10^{-4}$ \\
-    \hline
-Euler Modificado & 0.05  & $2.5\cdot 10^{-3}$ \\
-    \hline
-Euler            & 0.025 & $2.5\cdot 10^{-2}$ \\
-    \hline
-\end{tabular}
-\end{table}
-
+Para muchas aplicaciones,
+se utiliza el número de evaluaciones de la función $f$
+como una medida de la complejidad,
+pues puede ser una función muy costosa.
+Con nuestros avances actuales tenemos también dos formas de mejora
+de la precisión de la solución numérica:
+reducir el paso
+y usar un método de orden mayor.
+La \cref{tab:order-vs-step} muestra la comparación de estas dos formas
+con los métodos de Runge-Kutta vistos hasta el momento,
+fijando el número de evaluaciones a $40$
+y suponiendo un intervalo con $b - a = 1$.
 En general obtenemos mejores resultados aumentando el orden del método.
 
+%TODO esto para que problema
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+    Método           & Paso  & Precisión aproximada \\
+        \hline
+        \hline
+    RK4              & 0.1   & $10^{-4}$ \\
+        \hline
+    Euler Modificado & 0.05  & $2.5\cdot 10^{-3}$ \\
+        \hline
+    Euler            & 0.025 & $2.5\cdot 10^{-2}$ \\
+        \hline
+    \end{tabular}
+    \caption{Tres métodos de Runge-Kutta;
+        de órdenes $1$, $2$ y $4$;
+        aplicados al mismo problema ajustando el paso
+        para hacer el mismo número de evaluaciones de la función $f$.
+    }
+    \label{tab:order-vs-step}
+\end{table}
 
 \section{Métodos de paso adaptativo}
 \subsection{Control del error global a través del criterio del error local}
