@@ -11,7 +11,8 @@
 \usepackage{amsfonts}
 \geometry{verbose,tmargin=2cm,bmargin=2cm,lmargin=2cm,rmargin=2cm}
 \usepackage{multicol}
-% \usepackage{graphicx}
+\usepackage{graphicx}
+\usepackage{subcaption}
 \usepackage{array}
 \usepackage{framed}
 \usepackage{listings}
@@ -28,8 +29,12 @@
             sorting=nyt]{biblatex} % Complete reimplementation of bibliographic facilities
 %\addbibresource{bibliography.bib}
 \usepackage{amsthm}
+
 \usepackage{tikz}
 \usepackage[all]{xy}
+
+\usepackage{parskip}
+
 
 %%evitar sangrado de la 1ª linea
 \setlength{\parindent}{0pt}
@@ -40,13 +45,23 @@
 \renewcommand{\thefootnote}{\fnsymbol{footnote}}
 \newcommand{\astfootnote}[1]{\footnote[1]{#1}}
 
-
-\newtheorem{definition}{Definición}[section]
+\theoremstyle{plain}
 \newtheorem{theorem}{Teorema}[section]
-\newtheorem{remark}{Observación}[section]
-\newtheorem{corollary}{Corolario}[theorem]
 \newtheorem{lemma}{Lema}[section]
+\newtheorem{proposition}{Proposición}[section]
+\newtheorem{corollary}{Corolario}[theorem]
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definición}[section]
 \newtheorem{example}{Ejemplo}[section]
+\newtheorem{method}{Método}
+
+\theoremstyle{remark}
+\newtheorem{remark}{Observación}[section]
+
+% \newenvironment{method}[1]{%
+% \par\noindent \textbf{#1}. %
+% }{}
 
 \makeatletter
 
@@ -113,6 +128,9 @@
 
 \usepackage{physics}
 \usepackage{cleveref}
+\usepackage{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
+
 \input{src/mathematical-definitions}
 
 
@@ -124,14 +142,10 @@
 \tableofcontents{}
 \newpage{}
 
-\input{src/introduccion}
-\newpage
+\input{src/recurrence-relations}
 \input{src/pasofijo}
-\newpage
-\input{src/2}
-\newpage
 \input{src/3}
-\newpage
+\input{src/2}
 \input{src/4}
 
 
