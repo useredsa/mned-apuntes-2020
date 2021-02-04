@@ -130,8 +130,6 @@ luego nuestros métodos no son los deseados sino los aproximados. %TODO EIN?
 Por eso, introducimos la noción de método estable.
 
 \begin{definition}
-    \newcommand{\tw}{\tilde{w}}
-
     Un método en diferencias se dice estable
     si al generar una segunda solución aproximada de la forma
     \begin{equation*}
@@ -207,7 +205,6 @@ Por eso, introducimos la noción de método estable.
 \end{theorem}
 
 \begin{proof}
-    \newcommand{\tw}{\tilde{w}}
     Sea $L$ la constante de lipschitz de $\phi$ y
     sean $w_{i+1} = w_i + h\phi(t, w_i, h)$ y
     $\tw_{i+1} = h\phi(t, \tw_i, h) + \epsilon_i$.

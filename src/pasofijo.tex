@@ -1,52 +1,150 @@
-\section{Métodos de paso fijo}
+\section{Preliminares}
 
-\begin{definition}  Un método es de paso fijo si la solución que genera cumple $t_i-t_{i-1}=h,\forall i=1,\dots n$ para cierto $h>0$ constante. \end{definition}
-
-En este caso se tendrá $n=\lceil \frac{b-a}{2} \rceil$, y supondré este valor mientras trate con métodos de paso fijo.
-
-\subsection{Método de Euler}
-\begin{definition} 
-    El método de Euler de paso fijo genera, dado el problema \ref{eqn:pvi} y un paso $h>0$:
-
-\begin{equation} \label{eqn:eulersol}
-\begin{cases}
-    w_0=y_0 \\
-    w_{i+1}=w_i + h\cdot f(t_i, w_i), \forall i=0,\dots, n-1
-\end{cases}
-\end{equation}
-
-Siendo $t_i =t_0+i\cdot h,\forall i=0,\dots, n$.
+%TODO cambiar esta label y actualizar referencias
+\begin{definition}\label{eqn:pvi}
+    Un \emph{problema de valor inicial} (en adelante, PVI)
+    es una ecuación diferencial ordinaria dada por
+    $f : \Omega \subset \R \times \R^n \to \R^n$
+    acompañada de una condición inicial $(t_0, \vy_0)$ del dominio de $f$
+    del que se busca una solución $y$ que cumpla
+    \begin{equation*}
+        \left\{
+        \begin{aligned}
+            \vy'(t) &= f(t, \vy(t)) \\
+            \vy(t_0) &= \vy_0 \\
+        \end{aligned}.
+        \right.
+    \end{equation*}
 \end{definition}
 
-\subsubsection{Estimación del error con el método de Euler}
+%TODO la definición no deja cuestionarse el orden, no?
+% \begin{remark}
+%     Los problemas que trataremos serán de orden $1$ siempre,
+%     en otro caso los transformaremos en un problema de orden $1$.
+% \end{remark}
 
-\begin{lemma}
-\label{lema2}
-\begin{enumerate}
-    \item $\forall t \in \mathbb{R}$, $1+t \leq e^t$.
-    \item Si $t\geq -1$, entonces $\forall m > 0$ se cumple que  $0\leq (1+t)^m \leq e^{mt}.$
-\end{enumerate} 
-\end{lemma}
+A lo largo del texto hablaremos de la solución $\vy$ de un PVI,
+por lo que estaremos asumiendo que existe una solución y que es única.
+Esto será así en la mayoría de problemas que queramos resolver,
+a poco que la función $f$ del PVI cumpla unos requisitos mínimos.
+
+\begin{theorem}[Picard-Lindelöf]
+    Sea $f(t, \vy) : \Omega \subset \R \times \R^n \to \R^n$,
+    donde $\Omega$ es abierto,
+    una función continua y
+    localmente Lipschitziana respecto de la segunda variable.
+    Entonces, dado $(t_0, \vy_0) \in \Omega$,
+    existe un intervalo cerrado $[t_0 - h, t_0 + h]$
+    donde existe una única solución del PVI
+    \begin{equation*}
+        \left\{
+        \begin{aligned}
+            \vy'(t) &= f(t, \vy(t)) \\
+            \vy(t_0) &= \vy_0 \\
+        \end{aligned}.
+        \right.
+    \end{equation*}
+    que cumple que $(t, \vy(t)) \in \Omega$ para todo $t \in [t_0 - h, t_0 + h]$.
+\end{theorem}
+
 \begin{proof}
-\begin{enumerate}
-    \item Utilizando el desarrollo de Taylor para la exponencial:
-    $$
-    e^t = 1+t+\frac{t^2}{2}e^{\xi} \textnormal{ con }\xi\in(0,t) \overset{\frac{t^2}{2}e^{\xi} \geq 0}{\implies} e^t \geq 1+t
-    $$
-    \item Como $t\geq -1$, $1+x \geq 0$, y entonces aplicando lo anterior tenemos que $$ 0\leq 1+t \leq e^t \overset{m\geq 0}{\implies} 0 \leq (1+t)^m \leq (e^t)^m = e^{tm} $$
-\end{enumerate}
+    La prueba de este teorema corresponde a
+    un curso previo de ecuaciones diferenciales.
 \end{proof}
 
+\begin{remark}
+    La condición de que $f$ sea Lipschitziana no es necesariamente
+    muy restrictiva.
+    Pensemos que es suficiente con que $f$ está definida sobre un convexo y
+    que tenga derivada con respecto a la segunda variable continua y acotada.
+    Lo que también es cierto si ese convexo es compacto.
+\end{remark}
+
+\subsection{Notación}
+
+%TODO habría que considerar que t_i también se aproxima por tilde{t}_i, no?
+Los métodos que veremos calcularán soluciones de un PVI
+como una lista de pares $\{(t_0, \vw_0), \ldots, (t_n, \vw_n)\}$,
+donde los $t_i$ son reales de forma que $t_0 < t_1 < \cdots < t_n$
+y cada punto $\vw_i$ es una aproximación de $\vy(t_i)$,
+$\vw_i \approx \vy(t_i)$.
+No obstante, una implementación utilizaría números de precisión finita,
+produciendo una lista $\{t_0, \tw_0), \ldots, (t_n, \tw_n)\}$,
+de forma que
+\begin{equation*}
+    \tw_i \approx \vw_i \approx \vy(t_i).
+\end{equation*}
+
+\section{Métodos de paso fijo}
+
+\begin{definition}
+    Un método es \emph{de paso fijo $h$} si la solución
+    $\{(t_i, \vw_i)\}_{i = 0,\ldots,n}$ que genera cumple
+    \begin{equation*}
+        t_i = t_{i-1} + h \qq{para todo $i = 1,\ldots,n$.}
+    \end{equation*}
+\end{definition}
+
+Cuando resolvamos un PVI, generaremos una cantidad finita de puntos.
+A menudo, nos interesará conocer la solución en un intervalo $[a, b]$,
+$t_0 = a$,
+para lo cual lo normal es generar puntos hasta que $t_n > b$.
+En general, asumiremos que $t_n = b$.
+O mejor dicho, el lector puede entender que $a$ representa $t_0$
+y $b$ es $t_n$ para la solución concreta que estemos tratando.
+
+\subsection{El método de Euler}
+
+\begin{method}\label{met:euler}
+    El \emph{método de Euler} es un es un método de paso fijo $h$ que
+    a partir de un estado $(t_i, \vw_i) \approx (t_i, \vy(t_i))$,
+    aproxima $\vy(t_i + h)$ como
+    \begin{equation*}
+        w_{i+1} = w_i + h\cdot f(t_i, w_i).
+    \end{equation*}
+\end{method}
+
+A continuación presentamos una desigualdad elemental que utilizaremos
+en la estimación del error del método de Euler.
+
+\begin{lemma}\label{lema2}
+    Se cumplen las siguientes desigualdades:
+    \begin{enumerate}
+        \item $1 + x \le e^x$ para todo $x \in \mathbb{R}$.
+        \item $0 \le (1+x)^m \le e^{mx}$ para todo $m > 0$ y $x \ge -1$.
+    \end{enumerate} 
+\end{lemma}
+
+\begin{proof}
+    Es claro que la segunda desigualdad es consecuencia de la primera.
+    La primera tiene una demostración geométrica sencilla,
+    puesto que $1 + x$ es la línea tangente en $x = 0$ a $y = \nume^x$,
+    y las tangentes se encuentran por debajo de una función convexa.
+    Resultado que se puede probar usando un desarrollo de Taylor.
+    \begin{equation*}
+        \nume^x = 1 + x + \frac{x^2}{2}\nume^\xi \qq{con $\abs{\xi} < \abs{t}.$}
+        \implies \nume^x \ge 1+ x.
+    \end{equation*}
+    Donde hemos usado que $\frac{x^2}{2}\nume^\xi \ge 0$.
+\end{proof}
+
+%TODO follow here Emilio
 \begin{theorem}[Convergencia del método de Euler]
-    Sea $f:D\subset \mathbb{R}^2\rightarrow \mathbb{R}$ con $D$ abierto, e $Y(t)$ una solución de $(1)$ con $(t,Y(t))\in D,\forall t\in[a,b]$. Sea también la solución \ref{eqn:eulersol} para cierto $h$ fijo. Si se cumple
+    Sea $f:D\subset \mathbb{R}^2\rightarrow \mathbb{R}$ con $D$ abierto,
+    e $Y(t)$ una solución de $(1)$ con $(t,Y(t))\in D,\forall t\in[a,b]$.
+    Sea también la solución \ref{eqn:eulersol} para cierto $h$ fijo.
+    Si se cumple
     \begin{enumerate}[label=(\alph*)]
         \item f Lipschitziana respecto de la segunda variable en $D$, con constante de Lipschitz $K$.
-        \item $Y''$ existe en todo $[a,b]$ y está acotada por una constante $C\geq 0$.
+        \item $Y''$ existe en todo $[a,b]$ y está acotada por una constante $C\ge 0$.
         \item $(t_i,w_i)\in D,\forall i=0,\dots,n$.
     \end{enumerate}
-    entonces $$\max_{0\leq i \leq n}|Y(t_i)-w_i| \leq e^{(b-a)K}\cdot |Y(a)-w_0| + \frac{e^{(b-a)K}-1}{2K}ch$$
-
+    entonces
+    \begin{equation*}
+        \max_{0\le i \le n}|Y(t_i)-w_i| \le e^{(b-a)K}\cdot |Y(a)-w_0| + \frac{e^{(b-a)K}-1}{2K}ch
+    \end{equation*}
 \end{theorem}
+
 \begin{proof}
     \begin{equation}
 \label{eq1}
@@ -62,26 +160,26 @@ y_h(t_{n+1}) = y_h(t_n) + hf(t_n, y_h(t_n))
 \label{eq2}
 \implies Y(t_{n+1}) - y_h(t_{n+1}) = (Y(t_n) - y_h(t_n)) + h(f(t_n, Y(t_n)) - f(t_n, y_h(t_n))) + \frac{1}{2}h^2Y''(\xi)
 \end{equation}
-De esta última expresión se deduce, llamando $error_i = \|Y(t_i) - y_h(t_i)\|$ para $0\leq i \leq N$ y teniendo en cuenta que $\left\|\frac{1}{2}h^2Y''(\xi)\right\| \leq \frac{1}{2}h^2c$:
+De esta última expresión se deduce, llamando $error_i = \|Y(t_i) - y_h(t_i)\|$ para $0\le i \le N$ y teniendo en cuenta que $\left\|\frac{1}{2}h^2Y''(\xi)\right\| \le \frac{1}{2}h^2c$:
 $$
-error_{n+1} = \|Y(t_{n+1}) - y_h(t_{n+1})\| \leq \|Y(t_n) - y_h(t_n)\| + h\overset{\leq k\| Y(t_n) - y_h(t_n)\|}{\overbrace{\|f(t_n, Y(t_n)) - f(t_n, y_h(t_n))\|}}  + \frac{1}{2}h^2c \leq
+error_{n+1} = \|Y(t_{n+1}) - y_h(t_{n+1})\| \le \|Y(t_n) - y_h(t_n)\| + h\overset{\le k\| Y(t_n) - y_h(t_n)\|}{\overbrace{\|f(t_n, Y(t_n)) - f(t_n, y_h(t_n))\|}}  + \frac{1}{2}h^2c \le
 $$
 $$
-\leq (1+hk)\|Y(t_n) - y_h(t_n)\| + \frac{1}{2}h^2c = (1+hk)error_n + \frac{1}{2}h^2c
+\le (1+hk)\|Y(t_n) - y_h(t_n)\| + \frac{1}{2}h^2c = (1+hk)error_n + \frac{1}{2}h^2c
 $$
-Es decir, se obtiene que $error_{n+1} \leq (1+hk)error_n + \frac{1}{2}h^2c$.\\\\Si ahora utilizamos esta última expresión recursivamente como sigue
+Es decir, se obtiene que $error_{n+1} \le (1+hk)error_n + \frac{1}{2}h^2c$.\\\\Si ahora utilizamos esta última expresión recursivamente como sigue
 $$
-error_{n+1} \leq (1+hk)error_n + \frac{1}{2}h^2c \leq (1+hk)\left[(1+hk)error_{n-1} + \frac{1}{2}h^2c\right] + \frac{1}{2}h^2c
+error_{n+1} \le (1+hk)error_n + \frac{1}{2}h^2c \le (1+hk)\left[(1+hk)error_{n-1} + \frac{1}{2}h^2c\right] + \frac{1}{2}h^2c
 $$
 Llegamos a que
 $$
-error_{n+1} \leq (1+hk)^{n+1}error_0 + \overset{\textnormal{serie geométrica entre 0 y n}}{\overbrace{\left[ 1 + (1+hk) + (1+hk)^2 + \cdots + (1+hk)^{n}\right]}}\frac{1}{2}h^2c =  
+error_{n+1} \le (1+hk)^{n+1}error_0 + \overset{\textnormal{serie geométrica entre 0 y n}}{\overbrace{\left[ 1 + (1+hk) + (1+hk)^2 + \cdots + (1+hk)^{n}\right]}}\frac{1}{2}h^2c =  
 $$
 $$
-= (1+hk)^{n+1}error_0 + \left[\frac{(1+hk)^{n+1} - 1}{hk}\right]\frac{1}{2}h^2c = (1+hk)^{n+1}error_0 + \left[\frac{(1+hk)^{n+1} - 1}{k}\right]\frac{1}{2}hc \overset{\ref{lema2}}{\leq} 
+= (1+hk)^{n+1}error_0 + \left[\frac{(1+hk)^{n+1} - 1}{hk}\right]\frac{1}{2}h^2c = (1+hk)^{n+1}error_0 + \left[\frac{(1+hk)^{n+1} - 1}{k}\right]\frac{1}{2}hc \overset{\ref{lema2}}{\le} 
 $$
 $$
-\leq e^{hk(n+1)}error_0 + \left[\frac{e^{hk(n+1)} - 1}{k}\right]\frac{1}{2}hc =  e^{(b-a)k}\|Y(t_0) - y_h(t_0)\| + \left[\frac{e^{(b-a)k} - 1}{k}\right]\frac{1}{2}hc \qedhere
+\le e^{hk(n+1)}error_0 + \left[\frac{e^{hk(n+1)} - 1}{k}\right]\frac{1}{2}hc =  e^{(b-a)k}\|Y(t_0) - y_h(t_0)\| + \left[\frac{e^{(b-a)k} - 1}{k}\right]\frac{1}{2}hc \qedhere
 $$
 \end{proof}
 
@@ -102,10 +200,10 @@ con $\delta_i<\delta,\forall i=0,\dots,n$.
     Si se cumple
     \begin{enumerate}[label=(\alph*)]
         \item f Lipschitziana respecto de la segunda variable en $D$, con constante de Lipschitz $K$.
-        \item $Y''$ existe en todo $[a,b]$ y está acotada por una constante $C\geq 0$.
+        \item $Y''$ existe en todo $[a,b]$ y está acotada por una constante $C\ge 0$.
         \item $(t_i,w_i)\in D,\forall i=0,\dots,n$.
     \end{enumerate}
-    entonces $$\max_{0\leq i \leq n}|Y(t_i)-w_i| \leq e^{(b-a)K}\cdot |Y(a)-w_0| + \frac{e^{(b-a)K}-1}{K}\left(\frac{1}{2}ch+\frac{\delta}{h}\right)$$
+    entonces $$\max_{0\le i \le n}|Y(t_i)-w_i| \le e^{(b-a)K}\cdot |Y(a)-w_0| + \frac{e^{(b-a)K}-1}{K}\left(\frac{1}{2}ch+\frac{\delta}{h}\right)$$
 
 \end{theorem}
 
@@ -182,9 +280,9 @@ En el caso concreto del método de Euler se tiene:
     \xi_i\in[t_i,t_{i+1}], \forall i=0,\dots, n-1
     $$
 
-    y si $|Y''(t)|\leq C,\forall t\in[a,b]$ entonces
+    y si $|Y''(t)|\le C,\forall t\in[a,b]$ entonces
     $$
-    |T_{i+1}(h)|\leq \frac{C}{2} \cdot h
+    |T_{i+1}(h)|\le \frac{C}{2} \cdot h
     $$
     que es $\theta(h)$.
 
@@ -342,7 +440,7 @@ Es fácil ver que si queremos más precisión tenemos que utilizar más evaluaci
 \centering
 \begin{tabular}{|l||l|l|l|l|}
     \hline
-Evaluaciones & $1\leq p \leq 4$ & $5\leq p\leq 7$ & $8\leq p\leq 9$  & $10\leq p$ \\
+Evaluaciones & $1\le p \le 4$ & $5\le p\le 7$ & $8\le p\le 9$  & $10\le p$ \\
     \hline
 Mejor e.l.t. & $\theta(h^p)$ & $\theta(h^{p-1})$ & $\theta(h^{p-2})$ & $\theta(h^{p-3})$ \\
     \hline

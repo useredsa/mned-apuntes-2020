@@ -29,20 +29,26 @@
             sorting=nyt]{biblatex} % Complete reimplementation of bibliographic facilities
 %\addbibresource{bibliography.bib}
 \usepackage{amsthm}
+\usepackage{parskip}
 
 
-
-\newtheorem{definition}{Definición}[section]
-\newtheorem{proposition}{Proposición}[section]
+\theoremstyle{plain}
 \newtheorem{theorem}{Teorema}[section]
-\newtheorem{remark}{Observación}[section]
-\newtheorem{corollary}{Corolario}[theorem]
 \newtheorem{lemma}{Lema}[section]
-\newtheorem{example}{Ejemplo}[section]
+\newtheorem{proposition}{Proposición}[section]
+\newtheorem{corollary}{Corolario}[theorem]
 
-\newenvironment{method}[1]{%
-\par\noindent \textbf{#1}. %
-}{}
+\theoremstyle{definition}
+\newtheorem{definition}{Definición}[section]
+\newtheorem{example}{Ejemplo}[section]
+\newtheorem{method}{Método}
+
+\theoremstyle{remark}
+\newtheorem{remark}{Observación}[section]
+
+% \newenvironment{method}[1]{%
+% \par\noindent \textbf{#1}. %
+% }{}
 
 \makeatletter
 
@@ -109,6 +115,9 @@
 
 \usepackage{physics}
 \usepackage{cleveref}
+\usepackage{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
+
 \input{src/mathematical-definitions}
 
 
@@ -120,14 +129,10 @@
 \tableofcontents{}
 \newpage{}
 
-\input{src/introduccion}
-\newpage
+\input{src/recurrence-relations}
 \input{src/pasofijo}
-\newpage
 \input{src/3}
-\newpage
 \input{src/2}
-\newpage
 \input{src/4}
 
 
