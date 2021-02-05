@@ -623,7 +623,7 @@ El método de Runge-Kutta más utilizado es el siguiente, de orden $4$.
     a partir de un estado $(t_i, \vw_i) \approx (t_i, \vy(t_i))$,
     aproxima $\vy(t_i + h)$ como
     \begin{gather*}
-        \vw_{i+1} = \vw + \frac{
+        \vw_{i+1} = \vw_i + \frac{
             \K_1^{i+1} + 2\K_2^{i+1} + 2\K_3^{i+1} + \K_4^{i+1}
         }{6}. \\
         \begin{array}{ll}
