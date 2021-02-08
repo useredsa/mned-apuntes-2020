@@ -4,13 +4,13 @@
 \begin{definition}\label{eqn:pvi}
     Un \emph{problema de valor inicial} (en adelante, PVI)
     es una ecuación diferencial ordinaria dada por
-    $f : \Omega \subset \R \times \R^n \to \R^n$
-    acompañada de una condición inicial $(t_0, \vy_0)$ del dominio de $f$
-    del que se busca una solución $y$ que cumpla
+    $\vf : \Omega \subset \R \times \R^n \to \R^n$
+    acompañada de una condición inicial $(t_0, \vy_0)$ del dominio de $\vf$
+    del que se busca una solución $\vy$ que cumpla
     \begin{equation*}
         \left\{
         \begin{aligned}
-            \vy'(t) &= f(t, \vy(t)) \\
+            \vy'(t) &= \vf(t, \vy(t)) \\
             \vy(t_0) &= \vy_0 \\
         \end{aligned}.
         \right.
@@ -26,10 +26,10 @@
 A lo largo del texto hablaremos de la solución $\vy$ de un PVI,
 por lo que estaremos asumiendo que existe una solución y que es única.
 Esto será así en la mayoría de problemas que queramos resolver,
-a poco que la función $f$ del PVI cumpla unos requisitos mínimos.
+a poco que la función $\vf$ del PVI cumpla unos requisitos mínimos.
 
 \begin{theorem}[Picard-Lindelöf]
-    Sea $f(t, \vy) : \Omega \subset \R \times \R^n \to \R^n$,
+    Sea $\vf(t, \vy) : \Omega \subset \R \times \R^n \to \R^n$,
     donde $\Omega$ es abierto,
     una función continua y
     localmente Lipschitziana respecto de la segunda variable.
@@ -39,7 +39,7 @@ a poco que la función $f$ del PVI cumpla unos requisitos mínimos.
     \begin{equation*}
         \left\{
         \begin{aligned}
-            \vy'(t) &= f(t, \vy(t)) \\
+            \vy'(t) &= \vf(t, \vy(t)) \\
             \vy(t_0) &= \vy_0 \\
         \end{aligned}.
         \right.
@@ -53,9 +53,9 @@ a poco que la función $f$ del PVI cumpla unos requisitos mínimos.
 \end{proof}
 
 \begin{remark}
-    La condición de que $f$ sea Lipschitziana no es necesariamente
+    La condición de que $\vf$ sea Lipschitziana no es necesariamente
     muy restrictiva.
-    Pensemos que es suficiente con que $f$ está definida sobre un convexo y
+    Pensemos que es suficiente con que $\vf$ está definida sobre un convexo y
     que tenga derivada con respecto a la segunda variable continua y acotada.
     Lo que también es cierto si ese convexo es compacto.
 \end{remark}
@@ -100,7 +100,7 @@ y $b$ es $t_n$ para la solución concreta que estemos tratando.
     a partir de un estado $(t_i, \vw_i) \approx (t_i, \vy(t_i))$,
     aproxima $\vy(t_i + h)$ como
     \begin{equation*}
-        w_{i+1} = w_i + h\cdot f(t_i, w_i).
+        \vw_{i+1} = \vw_i + h\cdot \vf(t_i, \vw_i).
     \end{equation*}
 \end{method}
 
@@ -245,6 +245,7 @@ El siguiente teorema trata esta idea e incluso
 nos permite obtener un método mejor a partir del método de Euler.
 
 %TODO este teorema de dónde sale?
+% Sería cierta la versión vectorial?
 \begin{theorem}
     Dado un PVI definido por $f$
     y la solución $\{(t_i, w_i)\}_{i = 0,\ldots, n}$
@@ -357,13 +358,12 @@ conforme disminuye el tamaño del paso.
 \end{definition}
 
 \begin{definition}
-    Sea $\{t_i, \vw_i\}_{i = 1,\ldots,n}$ una aproximación obtenida por
-    un método en diferencias de paso $h$ para un PVI
-    y $\vy$ la solución de ese PVI.
-
+    Sea $\vy$ la solución obtenida por un método en diferencias de paso $h$
+    para un PVI.
     Se define \emph{el error local de truncamiento del método} como
     \begin{equation*}
-        Z_{i+1}(h) = \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - \phi(h, t_i, \vy(t_i)).
+        \ELT_{i+1}(h) =
+        \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - \phi(h, t_i, \vy(t_i)).
     \end{equation*}
 \end{definition}
 
@@ -391,17 +391,17 @@ conforme disminuye el tamaño del paso.
 \begin{example}
     En el caso concreto del método de Euler se tiene
     \begin{equation*}
-        Z_{i+1}(h) =
-        \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - h\cdot f(t_i,\vy(t_i)) =
+        \ELT_{i+1}(h) =
+        \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - h\cdot \vf(t_i,\vy(t_i)) =
         \frac{h}{2} \vy''(\xi_i),
             \qq{$\xi_i \in [t_i, t_{i+1}]$ para todo $i=0,\dots, n-1$}.
     \end{equation*}
-    $\vy$ si $\abs{y''(t)} \le C$ para todo $t \in [a, b]$ entonces
+    $\vy$ si $\norm{\vy''(t)} \le C$ para todo $t \in [a, b]$ entonces
     \begin{equation*}
-        \abs{Z_{i+1}(h)} \le \frac{C}{2}h = \vo(h).
+        \norm{\ELT_{i+1}(h)} \le \frac{C}{2}h = \vo(h).
     \end{equation*}
 
-    Lo que nos interesa es que este error
+    Lo que nos interesa es que este error (la norma)
     decrezca lo más rápido posible con $h$,
     es decir, que sea $\vo(h^p)$ con $p$ lo más grande posible.
     En esta búsqueda llegamos al siguiente método, el de Taylor.
@@ -410,12 +410,12 @@ conforme disminuye el tamaño del paso.
 \subsection{Notación para la diferenciación en varias variables}
 
 A continuación en el método utilizamos la notación
-$\pdv[2]{\vf(t_i, \vw_i)}{y}$
+$\pdv[2]{\vf(t_i, \vw_i)}{\vy}$
 para representar la matriz hessiana que saldría al considerar $\vf$
-como una función de $y$ exclusivamente.
+como una función de $\vy$ exclusivamente.
 
 Los lectores que prefieran razonar el método
-cuando $y$ es un escalar en vez de un vector,
+cuando $\vy$ es un escalar en vez de un vector
 pueden sustituir las evaluaciones de la diferencial y la hessiana
 por multiplicaciones.
 En el caso particular de la hessiana, saldría el término al cuadrado.
@@ -433,14 +433,15 @@ y cualquier método que considere intentará aproximar una solución suya.
     aproxima $\vy(t_i + h)$ como
     \begin{equation*}
         \vw_{i+1} =
-        \vw_i + h\cdot \D^{(0)}(t_i, \vw_i)
-            + \frac{h^2}{2}\D^{(1)}(t_i, \vw_i)
-            + \cdots
-            + \frac{h^p}{p!}\cdot \D^{(p-1)}(t_i, \vw_i) =:
         \vw_i + h\cdot \vb{T}^{(p)}(h, t_i, \vw_i),
     \end{equation*}
     donde
     \begin{align*}
+        \vb{T}^{(p)} &=
+            \vw_i + h\cdot \D^{(0)}(t_i, \vw_i)
+            + \frac{h^2}{2}\D^{(1)}(t_i, \vw_i)
+            + \cdots
+            + \frac{h^p}{p!}\cdot \D^{(p-1)}(t_i, \vw_i) \\
         \D^{(0)}(t_i, \vw_i) &= \vf(t_i, \vw_i), \\
         \D^{(1)}(t_i, \vw_i) &=
             \pdv{\vf(t_i, \vw_i)}{t} +
@@ -458,8 +459,8 @@ y cualquier método que considere intentará aproximar una solución suya.
 \begin{remark}
     La expresión de $\vb{D}^{(i)}$ en el método de Taylor surge
     de de derivar la función $\vy'(t) = \vf(t, \vy(t))$ múltiples veces.
-    Mientras que por $\vb{T}^{(p)}$ denotamos al
-    polinomio de Taylor de $\vy'$.
+    De esa manera $\vy(t) + h\vb{T}^{(p)}(h, t, \vy(t))$ es el
+    polinomio de Taylor de $\vy$.
 \end{remark}
 
 Unas pocas cuentas son suficientes para darse cuenta de que
@@ -479,15 +480,13 @@ El siguiente teorema era de esperar.
 \begin{proof}
     En estas condiciones el ELT no es más que el resto de Lagrange:
     \begin{equation*}
-        Z_{i+1}(h) = \frac{h^p}{(p+1)!} \vf^{(p)}(\xi_i, y(\xi_i)),
+        \ELT_{i+1}(h) = \frac{h^p}{(p+1)!} \vf^{(p)}(\xi_i, y(\xi_i)),
             \qq{$\xi_i \in [t_i, t_{i+1}]$ para todo $i = 1,\ldots n$.}
     \end{equation*}
-    Y si $f(t, y(t))$ está definida sobre un compacto
-    entonces está acotada en $[a,b]$,
-    y por lo tanto $Z_{i+1}(h) = \vo(h^p)$.
+    Y si $\vf(t, \vy(t))$ está definida sobre un compacto
+    entonces está acotada en $[a, b]$,
+    y por lo tanto $\ELT_{i+1}(h) = \vo(h^p)$.
 \end{proof}
-
-%TODO esto solo para una dimensión?
 
 A pesar de este gran resultado respecto al error,
 la dificultad para aplicarlo de manera genérica y
@@ -501,26 +500,31 @@ y que tengan órdenes similares.
 
 Comenzamos buscando métodos de orden $2$,
 para lo cual queremos aproximar
-$\vb{T}^{(2)}(t, y) = f(t,y) + \frac{h}{2} f'(t,y)$
+\begin{equation*}
+    \vb{T}^{(2)}(h, t, \vy) =
+    \vb{D}^{(0)}(t, \vy) + \frac{h}{2} \vb{D}^{(1)}(t, \vy) =
+    \vf(t,y) + \frac{h}{2}\pdv{\vf(t, \vy)}{t} +
+        \frac{h}{2}\pdv{\vf(t, \vy)}{\vy}\qty(\vf(t, \vy))
+\end{equation*}
 con un error de orden $\vo(h^2)$.
 Una idea feliz es considerar una aproximación de la forma
-$a_1\vf(t + \alpha_1, \vy + \vbeta_1)$.
+$\vf(t + \alpha, \vy + \vbeta)$.
 Aproximando esto último por Taylor tenemos
 \begin{multline*}
-    a_1\vf(t + \alpha_1, y + \vbeta_1) = \\
-    a_1\qty(
+    \vf(t + \alpha, y + \vbeta) = \\
+    \qty(
         \vf(t,y) +
-        \pdv{\vf(t, \vy)}{t} \cdot \alpha_1 +
-        \pdv{\vf(t, \vy)}{\vy} \qty(\vbeta_1) +
-        \frac{1}{2}\pdv[2]{\vf(\xi, \mu)}{t} \cdot \alpha_1^2 +
-        \pdv{\vf(\xi, \mu)}{t}{\vy} \qty(\vbeta_1) \cdot \alpha_1 +
-        \frac{1}{2}\pdv[2]{\vf(\xi, \mu)}{\vy} \qty(\vbeta_1, \vbeta_1)
+        \pdv{\vf(t, \vy)}{t} \cdot \alpha +
+        \pdv{\vf(t, \vy)}{\vy} \qty(\vbeta) +
+        \frac{1}{2}\pdv[2]{\vf(\xi, \mu)}{t} \cdot \alpha^2 +
+        \pdv{\vf(\xi, \mu)}{t}{\vy} \qty(\vbeta) \cdot \alpha +
+        \frac{1}{2}\pdv[2]{\vf(\xi, \mu)}{\vy} \qty(\vbeta, \vbeta)
     ).
 \end{multline*}
 
 Nótese que suponemos suficiente regularidad en $\vf$
 para que las parciales cruzadas sean iguales.
-Haciendo $a_1 = 1$, $\alpha_1 = \frac{h}{2}$, $\vbeta_1 = \frac{h}{2} \vf(t,y)$
+Haciendo $a_1 = 1$, $\alpha = \frac{h}{2}$, $\vbeta = \frac{h}{2} \vf(t,y)$
 la igualdad anterior se traduce en
 \begin{multline*}
     f(t + \tfrac{h}{2}, y + \tfrac{h}{2}\vf(t, \vy)) = \\
@@ -537,7 +541,7 @@ la igualdad anterior se traduce en
     ).
 \end{multline*}
 
-De nuevo bajo buenas condiciones de $f$
+De nuevo bajo buenas condiciones de $\vf$
 lo que hay entre paréntesis está acotado,
 y al estar multiplicado por $h^2$ es de orden $\vo(h^2)$.
 Hemos obtenido nuestro primer método de Runge-Kutta.
@@ -554,21 +558,21 @@ Hemos obtenido nuestro primer método de Runge-Kutta.
 \end{method}
 
 \begin{remark}
-    Para este método solo necesitamos la función $\vf$,
+    Para este método solo necesitamos la función $\vf$, no sus derivadas,
     pero necesitamos dos evaluaciones en cada paso.
 \end{remark}
 
 \begin{remark}
     Al ser $\vf\qty(t + \tfrac{h}{2}, \vy + \tfrac{h}{2}\vf(t, \vy)) =
-    \vb{T}^{(2)}(t, \vy) + \vo(h^2)$,
+    \vb{T}^{(2)}(h, t, \vy) + \vo(h^2)$,
     el ELT será
     \begin{multline*}
-        Z_{i+1}(h) =
+        \ELT_{i+1}(h) =
         \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - \qty(
-            T^{(2)}(t_i, \vy(t_i)) + \vo(h^2)
+            \vb{T}^{(2)}(h, t_i, \vy(t_i)) + \vo(h^2)
         ) =
         \qty(
-            \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - T^{(2)}(t_i, \vy(t_i))
+            \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - \vb{T}^{(2)}(h, t_i, \vy(t_i))
         ) - \vo(h^2) = \\
         \vo(h^2) - \vo(h^2) = \vo(h^2).
     \end{multline*}
@@ -580,8 +584,9 @@ pero nuestros intentos fracasan porque
 si intentamos aproximarlo mediante
 \begin{equation}\label{eqn:t3-aproximation}
     T^{(3)}(t,y) =
-    f(t,y) + \frac{h}{2}\dv{f(t,y)}{t} + \frac{h^2}{6}\dv[2]{f(t,y)}{t} \approx
-    a_1f(t,y) + a_2f(t+\alpha_2, y+\delta_2f(t,y))
+    f(t,y) + \frac{h}{2}\dv{f(t, y(t))}{t}
+        + \frac{h^2}{6}\dv[2]{f(t, y(t))}{t} \approx
+    a_1f(t,y) + a_2f(t + \alpha, y + \delta f(t,y))
 \end{equation}
 pero ni siquiera esto basta para igualar el término
 $\frac{h^2}{6}\qty[\pdv{f(t, y)}{y}]^2f(t,y)$
@@ -591,7 +596,7 @@ Obtenemos sin embargo más métodos de orden $2$.
 
 \begin{method}
     El \emph{método modificado de Euler} se obtiene de
-    tomar $a_1 = a_2 = \frac{1}{2}$ y $\alpha_2 = \delta_2 = h$
+    tomar $a_1 = a_2 = \frac{1}{2}$ y $\alpha = \delta = h$
     en la ecuación  \eqref{eqn:t3-aproximation}.
     \begin{equation*}
         \vw_{i+1} = \vw_i + \frac{h}{2}\qty\Big[
@@ -602,7 +607,7 @@ Obtenemos sin embargo más métodos de orden $2$.
 
 \begin{method}
     El \emph{método de Heun} se obtiene de tomar $a_1 = \frac{1}{4}$,
-    $a_2 = \frac{3}{4}$ y $\alpha_2 = \delta_2 = \frac{2}{3}h$
+    $a_2 = \frac{3}{4}$ y $\alpha = \delta = \frac{2}{3}h$
     en la ecuación \eqref{eqn:t3-aproximation}.
     \begin{equation*}
         \vw_{i+1} = \vw_i + \frac{h}{4}\qty\Big[
@@ -636,7 +641,7 @@ El método de Runge-Kutta más utilizado es el siguiente, de orden $4$.
 \end{method}
 
 El lector puede haber empezado a intuir que cuanta más precisión queremos
-más evaluaciones de $f$ necesitamos.
+más evaluaciones de $\vf$ necesitamos.
 Una pregunta interesante es
 el número mínimo de evaluaciones que necesitaríamos en cada paso
 para conseguir una aproximación de cierto orden.
@@ -655,13 +660,12 @@ La \cref{tab:butcher} relaciona ambos conceptos.
     \end{tabular}
     \caption{Tabla de Butcher.
         Muestra, para un número $p$,
-        el máximo orden de un método de Runge-Kutta con $p$ evaluaciones
-    }
+        el máximo orden de un método de Runge-Kutta con $p$ evaluaciones}
     \label{tab:butcher}
 \end{table}
 
 Para muchas aplicaciones,
-se utiliza el número de evaluaciones de la función $f$
+se utiliza el número de evaluaciones de la función $\vf$
 como una medida de la complejidad,
 pues puede ser una función muy costosa.
 Con nuestros avances actuales tenemos también dos formas de mejora
@@ -692,7 +696,7 @@ En general obtenemos mejores resultados aumentando el orden del método.
     \caption{Tres métodos de Runge-Kutta;
         de órdenes $1$, $2$ y $4$;
         aplicados al mismo problema ajustando el paso
-        para hacer el mismo número de evaluaciones de la función $f$.
+        para hacer el mismo número de evaluaciones de la función $\vf$.
     }
     \label{tab:order-vs-step}
 \end{table}

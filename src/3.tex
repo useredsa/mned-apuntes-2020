@@ -27,8 +27,8 @@ y el método implícito de Adams-Moulton de $3$ pasos.
     es un método a $4$-pasos.
     \begin{equation}\label{eqn:AB4steps}
         w_{i+1} = w_i + \frac{h}{24}\qty\bigg[
-            55f(t_i,w_i) - 59f(t_{i-1},w_{i-1})
-            + 37f(t_{i-1}w_{i-1}) - 9f(t_{i-3},w_{i-3})
+            55f(t_i, w_i) - 59f(t_{i-1}, w_{i-1})
+            + 37f(t_{i-2}, w_{i-2}) - 9f(t_{i-3}, w_{i-3})
         ].
     \end{equation}
 \end{method}
@@ -44,8 +44,8 @@ y el método implícito de Adams-Moulton de $3$ pasos.
     es un método a $3$-pasos.
     \begin{equation}\label{eqn:AM3steps}
         w_{i+1} = w_i + \frac{h}{24}\qty\bigg[
-            9f(t_{i+1},w_{i+1}) + 19f(t_i,w_i)
-            - 5f(t_{i-2}w_{i-2}) + f(t_{i-2},w_{i-2})
+            9f(t_{i+1}, w_{i+1}) + 19f(t_i, w_i)
+            - 5f(t_{i-1}, w_{i-1}) + f(t_{i-2}, w_{i-2})
         ].
     \end{equation}
 \end{method}
@@ -116,7 +116,7 @@ alto como podamos encontrar teniendo un coste razonable.
     Un método en diferencias
     \begin{equation*}
         w_{i+1} = \sum_{j=1}^m {a_{j-1}w_{i-m+j}}
-            + hF(t_i,w_{i-m+j}, \dots, w_i,w_{i+1},h)
+            + hF(t_i,w_{i-m+1}, \dots, w_i,w_{i+1},h)
     \end{equation*}
     se dice convergente si
     \begin{equation*}
