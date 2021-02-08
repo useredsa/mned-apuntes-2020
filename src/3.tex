@@ -346,18 +346,42 @@ Por la definición de error local de truncamiento tenemos que
 \end{gather*}
 Y si ahora identificamos los $w_j \approx y(t_j)$ para $j = 0,1,\dots, i$,
 tenemos que
-\begin{align*}
-    y(t_{i+1} - w_{i+1}^{(0)}) \approx {} &
-        \frac{251}{720}y^{(5)}(\xi)h^5 \qq{y} \\
-    y(t_{i+1} - w_{i+1}^{(1)}) \approx {} &
+\begin{equation*} 
+    y(t_{i+1} - w_{i+1}^{(0)}) \approx {} 
+        \frac{251}{720}y^{(5)}(\xi)h^5
+\end{equation*}
+\begin{equation} \label{eqn:pred-corr}
+    y(t_{i+1} - w_{i+1}^{(1)}) \approx {} 
         \frac{-19}{720}y^{(5)}(\mu)h^5.
-\end{align*}
+\end{equation}
 Si además, $h$ es suficientemente pequeño entonces
 $y^{(5)}(\xi) \approx y^{(5)}(\mu)$
 y restando
+\begin{align*}
+    w_{i+1}^{(1)} - w_{i+1}^{(0)} \approx 
+        \frac{h^6}{720}\qty[251y^{(5)}(\xi) + 19y^{(5)}(\mu)] \approx &
+        \frac{27}{72}h^5y^{(5)}(\mu) = \frac{3}{8}h^5y^(\mu) \\
+    y^{(5)}(\mu) = \frac{8}{3h^5}(w_{i+1}^{(1)} - w_{i+1}^{(0)}) &
+\end{align*}
+Por lo tanto, de \ref{eqn:pred-corr} tenemos
 \begin{equation*}
-    w_{i+1}^{(1)} - w_{i+1}^{(0)} \approx
-    \frac{h^6}{720}\qty[251y^{(5)}(\xi) + 19y^{(5)}(\mu)] \approx
-    %TODO seguir con `métodos multipaso y estabilidad.pdf` pág 12
+    y(t_{i+1}) - w_{i+1}^{(1)} \approx \frac{-19 * 8}{720 * 3}(w_{i+1}^{(1)} - w_{i+1}^{(0)})
 \end{equation*}
-
+Es decir
+\begin{equation*}
+    \tilde{e}_r(h) = \frac{19}{270}\norm{w_{i+1}^{(0)} - w_{i+1}^{(1)}}   
+\end{equation*}
+es una aproximación del error para un método de orden 4.
+Luego dada una tolerancia $\epsilon > 0$, usando la estimación
+local del paso del hijo de Ricardo tenemos
+\begin{equation*}
+    q = \bigg(\frac{\epsilon h}{\tilde{e}_r(h)}\bigg)^{1/4} \approx 
+        2.48\bigg(\frac{\epsilon h}{\norm{w_{i+1}^{(0)} - w_{i+1}^{(1)}}}\bigg)^{1/4}
+\end{equation*}
+%TODO dice algo de ser mas consevador que blablabla
+Por otra parte, cambiar el paso supone reiniciar los
+$4$ primeros pasos de modo que se ignora el cambio de paso 
+si tenemos que 
+\begin{equation*}
+    \frac{\epsilon h}{10} < \tilde{e}(h)
+\end{equation*}
