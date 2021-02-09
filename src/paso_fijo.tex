@@ -547,7 +547,7 @@ lo que hay entre paréntesis está acotado,
 y al estar multiplicado por $h^2$ es de orden $\vo(h^2)$.
 Hemos obtenido nuestro primer método de Runge-Kutta.
 
-\begin{method}\label{met:euler}
+\begin{method}\label{met:mean-point}
     El \emph{método del punto medio} es un es un método de paso fijo $h$ que
     a partir de un estado $(t_i, \vw_i) \approx (t_i, \vy(t_i))$,
     aproxima $\vy(t_i + h)$ como
@@ -621,7 +621,7 @@ Obtenemos sin embargo más métodos de orden $2$.
 
 El método de Runge-Kutta más utilizado es el siguiente, de orden $4$.
 
-\begin{method}\label{met:euler}
+\begin{method}\label{met:rk4}
     \newcommand{\K}{\vb{K}}
 
     El \emph{método de Runge-Kutta de orden $4$}
