@@ -35,7 +35,7 @@ tendríamos un método a un paso como hasta ahora.
     \label{met:AB4steps}
 
     El \emph{método de Adams-Bashforth} de orden $4$
-    es un método a $4$-pasos.
+    es un método a $4$ pasos.
     \begin{equation}
         \vw_{i+1} = \vw_i + \frac{h}{24}\qty\bigg[
             55\vf(t_i, \vw_i) - 59\vf(t_{i-1}, \vw_{i-1})
@@ -54,7 +54,7 @@ tendríamos un método a un paso como hasta ahora.
     \label{met:AM3steps}
 
     El \emph{método de Adams-Moulton} de orden $4$
-    es un método a $3$-pasos.
+    es un método a $3$ pasos.
     \begin{equation}
         \vw_{i+1} = \vw_i + \frac{h}{24}\qty\bigg[
             9\vf(t_{i+1}, \vw_{i+1}) + 19\vf(t_i, \vw_i)
@@ -122,10 +122,11 @@ por el mal condicionamiento.
 Por ello introducimos las siguientes definiciones.
 
 \begin{definition}
-    Un método se dice \emph{consistente} (o \emph{compatible})
+    Fijado un intervalo de resolución $[a, b]$,
+    un método se dice \emph{consistente} (o \emph{compatible})
     con el PVI que aproxima si
     \begin{equation*}
-        \lim\nolimits_{h\to 0} \max_{i = 1,\ldots,n}{\norm{\ELT_i(h)}} = 0.
+        \lim\nolimits_{h\to 0} \max_{i = 1,\ldots,n(h)}{\norm{\ELT_i(h)}} = 0.
 	\end{equation*}
 	El método se dice de orden $p$, $p \geq 1$, si $p$ es el mayor entero
 	tal que $\max{\norm*{\ELT_{i+1}(h)}} = \theta(h^p)$.
@@ -135,16 +136,11 @@ Naturalmente solo consideraremos los métodos consistentes y de orden tan
 alto como podamos encontrar teniendo un coste razonable.
 
 \begin{definition}
-    %TODO método en diferencias es multipaso o qué?
-    % Hay un lío de términos importante
-    Un método en diferencias
+    Fijado un intervalo de resolución $[a, b]$,
+    un método en diferencias se dice \emph{convergente} si
     \begin{equation*}
-        \vw_{i+1} = \sum_{j=1}^m {a_{j-1}\vw_{i-m+j}}
-            + h\vphi(t_i,\vw_{i-m+1}, \dots, \vw_i,\vw_{i+1},h)
-    \end{equation*}
-    se dice convergente si
-    \begin{equation*}
-        \lim\nolimits_{h \to 0} \max_{i = 1,\ldots,n}{\norm{\vy(t_i)-\vw_i}} = 0.
+        \lim\nolimits_{h \to 0}
+            \max_{i = 1,\ldots,n(h)}{\norm{\vy(t_i)-\vw_i}} = 0.
     \end{equation*}
 \end{definition}
 
@@ -155,25 +151,25 @@ Es decir, durante la ejecución en un ordenador se cometen errores de redondeo
 que hacen que la solución que calculemos sea
 \begin{equation*}
     \tw_{i+1} = \sum_{j=1}^m {a_{j-1}\tw_{i-m+j}}
-        + h\vphi(t_i,\tw_{i-m+1}, \dots, \vw_i,\tw_{i+1},h) + \varepsilon_{i+1}
+        + h\vphi(t_i,\tw_{i-m+1}, \dots, \vw_i,\tw_{i+1},h) + \delta_{i+1}
 \end{equation*}
-para ciertos $\varepsilon_i$, $i = 1,\ldots,n$.
+para ciertos $\delta_i$, $i = 0,\ldots,n$.
 Luego nuestros métodos no son los deseados sino una aproximación de estos.
 Por eso, introducimos la noción de método estable.
 
 \begin{definition}
-    Un método en diferencias se dice estable
+    Un método en diferencias se dice \emph{estable}
     si al generar una segunda solución aproximada de la forma
     \begin{equation*}
         \tw_{i+1} = \sum_{j=1}^m {a_{j-1}\tw_{i-m+j}}
             + h \vphi(t_i,\tw_{i-m+j}, \dots, \tw_i,\tw_{i+1},h)
-            + \varepsilon'_{i+1},
+            + \delta_{i+1},
     \end{equation*}
     existe una constante $M$, independiente de $h$, tal que
     \begin{equation*} \label{stab}
         \max_{m \le i \le n}{\norm{\tw_i - \vw_i}} \le M\qty[
             \max_{0 \le i < m}{\norm{\tw_i - \vw_i}}
-            + \sum_{m \le i \le n} \norm{\varepsilon'_i}
+            + \sum_{m \le i \le n} \norm{\delta_i}
         ]
     \end{equation*}
 \end{definition}
@@ -181,39 +177,35 @@ Por eso, introducimos la noción de método estable.
 \begin{remark}
     %TODO una referencia estaría increible en vd
     Esto no contradice el \cref{thm:euler-convergence}, pues
-    $\sum\norm{\varepsilon_j} \approx n\varepsilon \approx
+    $\sum\norm{\delta_j} \approx n\varepsilon \approx
     \frac{t_n - t_0}{h}\varepsilon$.
 \end{remark}
 
 \begin{theorem}
-    Si un método en diferencias
-    \begin{equation*}
-        \vw_{i+1} = \sum_{j=1}^m {a_{j-1}\vw_{i-m+j}}
-            + h\vphi(t_i,\vw_{i-m+j}, \dots, \vw_i,\vw_{i+1},h)
-    \end{equation*}
-    es estable y consistente, entonces es convergente.
+    Si un método en diferencias es estable y consistente,
+    entonces es convergente.
     Si, además, es de orden $p \geq 1$, se tiene
     %TODO creo que es h^p
     \begin{equation*}
-        \max_{0 \le i \le n}\norm{\vy(t_i) - \vw_i} \le M\qty\bigg[
-            \max_{0 \le i < m} \norm{\vy(t_i) - \vw_i} + Kh
+        \max_{0 \le i \le n}\norm{\tw_i - \vw_i} \le M\qty\bigg[
+            \max_{0 \le i < m} \norm{\tw_i - \vw_i} + Kh^p
             ]
     \end{equation*}
     Para constantes adecuadas M y K.
 \end{theorem}
 
 \begin{proof}
-    Sea $\varepsilon_i = h\ELT_i(h_i)$ y utilicemos la estabilidad
-    con $\tilde{w}_n = \vy(t_n)$. Se tiene que
+    Sea $\delta_i = h\ELT_i(h_i)$ y utilicemos la estabilidad con $\tilde{w}_i$.
+    Se tiene que
     \begin{equation*}
-        \max_{0 \le i \le n}\norm{\vy(t_i) - \vw_i} \le M\qty\bigg[
-            \max_{0 \le i < m}\norm{\vy(t_i) - \vw_i}
-            + \sum_{m\le i \le n}\norm{\varepsilon_i}
+        \max_{0 \le i \le n}\norm{\tw_i - \vw_i} \le M\qty\bigg[
+            \max_{0 \le i < m}\norm{\tw_i - \vw_i}
+            + \sum_{m\le i \le n}\norm{\delta_i}
         ]
     \end{equation*}
     para algún $m$. Pero
     \begin{equation*}
-        \sum_{m \le i \le n} \norm{\varepsilon_i} =
+        \sum_{m \le i \le n} \norm{\delta_i} =
         \sum_{m \le i \le n} h\norm{\ELT_i(h)} \le
         \qty(\sum_{m \le i \le n} h)
             \max_{m \le i \le n}\norm{\ELT_i(h)} \le
@@ -228,7 +220,7 @@ Por eso, introducimos la noción de método estable.
 
 %TODO este teorema está fatal hay que mirarlo en el burden
 \begin{theorem}
-    Sea $\vw_{i+1} = \vw_i + h\vphi(h, t, \vw_i)$ un método a un paso tal que
+    Sea $\vw_{i+1} = \vw_i + h\vphi(h, t_i, \vw_i)$ un método a un paso tal que
     $\vphi(h, t_i, \vw_i)$ es continua y lipschitziana en $\vw_i$.
     Entonces existe $h_0 > 0$ tal que para todo $h < h_0$,
     \begin{enumerate}
@@ -241,24 +233,32 @@ Por eso, introducimos la noción de método estable.
 \begin{proof}
     Sea $L$ la constante de lipschitz de $\vphi$ y
     sean $\vw_{i+1} = \vw_i + h\vphi(h, t_i, \vw_i)$ y
-    $\tw_{i+1} = \tw_i + h\vphi(h, t_i, \tw_i) + \varepsilon_i$.
+    $\tw_{i+1} = \tw_i + h\vphi(h, t_i, \tw_i) + \delta_i$.
     Entonces
     \begin{align*}
         \norm{\tw_{i+1} - \vw_{i+1}} & {} \le
-            (1 + hL)\norm{\tw_i - \vw_i} + \norm{\varepsilon_i} \\
+            (1 + hL)\norm{\tw_i - \vw_i} + \norm{\delta_i} \\
         & \le (1 + hL)^2\norm{\tw_{i-1} - \vw_{i-1}}
-            + (1 + hL)\norm{\varepsilon_{i-1}} + \norm{\varepsilon_i} \le \ldots \\
+            + (1 + hL)\norm{\delta_{i-1}}
+            + \norm{\delta_i} \le \ldots \\
         \ldots & \le (1 + hL)^{i+1}\norm{\tw_0 - \vw_0} + \qty[
-            \norm{\varepsilon_i} + (1 + hL)\norm{\varepsilon_{i-1}} + \dots
-            + (1 + hL)^i\norm{\varepsilon_0}
+            \norm{\delta_i} + (1 + hL)\norm{\delta_{i-1}} + \dots
+            + (1 + hL)^i\norm{\delta_1}
         ] \\
         & \le (1 + hL)^{i+1}\qty(
-            \norm{\tw_0 - \vw_0} + \frac{\max_{j=0}^i \norm{\varepsilon_j}}{hL}
-        ).
+            \norm{\tw_0 - \vw_0} + \sum_{j=1}^i \norm{\delta_j}
+        ) \\
+        & \le \nume^{(i+1)hL}\qty(
+            \norm{\tw_0 - \vw_0} + \sum_{j=1}^i \norm{\delta_j}
+        ) \\
+        & \le \, \nume^{(b-a)L} \; \qty(
+            \norm{\tw_0 - \vw_0} + \sum_{j=1}^i \norm{\delta_j}
+        ),
     \end{align*}
+    donde $[a, b]$ es el intervalo de resolución.
     Lo que demuestra que el método es estable.
 
-    Estudiamos ahora el error de truncamiento.
+    Estudiamos ahora el error local de truncamiento.
     \begin{multline*}
         \ELT_i(h) = \frac{\vy(t_i + h) - \vy(t_i)}{h} - \vphi(h, t_i, \vy(t_i)) =
         \vy'(\xi_i) - \vphi(h, t_i, \vy(t_i)) = \\
@@ -267,8 +267,7 @@ Por eso, introducimos la noción de método estable.
             + \vphi(0, \xi_i, \vy(\xi_i)) - \vphi(h, t_i, \vy(t_i)).
     \end{multline*}
     Por la continuidad uniforme de la función
-    $(t, h) \mapsto \vphi(h, t, \vy(t))$
-    sobre $[a, b] \times [0, h_0]$,
+    $(t, h) \mapsto \vphi(h, t, \vy(t))$ sobre $[a, b] \times [0, h_0]$,
     dado $\varepsilon > 0$ existe $h_0 > 0$ tal que si $h < h_0$,
     entonces como $\abs{\xi_i - t_i} < h$,
     \begin{equation*}
@@ -284,20 +283,20 @@ Por eso, introducimos la noción de método estable.
 Estudiar la estabilidad de los métodos a $m$ pasos es más complicado.
 Nosotros la estudiaremos sabiendo que, en realidad,
 para estudiar la estabilidad basta hacerlo con el problema
-$y' = 0$, $y(0) = \alpha$,
+$y' = 0$, $y(0) = \alpha \in \R$,
 pero la demostración de este hecho no forma parte de estos apuntes.
 
 Dado un método multipaso estándar a $m$ pasos,
 \begin{equation*}
-    \vw_i = a_0\vw_{i-m} + \dots + a_{m-1}\vw_{m-1} + h\qty\bigg[
+    \vw_i = a_0\vw_{i-m} + \dots + a_{m-1}\vw_{i-1} + h\qty\bigg[
         b_0\vf(t_{i-m}, \vw_{i-m}) + \dots + b_{m-1}\vf(t_{i-1}, \vw_{i-1})
         + b_m\vf(t_i, \vw_i)
     ]
 \end{equation*}
-el siguiente punto para el problema de prueba con $y' = 0$ se calcularía
+el siguiente punto para el problema de prueba con $y' = f = 0$ se calcularía
 siguiendo la ecuación de recurrencia
 \begin{equation*}
-    w_i = a_0w_{i-m} + \dots + a_{m-1}w_{m-1} + a_mw_m,
+    w_i = a_0w_{i-m} + \dots + a_{m-1}w_{i-1},
 \end{equation*}
 cuyo polinomio característico tiene raíces que satisfacen
 \begin{equation*}
@@ -314,14 +313,19 @@ Lo primero que podemos afirmar es que como $y(t) = \alpha$ es una solución,
 si el método tiene error local de truncamiento $o(h^p)$, $p \ge 1$,
 $w_n = \alpha$ debe ser una posible solución.
 \begin{equation*}
-    \alpha = a_0 + a_1\alpha + \dots + a_{m-1}\alpha.
+    \alpha = w_i =
+    a_0w_{i-m} + a_1w_{i-m+1} + \dots + a_{m-1}w_{i-1} =
+    a_0\alpha + a_1\alpha + \dots + a_{m-1}\alpha \iff
+    \sum_{i = 0}^{m-1} a_i = 1 \iff
+    \text{$1$ es raíz.}
 \end{equation*}
 Es decir, $\lambda = 1$ es una de las raíces del polinomio caracerístico.
 por lo que las soluciones son de la forma
 \begin{equation*}
-    \vw_n = c_1\alpha + \sum_{j=2}^m c_j\lambda_j^n,
+    w_n = c_1 + \sum_{j=2}^m c_j\lambda_j^n,
 \end{equation*}
-y para nuestra ecuación de prueba sería $c_j = 0$ para todo $j$.
+y para nuestra ecuación de prueba sería $c_1 = \alpha$,
+$c_j = 0$ para todo $j = 2,\ldots,m$.
 
 Para estudiar la estabilidad,
 nos interesa que acotando los errores de redondeo en las condiciones iniciales
@@ -355,68 +359,3 @@ Eso motiva la siguiente definición.
     que sea estable es equivalente a que sea convergente.
 \end{theorem}
 
-\section{Implementación de los métodos de Adams. Predictor-corrector}
-
-Estos métodos sirven para obtener lo mejor de los métodos explícito e implícito,
-la completitud del primero y el mejor error del segundo,y se consiguen usando
-el implícito para corregir la predicción del método explícito. Por ejemplo,
-uno de estos métodos  sería usar como predictor el método de Adams-Bashforth 
-de $4$ pasos (\cref{met:AB4steps}) y como corrector el método de Adams-Moulton
-de $3$ pasos (\cref{met:AM3steps}).
-
-De manera parecida a RKF, %TODO referencia a RKF
-el método predictor-corrector obtiene, cada vez,
-dos aproximaciones de la solución,
-una obtenida de uno del predictor y otra del corrector.
-Por la definición de error local de truncamiento tenemos que
-\begin{gather*}
-    \vy(t_{i+1}) = \vy(t_i) + \frac{h}{24}[
-        55\vf(t_i,\vy(t_i) - 59\vf(t_{i-1},\vy(t_{i-1})) + 37\vf(t_{i-2}, \vy(t_{i-2}))
-        - 9\vf(t_{w-3},\vy(t_{i-3})))
-    ] + \frac{251}{720}\vy^{(5)}(\xi)h^5  \\
-    \vy(t_{i+1}) = \vy(t_i) + \frac{h}{24}[
-        9\vf(t_{w+1},\vy(t_{i+1})) + 19\vf(t_i,\vy(t_i) - 5\vf(t_{i-1},\vy(t_{i-1}))
-        + \vf(t_{i-2}, \vy(t_{i-2})))
-    ] - \frac{19}{720}\vy^{(5)}(\mu)h^5
-\end{gather*}
-Y si ahora identificamos los $\vw_j \approx \vy(t_j)$ para $j = 0,1,\dots, i$,
-tenemos que
-\begin{equation*} 
-    \vy(t_{i+1} - \vw_{i+1}^{(0)}) \approx {} 
-        \frac{251}{720}\vy^{(5)}(\xi)h^5
-\end{equation*}
-\begin{equation} \label{eqn:pred-corr}
-    \vy(t_{i+1} - \vw_{i+1}^{(1)}) \approx {} 
-        \frac{-19}{720}\vy^{(5)}(\mu)h^5.
-\end{equation}
-Si además, $h$ es suficientemente pequeño entonces
-$\vy^{(5)}(\xi) \approx \vy^{(5)}(\mu)$
-y restando
-\begin{align*}
-    \vw_{i+1}^{(1)} - \vw_{i+1}^{(0)} \approx 
-        \frac{h^6}{720}\qty[251y^{(5)}(\xi) + 19y^{(5)}(\mu)] \approx &
-        \frac{27}{72}h^5y^{(5)}(\mu) = \frac{3}{8}h^5y^(\mu) \\
-    \vy^{(5)}(\mu) = \frac{8}{3h^5}(\vw_{i+1}^{(1)} - \vw_{i+1}^{(0)}) &
-\end{align*}
-Por lo tanto, de \ref{eqn:pred-corr} tenemos
-\begin{equation*}
-    \vy(t_{i+1}) - \vw_{i+1}^{(1)} \approx \frac{-19 * 8}{720 * 3}(\vw_{i+1}^{(1)} - \vw_{i+1}^{(0)})
-\end{equation*}
-Es decir
-\begin{equation*}
-    \tilde{e}_r(h) = \frac{19}{270}\norm{\vw_{i+1}^{(0)} - \vw_{i+1}^{(1)}}   
-\end{equation*}
-es una aproximación del error para un método de orden 4.
-Luego dada una tolerancia $\varepsilon > 0$, usando la estimación
-local del paso del hijo de Ricardo tenemos
-\begin{equation*}
-    q = \bigg(\frac{\varepsilon h}{\tilde{e}_r(h)}\bigg)^{1/4} \approx 
-        2.48\bigg(\frac{\varepsilon h}{\norm{\vw_{i+1}^{(0)} - \vw_{i+1}^{(1)}}}\bigg)^{1/4}
-\end{equation*}
-%TODO dice algo de ser mas consevador que blablabla
-Por otra parte, cambiar el paso supone reiniciar los
-$4$ primeros pasos de modo que se ignora el cambio de paso 
-si tenemos que 
-\begin{equation*}
-    \frac{\varepsilon h}{10} < \tilde{e}(h)
-\end{equation*}

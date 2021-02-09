@@ -103,17 +103,18 @@ pero que excluirían ese.
 Lo que sí podemos es reconocer características que son comunes
 a los problemas que presenten estos fenómenos.
 
-Por ejemplo,
-un sistema lineal de coeficientes constantes podría definirse como rígido
-cuando todos sus valores propios, $\lambda_1,\ldots,\lambda_n$,
-tienen parte real negativa y el coeficiente
-\begin{equation*}
-    \frac{\abs{\Re\lambda_M}}{\abs{\Re\lambda_m}}
-    \qq{siendo $M$ y $m$ tales que
-    $\abs{\Re\lambda_M} \ge \abs{\Re\lambda_k} \ge \abs{\Re\lambda_m}$
-    para todo $1 \le k \le n$.}
-\end{equation*}
-es ``grande''.
+\begin{example}
+    un sistema lineal de coeficientes constantes podría definirse como rígido
+    cuando todos sus valores propios, $\lambda_1,\ldots,\lambda_n$,
+    tienen parte real negativa y el coeficiente
+    \begin{equation*}
+        \frac{\abs{\Re\lambda_M}}{\abs{\Re\lambda_m}}
+        \qq{siendo $M$ y $m$ tales que
+        $\abs{\Re\lambda_M} \ge \abs{\Re\lambda_k} \ge \abs{\Re\lambda_m}$
+        para todo $1 \le k \le n$.}
+    \end{equation*}
+    es ``grande''.
+\end{example}
 
 De ahora en adelante utilizaremos la definición dada en clase,
 que se basa en la idea de que los problemas rígidos sean aquellos
@@ -158,33 +159,33 @@ Para el método de Euler tendríamos una sucesión de la forma
         w_0 = \alpha
     \end{cases}
 \end{equation*}
-de manera que $w_n = (1 + h\lambda)^w_0$,
-mientras que la solución $y(t_n) = \nume^{\lambda t_n} = \nume^{n\lambda h}$.
+de manera que $w_i = (1 + h\lambda)^iw_0$, mientras que la solución es
+$y(t_i) = \nume^{\lambda t_i} = \nume^{i\lambda h}$.
 
 Si queremos que el método de Euler se comporte como la solución analítica,
-$w_n$ debería tender a $0$,
+$w_i$ debería tender a $0$,
 pero eso solo pasará si $\abs{1 + h\lambda} < 1$.
 El lector sabrá que eso equivale a que $h < \frac{2}{\abs{\lambda}}$.
 
 También podemos llegar a la misma conclusión
 sin conocer el comportamiento de la solución analítica.
 Si suponemos que hay un error de redondeo en el valor inicial,
-de forma que iniciamos el método con $w_0 = \alpha + \epsilon$,
-entonces el error de aproximación del $w_n$ teórico del método sería
-$\epsilon_n = (1 + h\lambda)^n\epsilon$.
+de forma que iniciamos el método con $w_0 = \alpha + \epsilon_0$,
+entonces el error de aproximación del $w_i$ teórico del método sería
+$\epsilon_i = (1 + h\lambda)^i\epsilon_0$.
 Por tanto, también obtendríamos el límite $h < \frac{2}{\abs{\lambda}}$
 si quisiésemos que el error no creciese de manera exponencial.
 
-\subsubsection{Otros métodos de paso fijo}
+\subsubsection{Otros métodos de Runge-Kutta de paso fijo}
 
 Visto el ejemplo del método de Euler,
 podemos plantearnos repetirlo con otros métodos de paso fijo.
-En ese caso dado un método obtendríamos
+Fijado un método obtendríamos
 \begin{equation}\label{eqn:polq-one-step}
     w_{i+1} = Q(h\lambda)w_i
 \end{equation}
 en función de un polinomio $Q(x)$,
-y querríamos que $\abs{Q(h\lambda} < 1$.
+y querríamos que $\abs{Q(h\lambda)} < 1$.
 Por ejemplo, para el método de Taylor de orden $n$ se tendría que
 $Q(x) = 1 + x + \frac{x^2}{2} + \cdots + \frac{x^n}{n}$.
 Y en general, obtener el umbral para $h$ sería más laborioso.
@@ -218,16 +219,15 @@ cuyo polinomio característico sería
     - (a_0 - h\lambda b_0).
 \end{equation}
 
-Si conocemos $w_0,\ldots,w_{n-1}$
-y las raíces $\beta_1,\ldots,\beta_m$ de $Q(x, y)$
-y son todas diferentes %TODO esto de qué teorema señores? DE QUÉ TEOREMA?
+Si conociésemos $w_0,\ldots,w_{n-1}$
+y las raíces $\beta_1,\ldots,\beta_m$ de $Q(x, y)$ fuesen todas diferentes
 entonces las soluciones a esa sucesión serían de la forma
 \begin{equation*}
-    w_n = \sum_{i=1}^m C_i\beta_i^n,
+    w_i = \sum_{i=1}^m C_i\beta_i^i,
 \end{equation*}
 para una constantes $C_1,\ldots,C_n$
-que dependerían también de la condición inicial,
-y tenderían a $0$ si $\abs{\beta_k} < 1$ para todo $1 \le k \le m$.
+que dependerían también de la condición inicial.
+Y tenderían a $0$ si $\abs{\beta_k} < 1$ para todo $1 \le k \le m$.
 
 \subsection{A-Estabilidad}
 
@@ -308,16 +308,14 @@ es el siguiente punto de una solución.
 
 \subsection{Método de Euler implícito o hacia atrás}
 
-\begin{method}{Método de Euler hacia atrás}
-    El \emph{método de Euler hacia atrás} determina,
-    dado el problema \ref{eqn:pvi} y un paso $h > 0$:
+\begin{method}
+    El \emph{método de Euler hacia atrás}
+    es un método implícito de paso fijo $h$ que
+    a partir de un estado $(t_i, \vw_i) \approx (t_i, \vy(t_i))$,
+    aproxima $\vy(t_i + h)$ mediante la ecuación
     \begin{equation}\label{eqn:backwardseulersol}
-    \begin{cases}
-        w_0 = y_0 \\
-        w_{i+1} = w_i + h\cdot f(t_{i+1}, w_{i+1}), \forall i=0,\dots, n-1
-    \end{cases}
+        \vw_{i+1} = \vw_i + h\cdot \vf(t_{i+1}, \vw_{i+1}).
     \end{equation}
-    Siendo $t_i = t_0 + i\cdot h$ para $i \in \qty{0,\ldots, n}$.
 \end{method}
 
 %TODO el método de euler es estable
@@ -329,12 +327,13 @@ es el siguiente punto de una solución.
 \begin{proof}
     A partir de \eqref{eqn:backwardseulersol}, tenemos que 
     \begin{equation*}
-        y(t + h) - y(t) - hf(t+h, y(t+h)) =
-        hy'(t + h) + \frac{h^2}{2}y''(\xi) - hy'(t+h) =
-        \frac{h^2}{2}y''(\xi).
+        \ELT(h) =
+        \frac{\vy(t + h) - \vy(t)}{h} - \vf(t+h, \vy(t+h)) =
+        \vy'(t + h) - \frac{h}{2}\vy''(\xi) - \vy'(t+h) =
+        - \frac{h}{2}\vy''(\xi).
     \end{equation*}
-    Y por tanto, si $\norm{y''}$ está acotada (en el intervalo de resolución),
-    $\lim_{h \to 0} \frac{Z(h)}{h} = 0$.
+    Y por tanto, si $\norm{\vy''}$ está acotada (en el intervalo de resolución),
+    $\lim_{h \to 0} \ELT(h) = 0$.
 \end{proof}
 
 % \begin{remark}
@@ -346,7 +345,7 @@ es el siguiente punto de una solución.
 \end{proposition}
 
 \begin{proof}
-    Fijado el problema $y' = y$, escribimos
+    Fijado el problema $y' = \lambda y \in \R$, escribimos
     \begin{equation*}
         w_{i+1} = w_i + hf(t_{i+1}, w_{i+1}) = w_i + h\lambda w_{i+1}.
     \end{equation*}
@@ -369,17 +368,15 @@ es el siguiente punto de una solución.
 \subsection{Método del trapecio}
 
 \begin{method}{Método del Trapecio}
-    El \emph{método del trapecio} determina,
-    dado el problema \ref{eqn:pvi} y un paso $h > 0$:
+    El \emph{método del trapecio}
+    es un método implícito de paso fijo $h$ que
+    a partir de un estado $(t_i, \vw_i) \approx (t_i, \vy(t_i))$,
+    aproxima $\vy(t_i + h)$ mediante la ecuación
     \begin{equation}\label{eqn:trapezoidalsol}
-    \begin{cases}
-        w_0 = y_0 \\
-        w_{i+1} = w_i + \frac{h}{2}\qty(
-            f(t_i, w_i) + f(t_{i+1}, w_{i+1})
-        ), \forall i=0,\dots, n-1
-    \end{cases}
+        \vw_{i+1} = \vw_i + \frac{h}{2}\qty(
+            \vf(t_i, \vw_i) + \vf(t_{i+1}, \vw_{i+1})
+        ).
     \end{equation}
-    Siendo $t_i = t_0 + i\cdot h$ para $i \in \qty{0,\ldots, n}$.
 \end{method}
 
 \begin{proposition}
@@ -389,15 +386,18 @@ es el siguiente punto de una solución.
 \begin{proof}
     A partir de \eqref{eqn:trapezoidalsol}, tenemos que 
     \begin{multline*}
-        y(t+h) - y(t) - \frac{h}{2}\qty\bigg(f(t, y(t)) + f(t+h, y(t+h))) = \\
-        hy'(t) + \frac{h^2}{2}y''(t) + \frac{h^3}{6}y'''(\xi)
-        - \frac{h}{2}\qty\bigg(y'(t) - y'(t+h)) = \\
-        hy'(t) + \frac{h^2}{2}y''(t) + \frac{h^3}{6}y'''(\xi)
-        - \frac{h}{2}\qty\bigg(2y'(t) + hy''(t) + \frac{h^2}{2}y'''(\xi_2)) = \\
-        \frac{h^3}{6}\qty\bigg(y'''(\xi_1) - y'''(\xi_2)).
+        \vy(t+h) - \vy(t) - \frac{h}{2}\qty\bigg(
+            \vf(t, \vy(t)) + \vf(t+h, \vy(t+h))
+        ) = \\
+        h\vy'(t) + \frac{h^2}{2}\vy''(t) + \frac{h^3}{6}\vy'''(\xi)
+            - \frac{h}{2}\qty\bigg(\vy'(t) - \vy'(t+h)) = \\
+        h\vy'(t) + \frac{h^2}{2}\vy''(t) + \frac{h^3}{6}\vy'''(\xi)
+            - \frac{h}{2}\qty\bigg(2\vy'(t) + h\vy''(t)
+            + \frac{h^2}{2}\vy'''(\xi_2)) = \\
+        \frac{h^3}{6}\qty\bigg(\vy'''(\xi_1) - \vy'''(\xi_2)).
     \end{multline*}
     Y por tanto, si $\norm{y'''}$ está acotada (en el intervalo de resolución),
-    $\norm{\frac{Z(h)}{h}} \le ch^2\max{\norm{y'''}}$
+    $\abs{\ELT(h)} \le ch^2\max{\norm{y'''}}$
     para una constante $c$,
     y el método es consistente y de orden $2$.
 \end{proof}
@@ -430,12 +430,12 @@ es el siguiente punto de una solución.
 
 \subsection{Fórmulas de diferenciación hacia atrás}
 
-Dado un método a $m$-pasos genérico
+Dado un método a $m$-pasos estándar,
 \begin{equation*}
-    w_i = a_0w_{i-m} + \dots + a_{m-1}w_{i-1} + h\qty[
-        b_0f(t_{i-m}, w_{i-m}) + \dots + b_{m-1}f(t_{i-1}, w_{i-1})
-        + b_mf(t_i, w_i)
-    ]
+    \vw_i = a_0\vw_{i-m} + \dots + a_{m-1}\vw_{i-1} + h\qty[
+        b_0\vf(t_{i-m}, \vw_{i-m}) + \dots + b_{m-1}\vf(t_{i-1}, \vw_{i-1})
+        + b_m\vf(t_i, \vw_i)
+    ],
 \end{equation*}
 vamos a definir los polinomios
 \begin{align*}
@@ -476,7 +476,8 @@ Para orden $2$,
 \end{gather*}
 Lo que nos da proporciona el siguiente método.
 
-\begin{method}{Fórmula de diferenciación hacia atrás de orden $2$}
+\begin{method}
+    Fórmula de diferenciación hacia atrás de orden $2$.
     \begin{equation*}
         w_i = - \frac{1}{3}w_{i-2} + \frac{4}{3}w_{i-1}
             + \frac{2}{3}hf(t_i, w_i).
@@ -485,7 +486,8 @@ Lo que nos da proporciona el siguiente método.
 
 Podemos repetir los cálculos para el orden $3$.
 
-\begin{method}{Fórmula de diferenciación hacia atrás de orden $3$}
+\begin{method}
+    Fórmula de diferenciación hacia atrás de orden $3$.
     \begin{equation*}
         w_i = \frac{2}{11}w_{i-3} - \frac{9}{11}w_{i-2} + \frac{18}{11}w_{i-1}
             + \frac{11}{6}hf(t_i, wi).

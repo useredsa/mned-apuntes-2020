@@ -1,0 +1,47 @@
+\section{Notación}\label{sec:notation}
+
+\begin{description}
+    \item[$\vf : \Omega \subset \R \times \R^n \to \R^n$] es la función
+    derivada de la expresión de un PVI general
+    \begin{equation*}
+        \left\{
+        \begin{aligned}
+            \vy'(t) &= \vf(t, \vy(t)) \\
+            \vy(t_0) &= \vy_0 \\
+        \end{aligned}.
+        \right.
+    \end{equation*}
+    Normalmente asumimos que $f$ es continua y localmente Lipschitziana.
+
+    \item[$\vy : I \subset \R \to \R^n$] es la incógnita
+    o solución particular de un PVI general de la forma
+    \begin{equation*}
+        \left\{
+        \begin{aligned}
+            \vy'(t) &= \vf(t, \vy(t)) \\
+            \vy(t_0) &= \vy_0 \\
+        \end{aligned}.
+        \right.
+    \end{equation*}
+
+    \item[$L$] es la constante de lipschitz de la función $\vf$.
+
+    \item[$\vw_i$] es el $i$-ésimo punto generado por
+    un método de integración ideal.
+    Cuando se trabaja con varios métodos simultáneamente
+    se diferencian los puntos con superíndices.
+
+    \item[$\tw_i$] es el $i$-ésimo punto generado por
+    un método de integración ejecutado en un ordenador de precisión finita.
+    Es decir, $\tw_i \approx \vw_i$, salvo por los errores de redondeo.
+
+    \item[$\delta_i$] es el error por aproximación numérica en el $i$-ésimo paso.
+    Es decir, $\delta_i = \vw_i - \tw_i$.
+
+    \item[$h$] es, normalmente, el tamaño del paso de un método de paso fijo.
+    
+    \item[$\ELT_i$] es el error local de truncamiento (\cref{def:elt}).
+
+    \item[$\vz_i$] es una solución al PVI dado por
+    $\vf$ con condición inicial $(t_i, \vw_i)$.
+\end{description}
