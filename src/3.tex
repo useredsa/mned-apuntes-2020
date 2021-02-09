@@ -137,11 +137,11 @@ Por eso, introducimos la noción de método estable.
         \tw_{i+1} = \sum_{j=1}^m {a_{j-1}\tw_{i-m+j}}
             + h F(t_i,\tw_{i-m+j}, \dots, \tw_i,\tw_{i+1},h) + \epsilon'_i,
     \end{equation*}
-    existe una constante M, independiente de h, tal que
+    existe una constante $M$, independiente de $h$, tal que
     \begin{equation*} \label{stab}
-        \max_{m \leq n \leq N}{\norm{\tw_n - w_n}} \leq M[
-            \max_{0 \leq i \ m-1}{\norm{\tw_i - w_i}}
-            + \sum_{m-1 \leq j \leq N} \norm{\epsilon'_j}
+        \max_{m \leq n \leq N}{\norm{\tw_n - w_n}} \leq M\qty[
+            \max_{0 \leq i \le m-1}{\norm{\tw_i - w_i}}
+            + \sum_{m \leq j \leq N} \norm{\epsilon'_j}
         ]
     \end{equation*}
 \end{definition}
@@ -181,7 +181,7 @@ Por eso, introducimos la noción de método estable.
     para algún $m$. Pero
     \begin{equation*}
         \sum_{m \leq n \leq N} \norm{\epsilon_n} =
-        \sum_{m \leq n \leq N} h\norm{Tn+1(h)} \leq
+        \sum_{m \leq n \leq N} h\norm{T_{n+1}(h)} \leq
         \qty(\sum_{m \leq n \leq N} h)
             \max_{m \leq n \leq N}\norm{T_{n+1}(h)} \leq
         (b-a)\max_{m \leq n \leq N}\norm{T_{n+1}(h)},

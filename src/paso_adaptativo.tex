@@ -3,38 +3,43 @@
 \subsection{Control del error global a través del criterio del error local}
 
 \begin{definition}
-Dado el problema de valor inicial 
-$$
-\left\{
-\begin{array}{lll}
-y'(t) = f(t,y) & & \\
-y(t_0) = y_0 & &
-\end{array}
-\right.
-$$
- que queremos resolver, y un método numérico en diferencias
-\begin{equation}
-\label{eq6}
-\left\{
-\begin{array}{lll}
-\omega_0 = \alpha & & \\
-\omega_{i+1} = \omega_i + h \phi(t_i, \omega_i, h) & & 
-\end{array}
-\right.
-\end{equation}
-definimos la \textbf{solución local} $z_n$ como la solución del pvi
-$$
-\left\{
-\begin{array}{lll}
-z_n'(t) = f(t,z_n) & & \\
-z_n(t_n) = \omega_n & &
-\end{array}
-\right.
-$$
+    Dado un problema de valor inicial y la solución
+    $\qty{\vw_i}_{i = 0,\ldots,n}$
+    calculada por un método numérico en diferencias,
+    \begin{equation*}
+        \left\{
+        \begin{aligned}
+            \vy'(t) &= \vf(t, \vy(t)) \\
+            \vy(t_0) &= \vy_0 \\
+        \end{aligned}
+        \right.
+        \qq{y}
+        \left\{
+        \begin{aligned}
+            \vw_0 &= \vy_0 \\
+            \vw_{i+1} &= \vw_i + h \vphi(h, t_i, \vw_i)
+        \end{aligned},
+        \right.
+    \end{equation*}
+    definimos la \emph{solución local} $\vz_i$
+    como la solución del PVI
+    \begin{equation*}
+        \left\{
+        \begin{aligned}
+            \vz_i'(t) &= \vf(t, \vz_i) \\
+            \vz_i(t_n) &= \vw_i
+        \end{aligned}.
+        \right.
+    \end{equation*}
 \end{definition}
 
-Este último pvi es el que realmente resolvemos en cada paso que damos en un método:
-\begin{figure}[H]
+Este último PVI es el que realmente aproximamos
+en cada paso que damos en un método.
+En la \cref{fig:local-sol} representamos
+con una curva de color rojo la solución al problema original
+y con curvas de color verde las soluciones locales.
+
+\begin{figure}[h]
     \centering
     \begin{tikzpicture}[scale=1.5]
           \draw[->] (-0.5, 0) -- (3,0) node[right] {$t$};
@@ -49,216 +54,383 @@ Este último pvi es el que realmente resolvemos en cada paso que damos en un mé
           \draw[green,-] (0.5,0.5) -- (1,1.3) ;
           \draw[green,-] (1,1.3) -- (1.7,2) ;
 \end{tikzpicture}
-    \caption{Pvi en cada paso 1D}
+    \caption{Una ilustración unidimensional del PVI que intenta resolver
+    un método numérico en cada paso.
+    En este caso las soluciones del PVI no varían bruscamente
+    dada una pequeña pertubación en los datos de entrada.}
+    \label{fig:local-sol}
 \end{figure}
-que en este dibujo serían las curvas de color verde (el problema inicial sería la curva roja).
-\begin{theorem}
-Supongamos que el método de integración  (\ref{eq6}) verifica (en cada paso)
-$$
-\begin{array}{ll}
-\|z_n(t_n+h) - \omega_{n+1}\| \leq \varepsilon\cdot h & \textnormal{(criterio de error local)}
-\end{array}
-$$
-para cada tolerancia $\varepsilon$ dada.\\
-Entonces, si $f$ es lipschitziana con constante $k$, se tiene que 
-$$
-\|y(t_n)-\omega_n\| \leq e^{k(t_n-a)}\|y(b)-\omega_0\| + \frac{e^{k(t_n-a)}}{k}\varepsilon.
-$$
+
+\begin{theorem}\label{thm:global-err}
+    Supongamos que el método de integración verifica
+    \begin{equation*}
+        \norm{\vz_i(t_i + h) - \vw_{i+1}} \leq \varepsilon\cdot h
+            \qq{(criterio de error local)}
+    \end{equation*}
+    para todo $i = 1,\ldots,n$ para una tolerancia $\varepsilon$ dada.
+    Entonces, si $\vf$ es lipschitziana con constante $L$, se tiene que 
+    \begin{equation*}
+        \norm{\vy(t_n) - \vw_n} \leq \nume^{L(t_n - t_0)}\norm{\vy(t_n) - \vw_0}
+            + \frac{\nume^{L(t_n - t_0)}}{L}\varepsilon.
+    \end{equation*}
 \end{theorem}
+
 \begin{remark}
-Recuerda a la cota que obtuvimos para el método de Euler (si $k$ no es muy grande, para $b-a\approx 1$ es aceptable).
-\end{remark}
-\begin{remark}
-Es independiente del método.
-\end{remark}
-\begin{remark}
-Observar que, si asumimos que $z_n(t_n) \approx y(t_n) \approx \omega_n $, este criterio consiste en mantener
-$$
-\|\tau_{i+1}(h)\| = \frac{\| y(t_{i+1}) - (y(t_i) + h\phi(t_i, \omega_i, h)) \|}{h} \approx \frac{\| z_i(t_{i+1}) - \omega_{i+1} \|}{h} \leq \varepsilon
-$$
-es decir, mantener el error local de truncamiento por debajo de la tolerancia.
+    Al lector le recordará a la cota que obtuvimos para el método de Euler
+    (\cref{thm:euler-convergence}),
+    solo que ésta es independiente del método.
+    Además, si $L$ no es muy grande y $t_n - t_0 \approx 1$,
+    tenemos una cota aceptable.
 \end{remark}
 
-\newpage
+\begin{remark}
+    Observar que, si asumimos que $\vz_i(t_i) \approx \vy(t_i) \approx \vw_i $,
+    este criterio consiste en mantener el ELT
+    \begin{equation*}
+        \norm{\ELT_{i+1}(h)} =
+        \frac{\norm{\vy(t_{i+1}) - (\vy(t_i) + h\vphi(h, t_i, \vw_i))}}{h}
+        \approx \frac{\norm{\vz_i(t_{i+1}) - \vw_{i+1}}}{h} \le \varepsilon
+    \end{equation*}
+    por debajo de la tolerancia.
+\end{remark}
+
 \subsection{Control del error por extrapolación de Richardson}
+
+%TODO Este teorema debería tener demostración.
+% En particular, parece que van a hacer falta condiciones sobre el PVI,
+% para que z_i \approx z_{i+1}
 \begin{theorem}
-Supongamos que el método en diferencias 
-\begin{equation*}
-\left\{
-\begin{array}{lll}
-\omega_0 = \alpha & & \\
-\omega_{i+1} = \omega_i + h_i \phi(t_i, \omega_i, h_i) & & i = 0,1,\dots, N-1
-\end{array}
-\right.
-\end{equation*}
-verifica (en todo paso): \astfootnote{Usando la notación $\omega_{i+1} = y_h(t_i+h)$.}
-\begin{equation}
-\label{eq7}
-z_i(t_i+h) = y_h(t_i+h) + c\cdot z_i^{(k+1)}(t_i)h^{k+1} + \mathcal{O}(h^{k+2})
-\end{equation}
-donde $c$ es una constante. Entonces se tiene:
-\begin{equation}
-\label{eq8}
-z_i(t_i+h) = y_{\frac{h}{2}}(t_i+h) + 2c\cdot z_i^{(k+1)}(t_i)\left(\frac{h}{2}\right)^{k+1} + \mathcal{O}(h^{k+2})
-\end{equation}
+    \newcommand{\hh}{\sfrac{h}{2}}
+
+    Supongamos que el método en diferencias 
+    $\vw_{i+1} = \vw_i + h\cdot \vphi(h, t_i, \vw_i)$
+    verifica
+    \begin{equation*}\label{eq7}
+        \vz_i(t_{i+1}) =
+        \vw_{i+1} + h^{k+1}C\cdot \vz_i^{(k+1)}(t_i) + \vo(h^{k+2})
+    \end{equation*}
+    para una solución $\{(t_i, \vw_i)\}_{i = 0,\ldots,n}$ de paso $h$,
+    donde $C$ es una constante que no depende de $h$.
+    Entonces se tiene
+    \begin{equation*}\label{eq8}
+        \vz_i(t_{i+2}) =
+        \vw_{i+2} + 2h^{k+1}C\cdot \vz_i^{(k+1)}(t_i) + \vo(h^{k+2}).
+    \end{equation*}
 \end{theorem}
+
 \begin{remark}
-En este caso el error local de truncamiento es de orden $k$. Por ejemplo, el método de Euler tiene $k=1$ y el de Runge-Kutta de orden 4 tiene $k=4$.
+    En las condiciones del teorema anterior el ELT es de orden $k$.
 \end{remark}
 
-Haciendo $(\ref{eq8})\cdot 2^k - (\ref{eq7})$ obtenemos una fórmula para \textbf{mejorar la solución}:
-\begin{equation}
-\label{eq9}
-z_i(t_i+h) = \frac{2^ky_{\frac{h}{2}}(t_i+h)-y_h(t_i+h)}{2^k-1}+\mathcal{O}(h^{k+2})
-\end{equation}
-Y restando a eso $y_h(t_i+h)$, obtenemos una fórmula para \textbf{aproximar el error local de truncamiento}:
-\begin{equation}
-\label{eq10}
-z_i(t_i+h) -y_h(t_i+h)= \frac{2^k}{2^k-1}\left(y_{\frac{h}{2}}(t_i+h)-y_h(t_i+h)\right)+\mathcal{O}(h^{k+1})
-\end{equation}
-\begin{example}
-\begin{itemize}
-    \item Euler ($k=1$)  
-    $$
-    elt \approx 2\left(y_{\frac{h}{2}}(t_i+h)-y_h(t_i+h)\right)
-    $$
-    \item RK4 ($k=4$).
-    $$
-    elt \approx \frac{16}{15}\left(y_{\frac{h}{2}}(t_i+h)-y_h(t_i+h)\right)
-    $$
-\end{itemize}
-\end{example}
+\newcommand{\hh}{\sfrac{h}{2}}
 
-\newpage
-\subsection{Estimación local del paso con Richardson}
-Un método ideal de la ecuación de diferencias 
+Haciendo uso del teorema anterior, dadas dos soluciones
+$\{(t^h_i, \vw^h_i)\}_{i = 0,\ldots,n}$ y
+$\{(t^{\hh}_i, \vw^{\hh}_i)\}_{i = 0,\ldots,2n}$
+calculadas con pasos $h$ y $\frac{h}{2}$,
+\begin{align*}\label{eq8}
+    \vz^{h}_i(t^{h}_{i+1}) &=
+    \vw^{h}_{i+1} + h^{k+1}C\cdot (\vz^{h}_i)^{(k+1)}(t^{h}_i)
+        + \vo(h^{k+2}), \\
+    \vz^{\hh}_i(t^{\hh}_{i+2}) &=
+    \vw^{\hh}_{i+2} + 2\qty(\frac{h}{2})^{k+1} \hspace{-4mm} C\cdot
+        (\vz^{\hh}_i)^{(k+1)}(t^{\hh}_i) + \vo(h^{k+2}).
+\end{align*}
+Por tanto, si partiésemos del mismo punto
+$(t^h_i, \vw^h_i) = (t^{\hh}_i, \vw^{\hh}_i)$,
+sería $\vz^h_i(t^h_{i+1}) = \vz^{\hh}_i(t^{\hh}_{i+2})$
+y podríamos obtener \emph{una fórmula para mejorar la solución},
 \begin{equation*}
-\left\{
-\begin{array}{lll}
-\omega_0 = \alpha & & \\
-\omega_{i+1} = \omega_i + h_i \phi(t_i, \omega_i, h_i) & & i = 0,1,\dots, N-1
-\end{array}
-\right.
+    \vz^h_i(t^h_{i+1}) = \vz^{\hh}_i(t^{\hh}_{i+2}) =
+    \frac{2^k\vw^{\hh}_{i+2} - \vw^h_{i+1}}{2^k - 1} + \vo(h^{k+2}),
 \end{equation*}
-para aproximar la solución $z_i(t)$ al problema de valor inicial
+y \emph{una fórmula para aproximar el error local de truncamiento},
 \begin{equation*}
-\left\{
-\begin{array}{lll}
-z_i'(t) = f(t,z_i) & & \\
-z_i(t_i) = \omega_i & &
-\end{array}
-\right.
+    \vz^h_i(t^h_{i+1}) - \vw^h_{i+1} =
+    \frac{2^k}{2^k-1}\qty(\vw^{\hh}_{i+2} - \vw^h_{i+1}) + \vo(h^{k+1}).
 \end{equation*}
-deberá tener la propiedad de que, con una tolerancia $\varepsilon >0$, se puede mantener $$|z_i(t_i+h) - y_h(t_i+h)| = |z_i(t_i+h) - \omega_{i+1}| \leq \varepsilon\cdot h$$ para todo $i=0,1,\dots N-1$ si queremos controlar el error local, ya que este es el error introducido en la solución en el punto $t_{i+1} = t_i +h$ si asumimos que la solución $y_n$ en el punto anterior, $t_n$, es la solución exacta. \\
-La manera más fácil de estimar este error es usando la extrapolación de Richardson de la siguiente manera: 
-\begin{enumerate}
-\item Resolvemos el pvi dos veces en el intervalo $[t_0,b]$ con tamaños de paso $2h$ y $h$ \astfootnote{P.Esquembre usa $h$ y $\frac{h}{2}$.}.
-\item Estimamos el error, $\tilde{e}_r(h) = \| z_i(t_i+h_i) - \omega_{i+1} \|$, con extrapolación de Richardson.
-\item Si el error estimado es menor o igual que $\varepsilon \cdot h$ ($\tilde{e}_r(h)\leq \varepsilon \cdot h$) entonces el paso es el adecuado y pasamos a aproximar $\omega_{i+1}$ con la fórmula (\ref{eq9}).
-\item Si no, ¿cuál tendría que haber sido el paso $h^* = qh$ para que el error sí fuese menor o igual que $\varepsilon \cdot h$? Lo vemos:
-$$
-\|z_i(t_h + qh) - y_{qh}(t_i+qh)\| \approx C(qh)^{k+1} = Cq^{k+1}h^{k+1} \approx
-$$
-$$
-\approx q^{k+1}\cdot \|z_i(t_h + h) - y_h(t_i+h)\| = q^{k+1}\cdot \tilde{e}_r(h)\leq \varepsilon qh
-$$
-\\Donde hemos usado que $Ch^{k+1} \approx \|z_i(t_i + h) - y_h(t_i+h)\|$. Obtenemos, entonces, que debe ser
-$$
-q \leq \left(\frac{\varepsilon h}{\tilde{e}_r(h)}\right)^{\frac{1}{k}}
-$$
-Por tanto, cuando $\tilde{e}_r(h)> \varepsilon \cdot h$ lo que haremos será tomar $q =\left(\frac{\varepsilon h}{\tilde{e}_r(h)}\right)^{\frac{1}{k}} $ y $h = q\cdot h$ para volver a dar el paso con un $h$ que esperamos nos permita mantener $\tilde{e}_r(h)\leq \varepsilon\cdot h$. Este proceso se repetirá hasta que lleguemos a un $h$ que cumpla esto último.
-\end{enumerate}
+
+%TODO esto lo he quitado de momento.
+% Se podría formatear y explicar mejor
+% \begin{example}
+% \begin{itemize}
+%     \item Euler ($k=1$)  
+%     $$
+%     elt \approx 2\left(y_{\frac{h}{2}}(t_i+h)-y_h(t_i+h)\right)
+%     $$
+%     \item RK4 ($k=4$).
+%     $$
+%     elt \approx \frac{16}{15}\left(y_{\frac{h}{2}}(t_i+h)-y_h(t_i+h)\right)
+%     $$
+% \end{itemize}
+% \end{example}
+
+Este último avance es muy importante.
+Hasta ahora habíamos podido estimar
+la variación del error local de truncamiento en función de $h$,
+que nos servía para comparar qué métodos aproximaban mejor
+(suponiendo $h$ suficientemente pequeña)
+y nos daba una cota del error global.
+Pero el nuevo avance nos permite aproximar el error local.
+Ahora proponemos un algoritmo que resuelve el problema
+asegurándose de que el error local permanece acotado.
+
+\begin{theorem}
+    El siguiente procedimiento asegura que la aproximación final
+    tiene ELT menor que $\varepsilon$.
+
+    Parámetros:
+    intervalo de resolución (\/$[a, b]$),
+    cota para el error (\/$\varepsilon$),
+    paso inicial (\/$h_0$).
+
+    \begin{enumerate}
+        \item Resolvemos el PVI dos veces en el intervalo $[a, b]$
+        con tamaños de paso $h$ y $\frac{h}{2}$.
+        \item Estimamos el máximo error local.
+        \begin{equation*}
+            \operatorname{err} = \max_{i = 1,\ldots,n}\qty{\ELT^h_i} \approx
+            \max_{i = 1,\ldots,n}\qty{
+                \frac{2^k}{2^k-1}\qty(\vw^{\hh}_{i+2} - \vw^h_{i+1})
+            }.
+        \end{equation*}
+        \item Si el error no es menor que $\varepsilon\cdot h$,
+        entonces dividimos $h$ entre $2$ y repetimos.
+        \item Si el error estimado es menor o igual que $\varepsilon \cdot h$
+        entonces el paso es el adecuado y
+        devolvemos la extrapolación
+        \begin{equation*}
+            \vw_i := \frac{2^k\vw^{\hh}_{i+2} - \vw^h_{i+1}}{2^k - 1}.
+        \end{equation*}
+    \end{enumerate}
+\end{theorem}
+
 \begin{remark}
-El coste de estimar el error de esta manera supone, aproximadamente, un incremento del 50\% en la cantidad de cómputo, comparándolo con solo calcular $y_h$.\\
-Puede parecer un coste demasiado alto, pero generalmente merece la pera excepto para los problemas que más tiempo emplean. 
+    El algoritmo anterior es un método de resolución
+    que mantiene el error local local de truncamiento
+    por debajo de $\varepsilon\cdot h$ (aproximadamente).
+    Por tanto, el \cref{thm:global-err} asegura que el error global será
+    menor o igual que $\varepsilon$ (también aproximadamente).
+\end{remark}
+
+La pregunta que vamos a responder ahora será la base de los métodos adaptativos.
+Si tenemos una estimación del error en el paso anterior,
+¿podemos estimar cuál tendría que haber sido el paso para tener un error menor?
+Veámoslo.
+
+Si escribimos el nuevo paso como $qh$, donde $q > 0$ sería el coeficiente corrector,
+llegamos a la ecuación
+\begin{align*}
+    \norm{\vz_i(t_i + h) - \vw^{qh}_{i+1}} =
+    \norm{(qh)^{k+1}C\cdot \vz_i^{(k+1)}(t_i) + \vo((qh)^{k+2})} = {} \\
+    q^{k+1}\norm{h^{k+1}C\cdot \vz_i^{(k+1)}(t_i) + \vo(h^{k+2})} = {} \\
+    q^{k+1}\norm{\vz_i(t_i + h) - \vw^{qh}_{i+1} + \vo(h^{k+2})} = {} \\
+    q^{k+1}\norm{\ELT^h_{i+1} + \vo(h^{k+2})} \le {} & \varepsilon qh
+\end{align*}
+Y por tanto concluímos que una buena estimación para el nuevo paso
+viene dada por
+\begin{equation*}
+    q \le \qty(\frac{\varepsilon h}{\ELT^h_{i+1}})^{\frac{1}{k}}.
+\end{equation*}
+
+\begin{remark}
+    Obsérvese que $q < 1$ si y solo sí $\ELT^h_{i+1} > \varepsilon h$.
+    Por tanto, la estimación del nuevo paso
+    siempre reduce el paso cuando no tenemos la tolerancia esperada.
+\end{remark}
+
+Podemos entonces modificar el algoritmo anterior
+para que converja más rápido.
+No obstante, una idea más útil es
+modificar el paso de nuestro método de forma dinámica
+para mantener el error por debajo del umbral.
+Es más, la misma ecuación que hemos planteado también nos sirve
+para estimar cuánto se puede agrandar el paso
+manteniendo la cota sobre el error de truncamiento local.
+
+
+\subsection{Métodos adaptativos mediante extrapolación de Richardson}
+
+\begin{definition}
+    Un método es \emph{de paso adaptativo con tolerancia $\varepsilon$}
+    si la solución $\{(t_i, \vw_i)\}_{i = 0,\ldots,n}$ que genera asegura
+    \begin{equation*}
+        \norm{\ELT_i} \le \varepsilon (t_i - t_{i-1})
+            \qq{para todo $i = 1,\ldots,n$,}
+    \end{equation*}
+    a costa de modificar el tamaño del paso $h_i = t_i - t_{i-1}$
+    en cada iteración.
+\end{definition}
+
+\begin{method}
+    Fijado un método de paso fijo $M$ de orden $k$,
+    su extrapolación adaptativa de Richardson
+    es un método adaptativo de tolerancia $\varepsilon$.
+
+    Una iteración, tal cual la definimos a continuación,
+    no asegura que se genere un nuevo punto de la solución y
+    utiliza un tamaño de paso $h$ que viene sugerido por la iteración anterior.
+    Fijados $(t_i, \vw_i)$ y $h$,
+    una iteración de este método
+    calcula la aproximación $\vw^h$ dada por $M$ con un paso de tamaño $h$
+    y $\vw^{\hh}$ dada por $M$ con dos pasos de tamaño $\frac{h}{2}$.
+    Entonces, si el valor
+    \begin{equation*}
+        \operatorname{err} := \frac{2^k}{2^k-1}\norm{\vw^{\hh} - \vw^h}
+    \end{equation*}
+    verifica $\operatorname{err} < \varepsilon\cdot h$,
+    determina el nuevo punto
+    \begin{equation*}
+        (t_{i+1}, \vw_{i+1}) = \qty(
+            t_i + h, \frac{2^k\vw^{\hh}_{i+2} - \vw^h_{i+1}}{2^k - 1}
+        ).
+    \end{equation*}
+    A continuación multiplica $h$ por
+    $q = \qty(\frac{\varepsilon h}{\operatorname{err}})^{\frac{1}{k}}$,
+    de cara a la siguiente iteración.
+\end{method}
+
+\begin{remark}
+    El paso $h$ puede tanto aumentar como disminuir en cada iteración,
+    y se modifica independientemente de que se acepte o no el punto.
+\end{remark}
+
+\begin{remark}
+    Una implementación real del método de Richardson
+    utiliza dos valores más,
+    el máximo y el mínimo tamaño del paso.
+    El máximo sirve para mantener el tamaño por debajo de un umbral
+    independientemente de lo que sugiera el método,
+    y el mínimo es para parar el método si fuese necesario reducir el paso
+    por debajo de ese umbral,
+    lo que impide que el método itere infinitamente por falta de convergencia.
+
+    Además, empíricamente se ha visto que es mejor usar la expresión
+    $q = \qty(\frac{\varepsilon h}{2\operatorname{err}})^{\frac{1}{k}}$
+    porque aporta mejores resultados.
+\end{remark}
+    
+\begin{remark}
+    El coste de estimar el error de esta manera supone, aproximadamente,
+    un incremento del $50\%$ en la cantidad de cómputo,
+    comparándolo con solo calcular la extrapolación.
+    Puede parecer un coste demasiado alto,
+    pero la mayoría de problemas cuentan con
+    zonas que necesitarían un tamaño de paso muy pequeño
+    y zonas que bastaría con usar un tamaño de paso moderado.
+    Por tanto, el ahorro de cómputo derivado de no tener que
+    usar el mínimo paso requerido en todo el intervalo
+    contrarresta en gran medida, en general,
+    el incremento de cómputo.
 \end{remark}  
-\begin{remark}
-Este método también nos dice cuándo podemos coger un paso más grande y seguir manteniendo la tolerancia: si $q < \left(\frac{\varepsilon h}{\tilde{e}_r(h)}\right)^{\frac{1}{k}}$, podemos tomar $h=\left(\frac{\varepsilon h}{\tilde{e}_r(h)}\right)^{\frac{1}{k}}h$, que es más grande que el paso anterior, y se seguiría manteniendo $\tilde{e}_r(h)\leq \varepsilon\cdot h$.
-\end{remark}
 
-\subsection{Método de Runge-Kutta-Fehlberg}
-Para ilustrar este método, supogamos que tenemos dos métodos de aproximación. El primero es un Runge-Kutta de orden $n$
-$$
-y(t_{i+1}) = y(t_i) + h\phi (t_i, y(t_i), h) + \mathcal{O}(h^{n+1})
-$$
+\subsection{El método de Fehlberg}
+
+\begin{editorial}
+    Esta sección necesita todavía más detalle.
+    Contribuye a estos apuntes via \href{https://git-scm.com/}{git}.
+    Puedes encontrar el repositorio en
+    \url{https://github.com/pablomiralles22/mned-apuntes-2020}.
+\end{editorial}
+
+Para ilustrar este método,
+supogamos que tenemos dos métodos de aproximación.
+El primero es un Runge-Kutta de orden $k$
+\begin{equation*}
+    \vw_{i+1} = \vw_i + h\vphi(h, t_i, \vw_i) + \vo(h^{k+1})
+\end{equation*}
 que produce las aproximaciones
-$$
-\left\{
-\begin{array}{lll}
-\omega_0 = \alpha & & \\
-\omega_{i+1} = \omega_i + h\phi(t_i, \omega_i, h) & & i >0
-\end{array}
-\right.
-$$
-\\con error de truncamiento $\tau_{i+1}(h) = \mathcal{O}(h^n)$, y el segundo es otro método de Runge-Kutta pero de orden $n+1$
-$$
-y(t_{i+1}) = y(t_i) + h\tilde{\phi}(t_i, y(t_i), h) + \mathcal{O}(h^{n+2})
-$$
+\begin{equation*}
+    \left\{
+    \begin{array}{lll}
+    \vw_0 = \alpha & & \\
+    \vw_{i+1} = \vw_i + h\phi(t_i, \vw_i, h) & & i >0
+    \end{array}
+    \right.
+\end{equation*}
+con error de truncamiento $\ELT_{i+1}(h) = \vo(h^k)$,
+y el segundo es otro método de Runge-Kutta pero de orden $k+1$
+\begin{equation*}
+    \bar\vw_{i+1} = \bar\vw_i + h\bar\vphi(h, t_i, \bar\vw_i) + \vo(h^{k+2})
+\end{equation*}
 que produce las aproximaciones
-$$
-\left\{
-\begin{array}{lll}
-\tilde{\omega_0} = a & & \\
-\tilde{\omega}_{i+1} = \tilde{\omega}_i + h\tilde{\phi}(t_i, \tilde{\omega}_i, h) & & i >0
-\end{array}
-\right.
-$$
-\\con error de truncamiento $\tau_{i+1}(h) = \mathcal{O}(h^{n+1})$.\\
-Suponiendo $\omega_i \approx y(t_i) \approx \tilde{\omega}_i$ y tomando un $h$ fijo tenemos que
-$$
+\begin{equation*}
+    \left\{
+    \begin{array}{lll}
+    \tilde{\vw_0} = a & & \\
+    \bar\vw_{i+1} = \bar\vw_i + h\tilde{\phi}(t_i, \bar\vw_i, h) & & i >0
+    \end{array}
+    \right.
+\end{equation*}
+con error de truncamiento $\ELT_{i+1}(h) = \vo(h^{k+1})$.
+
+Suponiendo $\vw_i = \bar\vw_i \approx y(t_i)$ y tomando un $h$ fijo tenemos que
+\begin{equation*}
 \begin{array}{l}
-\tau_{i+1}(h) = \frac{y(t_{i+1}) - y(t_i)}{h} - \phi(t_i, y(t_i), h) \approx  \frac{y(t_{i+1}) - \omega_i}{h} - \phi(t_i, \omega_i, h) =\\
-\\
- =\frac{y(t_{i+1}) - (\omega_i+ - h\phi(t_i, \omega_i, h))}{h} = \frac{1}{h}(y(t+i)-\omega_{i+1})
+    \ELT_{i+1}(h) = \frac{y(t_{i+1}) - y(t_i)}{h} - \phi(t_i, y(t_i), h) \approx  \frac{y(t_{i+1}) - \vw_i}{h} - \phi(t_i, \vw_i, h) =\\
+    \\
+     =\frac{y(t_{i+1}) - (\vw_i+ - h\phi(t_i, \vw_i, h))}{h} = \frac{1}{h}(y(t+i)-\vw_{i+1})
 \end{array}
-$$
+\end{equation*}
 Y, análogamente, se tiene que 
-$$
-\tilde{\tau}_{i+1}(h) \approx \frac{1}{h}(y(t+i)-\tilde{\omega}_{i+1})
-$$
-Si ahora sumamos y restamos el término $\frac{1}{h}\tilde{\omega}_{i+1}$ en la aproximación obtenida para $\tau_{i+1}(h)$, llegamos a que
-$$
-\tau_{i+1}(h) = \frac{1}{h}[(y(t_{i+1})-\tilde{\omega}_{i+1}) + (\tilde{\omega}_{i+1} - \omega_{i+1})] = \tilde{\tau}_{i+1}(h) + \frac{1}{h}(\tilde{\omega}_{i+1}-\omega_{i+1})
-$$
-Ahora, como $\tilde{\tau}_{i+1}(h)$ es una $\mathcal{O}(h^{n+1})$, podemos aproximar el error local de truncamiento del método de orden $n$ como
-$$
-\tau_{i+1}(h) \approx \frac{1}{h}(\tilde{\omega}_{i+1}-\omega_{i+1})
-$$
-\\De manera que la aproximación del error local de truncamiento al tomar el paso de tamaño $qh$ es
-$$
-\tau_{i+1}(qh)\approx C(qh)^n = Cq^nh^n \approx q^n \tau_{i+1}(h) \approx \frac{q^n}{h}(\tilde{\omega}_{i+1}-\omega_{i+1}) 
-$$
-donde hemos utilizado que $\tau_{i+1}(h) \approx Ch^n$ por ser $\tau_{i+1}(h)$ una $\mathcal{O}(h^n)$.
-\\Para establecer la cota del error local de truncamiento por la tolerancia $\varepsilon$ tendríamos, por tanto, que escoger $q$ tal que
-$$
-q \leq \left(\frac{\varepsilon h}{|\tilde{\omega}_{i+1} - \omega_{i+1}|}\right)^{\frac{1}{n}}
-$$
-Un método muy usado que utiliza esta última desigualdad para controlar el error local de truncamiento es el \textbf{método de Runge-Kutta-Felhberg}, que pasamos a introducir a continuación.\\
+\begin{equation*}
+    \bar\ELT_{i+1}(h) \approx \frac{1}{h}(y(t+i)-\bar\vw_{i+1})
+\end{equation*}
+Si ahora sumamos y restamos el término $\frac{1}{h}\bar\vw_{i+1}$
+en la aproximación obtenida para $\ELT_{i+1}(h)$,
+llegamos a que
+\begin{equation*}
+    \ELT_{i+1}(h) = \frac{1}{h}[(y(t_{i+1})-\bar\vw_{i+1}) + (\bar\vw_{i+1} - \vw_{i+1})] = \bar\ELT_{i+1}(h) + \frac{1}{h}(\bar\vw_{i+1}-\vw_{i+1}).
+\end{equation*}
+Ahora bien, como $\bar\ELT_{i+1}(h)$ es $\vo(h^{k+1})$,
+podemos aproximar el ELT del método de orden $k$ como
+\begin{equation*}
+\ELT_{i+1}(h) \approx \frac{1}{h}(\bar\vw_{i+1}-\vw_{i+1}),
+\end{equation*}
+de manera que la aproximación del error local de truncamiento
+al tomar el paso de tamaño $qh$ es
+\begin{equation*}
+    \ELT_{i+1}(qh)\approx C(qh)^k = Cq^nh^k \approx q^k \ELT_{i+1}(h) \approx \frac{q^k}{h}(\bar\vw_{i+1}-\vw_{i+1}),
+\end{equation*}
+donde hemos utilizado que $\ELT_{i+1}(h) \approx Ch^k$
+por ser $\ELT_{i+1}(h)$ una $\vo(h^k)$.
 
-Si eligiésemos dos métodos arbitrarios de Runge-Kutta de cuarto y quinto orden para aplicar lo que acabamos de ver, necesitaríamos, como mínimo, 10 evaluaciones de la función $f$ (4 por el método de orden 4 y 6 por el de orden 5). Sin embargo, \textbf{Erwin Fehlberg} encontró 2 métodos de Runge-Kutta de estos órdenes que se pueden anidar de manera que se necesiten tan solo 6 evaluaciones de $f$. \\
-El \textbf{método de Runge-Kutta-Fehlberg} consiste, por tanto, en emplear Runge-Kutta con el error local de truncamiento de quinto orden
-$$
-\tilde{\omega}_{i+1} = \omega_i + \frac{16}{135}k_1 + \frac{6656}{12825}k_3 + \frac{28561}{56430}k_4 - \frac{9}{50}k_5 + \frac{2}{55}k_6
-$$
-para estimar el error local en un método de Runge-Kutta de cuarto orden dado por 
-$$
-\omega_{i+1} = \omega_i + \frac{25}{216}k_1 + \frac{1408}{2565}k_3 + \frac{2197}{4104}k_4 - \frac{1}{5}k_5 
-$$
+Para establecer la cota del error local de truncamiento
+por la tolerancia $\varepsilon$ tendríamos, por tanto,
+que escoger $q$ tal que
+\begin{equation*}
+    q \leq \left(\frac{\varepsilon h}{|\bar\vw_{i+1} - \vw_{i+1}|}\right)^{\frac{1}{k}}
+\end{equation*}
+Un método muy usado que utiliza esta última desigualdad para
+controlar el error local de truncamiento es
+\emph{el método de Runge-Kutta-Felhberg},
+que pasamos a introducir a continuación.
+
+Si eligiésemos dos métodos arbitrarios de Runge-Kutta de cuarto y quinto orden
+para aplicar lo que acabamos de ver,
+necesitaríamos, como mínimo, $10$ evaluaciones de la función $\vf$
+($4$ por el método de orden $4$ y $6$ por el de orden $5$).
+Sin embargo, Erwin Fehlberg encontró $2$ métodos de Runge-Kutta de estos órdenes
+que se pueden anidar de manera que
+se necesiten tan solo $6$ evaluaciones de $\vf$ para calcular ambos.
+El \textbf{método de Runge-Kutta-Fehlberg} consiste, por tanto, en
+emplear el método de Runge-Kutta
+\begin{equation*}
+    \bar\vw_{i+1} = \vw_i + \frac{16}{135}\vb{K}_1 + \frac{6656}{12825}\vb{K}_3 + \frac{28561}{56430}\vb{K}_4 - \frac{9}{50}\vb{K}_5 + \frac{2}{55}\vb{K}_6,
+\end{equation*}
+con un ELT de quinto orden para estimar el ELT
+en el método de Runge-Kutta de cuarto orden dado por 
+\begin{equation*}
+    \vw_{i+1} = \vw_i + \frac{25}{216}\vb{K}_1 + \frac{1408}{2565}\vb{K}_3 + \frac{2197}{4104}\vb{K}_4 - \frac{1}{5}\vb{K}_5,
+\end{equation*}
 donde 
-$$
+\begin{equation*}
 \begin{array}{l}
-\\
-k_1 =  hf\left(t_i, \omega_i\right)\\
-\\
-k_2 =  hf\left(t_i + \frac{h}{4}, \omega_i + \frac{1}{4}k_1\right)\\
-\\
-k_3 =  hf\left(t_i + \frac{3h}{8}, \omega_i + \frac{3}{32}k_1 +  \frac{9}{32}k_2\right)\\
-\\
-k_4 = hf\left(t_i + \frac{12h}{13}, \omega_i + \frac{1932}{2197}k_1 -   \frac{7200}{2197}k_2 +  \frac{7296}{2197}k_3\right) \\
-\\
-k_5 = hf\left(t_i + h, \omega_i + \frac{439}{216}k_1 - 8k_2 +  \frac{3680}{513}k_3 - \frac{845}{4104}k_4\right) \\
-\\
-k_6 = hf\left(t_i + \frac{h}{2}, \omega_i - \frac{8}{27}k_1 + 2k_2 -  \frac{3544}{2565}k_3 + \frac{1859}{4104}k_4 - \frac{11}{40}k_5\right)
+    \vb{K}_1 =  hf\left(t_i, \vw_i\right)\\
+    \vb{K}_2 =  hf\left(t_i + \frac{h}{4}, \vw_i + \frac{1}{4}\vb{K}_1\right)\\
+    \vb{K}_3 =  hf\left(t_i + \frac{3h}{8}, \vw_i + \frac{3}{32}\vb{K}_1 +  \frac{9}{32}\vb{K}_2\right)\\
+    \vb{K}_4 = hf\left(t_i + \frac{12h}{13}, \vw_i + \frac{1932}{2197}\vb{K}_1 -   \frac{7200}{2197}\vb{K}_2 +  \frac{7296}{2197}\vb{K}_3\right) \\
+    \vb{K}_5 = hf\left(t_i + h, \vw_i + \frac{439}{216}\vb{K}_1 - 8k_2 +  \frac{3680}{513}\vb{K}_3 - \frac{845}{4104}\vb{K}_4\right) \\
+    \vb{K}_6 = hf\left(t_i + \frac{h}{2}, \vw_i - \frac{8}{27}\vb{K}_1 + 2k_2 -  \frac{3544}{2565}\vb{K}_3 + \frac{1859}{4104}\vb{K}_4 - \frac{11}{40}\vb{K}_5\right)
 \end{array}
-$$
-\\ //aquí falta algoritmo completo
+\end{equation*}

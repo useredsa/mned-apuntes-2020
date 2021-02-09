@@ -129,7 +129,7 @@ en la estimación del error del método de Euler.
 \end{proof}
 
 %TODO discutir sobre la convexidad en este resultado
-\begin{theorem}[Convergencia del método de Euler]
+\begin{theorem}[Convergencia del método de Euler]\label{thm:euler-convergence}
     Sean $f : D \subset \R \times \R \to \R$ con $D$ abierto convexo
     y $\{(t_i, w_i)\}_{i = 0,\ldots, n}$
     la solución calculada por el método de Euler para cierto paso fijo $h$
@@ -352,18 +352,19 @@ conforme disminuye el tamaño del paso.
     que a partir de un estado $(t_i, \vw_i) \approx (t_i, \vy(t_i))$,
     aproxima $\vy(t_i + h)$ como
     \begin{equation*}
-        w_{i+1} = w_i + h\cdot \phi(h, t_i, w_i).
+        w_{i+1} = w_i + h\cdot \vb*{\phi}(h, t_i, w_i).
     \end{equation*}
     para un tamaño de paso $h$.
 \end{definition}
 
 \begin{definition}
-    Sea $\vy$ la solución obtenida por un método en diferencias de paso $h$
-    para un PVI.
-    Se define \emph{el error local de truncamiento del método} como
+    Sea $\vy$ la solución de un PVI.
+    Se define \emph{el error local de truncamiento
+    de un método en diferencias de paso $h$} como
     \begin{equation*}
         \ELT_{i+1}(h) =
-        \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - \phi(h, t_i, \vy(t_i)).
+        \frac{\vy(t_{i+1}) - \vy(t_i) - h\cdot \vb*{\phi}(h, t_i, \vy(t_i))}{h} =
+        \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - \vb*{\phi}(h, t_i, \vy(t_i)).
     \end{equation*}
 \end{definition}
 
@@ -383,7 +384,8 @@ conforme disminuye el tamaño del paso.
 %     \end{equation*}
 %     En el caso de un método en diferencias,
 %     \begin{equation*}
-%         Z_{i+1}(h) = \frac{\vy_i(t_i + h) - \vw_i}{h} - \phi(h, t_i, w_i).
+%         Z_{i+1}(h) =
+%             \frac{\vy_i(t_i + h) - \vw_i}{h} - \vb*{\phi}(h, t_i, w_i).
 %     \end{equation*}
 % \end{definition}
 
@@ -392,11 +394,11 @@ conforme disminuye el tamaño del paso.
     En el caso concreto del método de Euler se tiene
     \begin{equation*}
         \ELT_{i+1}(h) =
-        \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - h\cdot \vf(t_i,\vy(t_i)) =
+        \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - \cdot \vf(t_i,\vy(t_i)) =
         \frac{h}{2} \vy''(\xi_i),
             \qq{$\xi_i \in [t_i, t_{i+1}]$ para todo $i=0,\dots, n-1$}.
     \end{equation*}
-    $\vy$ si $\norm{\vy''(t)} \le C$ para todo $t \in [a, b]$ entonces
+    Y si $\norm{\vy''(t)} \le C$ para todo $t \in [a, b]$ entonces
     \begin{equation*}
         \norm{\ELT_{i+1}(h)} \le \frac{C}{2}h = \vo(h).
     \end{equation*}
