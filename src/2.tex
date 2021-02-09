@@ -9,7 +9,6 @@ en la resolución de ciertos problemas.
 \subsection{Un primer problema rígido}
 
 Consideremos el problema de valor inicial
-%
 \begin{equation}\label{prb:rigid1}
     \begin{cases}
         y'(t) = 5\nume^{5t}(y-t)^2 + 1 \\
@@ -17,10 +16,9 @@ Consideremos el problema de valor inicial
     \end{cases}
     \qq{para $t$ en $[0,1]$ o $[0,8]$}
 \end{equation}
-%
 cuya solución analítica es $y(t) = t - \nume^{-5t}$.
 Si intentamos resolverlo con el método de RK4
-podemos construir la tabla \cref{tab:rigid-problem-rk4-step-error-comparison}.
+podemos construir la \cref{tab:rigid-problem-rk4-step-error-comparison}.
 Observamos un fenómeno extraño.
 Si el paso es menor que $0.2419$
 el método obtiene unas cotas de error razonables
@@ -52,13 +50,13 @@ el error del método se dispara.
 Cuando integramos una ecuación diferencial cuyas derivadas tenemos acotadas,
 la intuición\footnote{
     Justificada por las fórmulas de error que hemos obtenido,
-    ya que una aproximación del error es $Cy^{(p)}(\xi)h^p$.
+    ya que una aproximación del error es $C\vy^{(p)}(\xi)h^p$.
 }
 nos dice que el tamaño del paso
 podría ser grande en zonas donde la variación de la curva es pequeña
 y debería ser más pequeño en intervalos donde la variación es grande.
 También asumimos que podemos controlar el error
-eligiendo un tamaño de paso adecuado o
+eligiendo un tamaño de paso adecuado u
 obtener una aproximación del mismo
 comparando una solución con otra donde hemos reducido el tamaño del paso.
 Sin embargo, en el problema anterior vemos que el error,
@@ -82,7 +80,6 @@ y no de una solución a ese problema.
 Aparte del fenómeno anterior,
 hay otros que habitualmente se atribuyen a los problemas que llamamos rígidos.
 Enumeramos tres.
-%
 \begin{enumerate}
     \item Si el paso no está por debajo de un umbral,
     el error se dispara.
@@ -110,33 +107,29 @@ Por ejemplo,
 un sistema lineal de coeficientes constantes podría definirse como rígido
 cuando todos sus valores propios, $\lambda_1,\ldots,\lambda_n$,
 tienen parte real negativa y el coeficiente
-%
 \begin{equation*}
     \frac{\abs{\Re\lambda_M}}{\abs{\Re\lambda_m}}
     \qq{siendo $M$ y $m$ tales que
     $\abs{\Re\lambda_M} \ge \abs{\Re\lambda_k} \ge \abs{\Re\lambda_m}$
     para todo $1 \le k \le n$.}
 \end{equation*}
-%
 es ``grande''.
 
-De ahora en adelante utilizaremos la definición proporcionada por
-Don Francisco Esquembre,
+De ahora en adelante utilizaremos la definición dada en clase,
 que se basa en la idea de que los problemas rígidos sean aquellos
 para los que no podamos asegurar que el error relativo sea pequeño.
 
 \begin{definition}
-    Dado un problema de valor inicial con derivada $y$
+    Dado un problema de valor inicial con derivada $\vy$
     que proporcione una estimación del error de la forma
-    %
     \begin{equation*}
-        Cy^{(p)}(\xi)h^p
+        C\vy^{(p)}(\xi)h^p
     \end{equation*}
-    %
     donde $C$ y $p$ son constantes que dependen del método,
     $h$ el tamaño del paso y $\xi$ un punto del intervalo solución,
     diremos que estamos antes un \emph{problema rígido} si
-    $y^{(p)}(t)$ crece de forma no acotada y en mayor proporción que $y(t)$.
+    $\vy^{(p)}(\xi)$ crece de forma no acotada
+    y en mayor proporción que $\vy(t)$.
 \end{definition}
 
 \subsection{Tamaño de paso umbral}
@@ -158,15 +151,13 @@ podemos estudiar cómo se comportan los métodos que conocemos.
 
 \subsubsection{Método de Euler}
 
-Para el método de Euler tendríamos una ecuación de la forma
-%
+Para el método de Euler tendríamos una sucesión de la forma
 \begin{equation*}
     \begin{cases}
         w_{i+1} = w_i + hf(t_i, w_i) = (1 + h\lambda)w_i \\
         w_0 = \alpha
     \end{cases}
 \end{equation*}
-%
 de manera que $w_n = (1 + h\lambda)^w_0$,
 mientras que la solución $y(t_n) = \nume^{\lambda t_n} = \nume^{n\lambda h}$.
 
@@ -189,11 +180,9 @@ si quisiésemos que el error no creciese de manera exponencial.
 Visto el ejemplo del método de Euler,
 podemos plantearnos repetirlo con otros métodos de paso fijo.
 En ese caso dado un método obtendríamos
-%
 \begin{equation}\label{eqn:polq-one-step}
     w_{i+1} = Q(h\lambda)w_i
 \end{equation}
-%
 en función de un polinomio $Q(x)$,
 y querríamos que $\abs{Q(h\lambda} < 1$.
 Por ejemplo, para el método de Taylor de orden $n$ se tendría que
@@ -203,29 +192,24 @@ Y en general, obtener el umbral para $h$ sería más laborioso.
 \subsubsection{Métodos multipaso}
 
 Para un método multipaso general, tendríamos
-%
 \begin{equation*}
     \begin{cases}
         w_i =
         a_0w_{i-m} + \cdots + a_{m-1}w_{i-1} + h\qty[
             b_0f(t_{i-m}, w_{i-m}) + \cdots + b_mf(t_i, w_i)
-        ]
+        ] \\
         w_0 = \alpha
     \end{cases}.
 \end{equation*}
-%
 Aplicado al problema de prueba tendríamos que considerarlo como
 una sucesión de recurrencia
-%
 \begin{equation*}
     (1 - h\lambda b_m)w_i
     - (a_{m-1} - h\lambda b_{m-1})w_{i-1}
     - \cdots
     - (a_0 + h\lambda b_0)w_{i-m} = 0,
 \end{equation*}
-%
 cuyo polinomio característico sería
-%
 \begin{equation}\label{eqn:polq-multi-step}
     Q(z, h\lambda) =
     (1 - h\lambda b_m)z^m
@@ -238,11 +222,9 @@ Si conocemos $w_0,\ldots,w_{n-1}$
 y las raíces $\beta_1,\ldots,\beta_m$ de $Q(x, y)$
 y son todas diferentes %TODO esto de qué teorema señores? DE QUÉ TEOREMA?
 entonces las soluciones a esa sucesión serían de la forma
-%
 \begin{equation*}
     w_n = \sum_{i=1}^m C_i\beta_i^n,
 \end{equation*}
-%
 para una constantes $C_1,\ldots,C_n$
 que dependerían también de la condición inicial,
 y tenderían a $0$ si $\abs{\beta_k} < 1$ para todo $1 \le k \le m$.
@@ -302,20 +284,21 @@ ante problemas rígidos.
     Ningún método explícito de Runge-Kutta puede ser $A$-estable.
 \end{theorem}
 
-\begin{remark}
-    En realidad no hemos definido lo que es
-    un método explícito de Runge-Kutta todavía.
-    La definición que hemos dado de método de Runge-Kutta
-    se corresponde con los métodos explícitos.
-    A continuación estudiaremos los métodos implícitos.
-\end{remark}
+% \begin{remark}
+%     En realidad no hemos definido lo que es
+%     un método explícito de Runge-Kutta todavía.
+%     La definición que hemos dado de método de Runge-Kutta
+%     se corresponde con los métodos explícitos.
+%     A continuación estudiaremos los métodos implícitos.
+% \end{remark}
 
 % Iserles pág 67
 \begin{theorem}
     El mayor orden de un método multipaso $A$-estable es $2$.
 \end{theorem}
 
-A continuación introduciremos
+A continuación veremos como los métodos implícitos son en general
+mejores para los problemas rígidos.
 
 \section{Métodos Implícitos}
 
@@ -328,14 +311,12 @@ es el siguiente punto de una solución.
 \begin{method}{Método de Euler hacia atrás}
     El \emph{método de Euler hacia atrás} determina,
     dado el problema \ref{eqn:pvi} y un paso $h > 0$:
-%
     \begin{equation}\label{eqn:backwardseulersol}
     \begin{cases}
         w_0 = y_0 \\
         w_{i+1} = w_i + h\cdot f(t_{i+1}, w_{i+1}), \forall i=0,\dots, n-1
     \end{cases}
     \end{equation}
-%
     Siendo $t_i = t_0 + i\cdot h$ para $i \in \qty{0,\ldots, n}$.
 \end{method}
 
@@ -390,7 +371,6 @@ es el siguiente punto de una solución.
 \begin{method}{Método del Trapecio}
     El \emph{método del trapecio} determina,
     dado el problema \ref{eqn:pvi} y un paso $h > 0$:
-%
     \begin{equation}\label{eqn:trapezoidalsol}
     \begin{cases}
         w_0 = y_0 \\
@@ -399,7 +379,6 @@ es el siguiente punto de una solución.
         ), \forall i=0,\dots, n-1
     \end{cases}
     \end{equation}
-%
     Siendo $t_i = t_0 + i\cdot h$ para $i \in \qty{0,\ldots, n}$.
 \end{method}
 
