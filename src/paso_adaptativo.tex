@@ -3,31 +3,15 @@
 \subsection{Control del error global a través del criterio del error local}
 
 \begin{definition}
-    Dado un problema de valor inicial y la solución
-    $\qty{\vw_i}_{i = 0,\ldots,n}$
-    calculada por un método numérico en diferencias,
-    \begin{equation*}
-        \left\{
-        \begin{aligned}
-            \vy'(t) &= \vf(t, \vy(t)) \\
-            \vy(t_0) &= \vy_0 \\
-        \end{aligned}
-        \right.
-        \qq{y}
-        \left\{
-        \begin{aligned}
-            \vw_0 &= \vy_0 \\
-            \vw_{i+1} &= \vw_i + h \vphi(h, t_i, \vw_i)
-        \end{aligned},
-        \right.
-    \end{equation*}
+    Dado un PVI y la solución $\qty{\vw_i}_{i = 0,\ldots,n}$
+    calculada por un método de integración,
     definimos la \emph{solución local} $\vz_i$
     como la solución del PVI
     \begin{equation*}
         \left\{
         \begin{aligned}
             \vz_i'(t) &= \vf(t, \vz_i) \\
-            \vz_i(t_n) &= \vw_i
+            \vz_i(t_i) &= \vw_i
         \end{aligned}.
         \right.
     \end{equation*}
@@ -61,16 +45,24 @@ y con curvas de color verde las soluciones locales.
     \label{fig:local-sol}
 \end{figure}
 
+\begin{editorial}
+    El siguiente teorema, del que no tenemos demostración,
+    parece falso a simple vista sin añadir más hipótesis.
+    Sin embargo, probablemente es cierto para los métodos que conocemos
+    (Runge-Kutta y extrapolación de Richardson de métodos de Runge-Kutta).
+    Necesitamos bibliografía que lo confirme.
+\end{editorial}
+
 \begin{theorem}\label{thm:global-err}
     Supongamos que el método de integración verifica
     \begin{equation*}
-        \norm{\vz_i(t_i + h) - \vw_{i+1}} \leq \varepsilon\cdot h
-            \qq{(criterio de error local)}
+        \norm{\vz_i(t_{i+1}) - \vw_{i+1}} \leq \varepsilon\cdot (t_{i+1}-t_i)
+            \qq{para todo $i = 1,\ldots,n$,}
     \end{equation*}
-    para todo $i = 1,\ldots,n$ para una tolerancia $\varepsilon$ dada.
+    donde $\varepsilon$ es una tolerancia dada.
     Entonces, si $\vf$ es lipschitziana con constante $L$, se tiene que 
     \begin{equation*}
-        \norm{\vy(t_n) - \vw_n} \leq \nume^{L(t_n - t_0)}\norm{\vy(t_n) - \vw_0}
+        \norm{\vy(t_n) - \vw_n} \leq \nume^{L(t_n - t_0)}\norm{\vy(t_0) - \vw_0}
             + \frac{\nume^{L(t_n - t_0)}}{L}\varepsilon.
     \end{equation*}
 \end{theorem}
@@ -88,7 +80,7 @@ y con curvas de color verde las soluciones locales.
     este criterio consiste en mantener el ELT
     \begin{equation*}
         \norm{\ELT_{i+1}(h)} =
-        \frac{\norm{\vy(t_{i+1}) - (\vy(t_i) + h\vphi(h, t_i, \vw_i))}}{h}
+        \frac{\norm{\vy(t_{i+1}) - (\vy(t_i) + h\vphi(h, t_i, \vy(t_i)))}}{h}
         \approx \frac{\norm{\vz_i(t_{i+1}) - \vw_{i+1}}}{h} \le \varepsilon
     \end{equation*}
     por debajo de la tolerancia.
@@ -121,6 +113,12 @@ y con curvas de color verde las soluciones locales.
 \begin{remark}
     En las condiciones del teorema anterior el ELT es de orden $k$.
 \end{remark}
+
+\begin{editorial}
+    No está claro si el teorema anterior es correcto.
+    En el libro de Atkinson demuestra una fórmula similar
+    exclusiva para métodos de Runge-Kutta.
+\end{editorial}
 
 \newcommand{\hh}{\sfrac{h}{2}}
 
@@ -175,10 +173,7 @@ Pero el nuevo avance nos permite aproximar el error local.
 Ahora proponemos un algoritmo que resuelve el problema
 asegurándose de que el error local permanece acotado.
 
-\begin{theorem}
-    El siguiente procedimiento asegura que la aproximación final
-    tiene ELT menor que $\varepsilon$.
-
+\begin{definition}[Algoritmo de aproximaciones sucesivas]
     Parámetros:
     intervalo de resolución (\/$[a, b]$),
     cota para el error (\/$\varepsilon$),
@@ -203,7 +198,7 @@ asegurándose de que el error local permanece acotado.
             \vw_i := \frac{2^k\vw^{\hh}_{i+2} - \vw^h_{i+1}}{2^k - 1}.
         \end{equation*}
     \end{enumerate}
-\end{theorem}
+\end{definition}
 
 \begin{remark}
     El algoritmo anterior es un método de resolución
@@ -255,8 +250,8 @@ manteniendo la cota sobre el error de truncamiento local.
     Un método es \emph{de paso adaptativo con tolerancia $\varepsilon$}
     si la solución $\{(t_i, \vw_i)\}_{i = 0,\ldots,n}$ que genera asegura
     \begin{equation*}
-        \norm{\ELT_i} \le \varepsilon (t_i - t_{i-1})
-            \qq{para todo $i = 1,\ldots,n$,}
+        \norm{\vz_i(t_{i+1}) - \vw_{i+1}} \le \varepsilon (t_{i+1} - t_i)
+            \qq{para todo $i = 0,\ldots,n-1$,}
     \end{equation*}
     a costa de modificar el tamaño del paso $h_i = t_i - t_{i-1}$
     en cada iteración.
@@ -344,7 +339,7 @@ que produce las aproximaciones
     \left\{
     \begin{array}{lll}
     \vw_0 = \alpha & & \\
-    \vw_{i+1} = \vw_i + h\phi(t_i, \vw_i, h) & & i >0
+    \vw_{i+1} = \vw_i + h\phi(h, t_i, \vw_i) & & i >0
     \end{array}
     \right.
 \end{equation*}
@@ -362,14 +357,14 @@ que produce las aproximaciones
     \end{array}
     \right.
 \end{equation*}
-con error de truncamiento $\ELT_{i+1}(h) = \vo(h^{k+1})$.
+con error de truncamiento $\bar\ELT_{i+1}(h) = \vo(h^{k+1})$.
 
 Suponiendo $\vw_i = \bar\vw_i \approx y(t_i)$ y tomando un $h$ fijo tenemos que
 \begin{equation*}
 \begin{array}{l}
-    \ELT_{i+1}(h) = \frac{y(t_{i+1}) - y(t_i)}{h} - \phi(t_i, y(t_i), h) \approx  \frac{y(t_{i+1}) - \vw_i}{h} - \phi(t_i, \vw_i, h) =\\
+    \ELT_{i+1}(h) = \frac{y(t_{i+1}) - y(t_i)}{h} - \phi(h, t_i, y(t_i)) \approx  \frac{y(t_{i+1}) - \vw_i}{h} - \phi(h, t_i, \vw_i) =\\
     \\
-     =\frac{y(t_{i+1}) - (\vw_i + h\phi(t_i, \vw_i, h))}{h} = \frac{1}{h}(y(t_{i+1})-\vw_{i+1})
+     =\frac{y(t_{i+1}) - (\vw_i + h\phi(h, t_i, \vw_i))}{h} = \frac{1}{h}(y(t_{i+1})-\vw_{i+1})
 \end{array}
 \end{equation*}
 Y, análogamente, se tiene que 
@@ -424,13 +419,11 @@ en el método de Runge-Kutta de cuarto orden dado por
     \vw_{i+1} = \vw_i + \frac{25}{216}\vb{K}_1 + \frac{1408}{2565}\vb{K}_3 + \frac{2197}{4104}\vb{K}_4 - \frac{1}{5}\vb{K}_5,
 \end{equation*}
 donde 
-\begin{equation*}
-\begin{array}{l}
-    \vb{K}_1 =  hf\left(t_i, \vw_i\right)\\
-    \vb{K}_2 =  hf\left(t_i + \frac{h}{4}, \vw_i + \frac{1}{4}\vb{K}_1\right)\\
-    \vb{K}_3 =  hf\left(t_i + \frac{3h}{8}, \vw_i + \frac{3}{32}\vb{K}_1 +  \frac{9}{32}\vb{K}_2\right)\\
-    \vb{K}_4 = hf\left(t_i + \frac{12h}{13}, \vw_i + \frac{1932}{2197}\vb{K}_1 -   \frac{7200}{2197}\vb{K}_2 +  \frac{7296}{2197}\vb{K}_3\right) \\
-    \vb{K}_5 = hf\left(t_i + h, \vw_i + \frac{439}{216}\vb{K}_1 - 8k_2 +  \frac{3680}{513}\vb{K}_3 - \frac{845}{4104}\vb{K}_4\right) \\
-    \vb{K}_6 = hf\left(t_i + \frac{h}{2}, \vw_i - \frac{8}{27}\vb{K}_1 + 2k_2 -  \frac{3544}{2565}\vb{K}_3 + \frac{1859}{4104}\vb{K}_4 - \frac{11}{40}\vb{K}_5\right)
-\end{array}
-\end{equation*}
+\begin{align*}
+    \vb{K}_1 &=  hf\qty\bigg(t_i, \vw_i)\\
+    \vb{K}_2 &=  hf\qty\bigg(t_i + \frac{h}{4}, \vw_i + \frac{1}{4}\vb{K}_1)\\
+    \vb{K}_3 &=  hf\qty\bigg(t_i + \frac{3h}{8}, \vw_i + \frac{3}{32}\vb{K}_1 +  \frac{9}{32}\vb{K}_2)\\
+    \vb{K}_4 &= hf\qty\bigg(t_i + \frac{12h}{13}, \vw_i + \frac{1932}{2197}\vb{K}_1 -   \frac{7200}{2197}\vb{K}_2 +  \frac{7296}{2197}\vb{K}_3) \\
+    \vb{K}_5 &= hf\qty\bigg(t_i + h, \vw_i + \frac{439}{216}\vb{K}_1 - 8k_2 +  \frac{3680}{513}\vb{K}_3 - \frac{845}{4104}\vb{K}_4) \\
+    \vb{K}_6 &= hf\qty\bigg(t_i + \frac{h}{2}, \vw_i - \frac{8}{27}\vb{K}_1 + 2k_2 -  \frac{3544}{2565}\vb{K}_3 + \frac{1859}{4104}\vb{K}_4 - \frac{11}{40}\vb{K}_5)
+\end{align*}

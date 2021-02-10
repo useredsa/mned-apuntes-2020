@@ -1,0 +1,72 @@
+\section{Implementación de los métodos de Adams. Predictor-corrector}
+
+\begin{editorial}
+    Esta sección necesita todavía más detalle.
+    Contribuye a estos apuntes via \href{https://git-scm.com/}{git}.
+    Puedes encontrar el repositorio en
+    \url{https://github.com/pablomiralles22/mned-apuntes-2020}.
+\end{editorial}
+
+Estos métodos sirven para obtener lo mejor de los métodos explícito e implícito,
+la completitud del primero y el mejor error del segundo,y se consiguen usando
+el implícito para corregir la predicción del método explícito. Por ejemplo,
+uno de estos métodos  sería usar como predictor el método de Adams-Bashforth 
+de $4$ pasos (\cref{met:AB4steps}) y como corrector el método de Adams-Moulton
+de $3$ pasos (\cref{met:AM3steps}).
+
+De manera parecida a RKF, %TODO referencia a RKF
+el método predictor-corrector obtiene, cada vez,
+dos aproximaciones de la solución,
+una obtenida de uno del predictor y otra del corrector.
+Por la definición de error local de truncamiento tenemos que
+\begin{gather*}
+    \vy(t_{i+1}) = \vy(t_i) + \frac{h}{24}[
+        55\vf(t_i,\vy(t_i) - 59\vf(t_{i-1},\vy(t_{i-1})) + 37\vf(t_{i-2}, \vy(t_{i-2}))
+        - 9\vf(t_{w-3},\vy(t_{i-3})))
+    ] + \frac{251}{720}\vy^{(5)}(\xi)h^5  \\
+    \vy(t_{i+1}) = \vy(t_i) + \frac{h}{24}[
+        9\vf(t_{w+1},\vy(t_{i+1})) + 19\vf(t_i,\vy(t_i) - 5\vf(t_{i-1},\vy(t_{i-1}))
+        + \vf(t_{i-2}, \vy(t_{i-2})))
+    ] - \frac{19}{720}\vy^{(5)}(\mu)h^5
+\end{gather*}
+Y si ahora identificamos los $\vw_j \approx \vy(t_j)$ para $j = 0,1,\dots, i$,
+tenemos que
+\begin{equation*} 
+    \vy(t_{i+1}) - \vw_{i+1}^{(0)} \approx {} 
+        \frac{251}{720}\vy^{(5)}(\xi)h^5
+\end{equation*}
+\begin{equation} \label{eqn:pred-corr}
+    \vy(t_{i+1}) - \vw_{i+1}^{(1)} \approx {} 
+        \frac{-19}{720}\vy^{(5)}(\mu)h^5.
+\end{equation}
+Si además, $h$ es suficientemente pequeño entonces
+$\vy^{(5)}(\xi) \approx \vy^{(5)}(\mu)$
+y restando
+\begin{align*}
+    \vw_{i+1}^{(1)} - \vw_{i+1}^{(0)} \approx 
+        \frac{h^6}{720}\qty[251y^{(5)}(\xi) + 19y^{(5)}(\mu)] \approx &
+        \frac{27}{72}h^5y^{(5)}(\mu) = \frac{3}{8}h^5y^(\mu) \\
+    \vy^{(5)}(\mu) = \frac{8}{3h^5}(\vw_{i+1}^{(1)} - \vw_{i+1}^{(0)}) &
+\end{align*}
+Por lo tanto, de \ref{eqn:pred-corr} tenemos
+\begin{equation*}
+    \vy(t_{i+1}) - \vw_{i+1}^{(1)} \approx \frac{-19 * 8}{720 * 3}(\vw_{i+1}^{(1)} - \vw_{i+1}^{(0)})
+\end{equation*}
+Es decir
+\begin{equation*}
+    \tilde{e}_r(h) = \frac{19}{270}\norm{\vw_{i+1}^{(0)} - \vw_{i+1}^{(1)}}   
+\end{equation*}
+es una aproximación del error para un método de orden 4.
+Luego dada una tolerancia $\varepsilon > 0$, usando la estimación
+local del paso del hijo de Ricardo tenemos
+\begin{equation*}
+    q = \bigg(\frac{\varepsilon h}{\tilde{e}_r(h)}\bigg)^{1/4} \approx 
+        2.48\bigg(\frac{\varepsilon h}{\norm{\vw_{i+1}^{(0)} - \vw_{i+1}^{(1)}}}\bigg)^{1/4}
+\end{equation*}
+%TODO dice algo de ser mas consevador que blablabla
+Por otra parte, cambiar el paso supone reiniciar los
+$4$ primeros pasos de modo que se ignora el cambio de paso 
+si tenemos que 
+\begin{equation*}
+    \frac{\varepsilon h}{10} < \tilde{e}(h)
+\end{equation*}

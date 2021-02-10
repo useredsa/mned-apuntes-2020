@@ -1,5 +1,7 @@
 \section{Preliminares}
 
+\subsection{Problemas de valor inicial}
+
 %TODO cambiar esta label y actualizar referencias
 \begin{definition}\label{eqn:pvi}
     Un \emph{problema de valor inicial} (en adelante, PVI)
@@ -63,7 +65,7 @@ a poco que la función $\vf$ del PVI cumpla unos requisitos mínimos.
 \subsection{Notación}
 
 %TODO habría que considerar que t_i también se aproxima por tilde{t}_i, no?
-Los métodos que veremos calcularán soluciones de un PVI
+Los métodos de integración que veremos calcularán soluciones de un PVI
 como una lista de pares $\{(t_0, \vw_0), \ldots, (t_n, \vw_n)\}$,
 donde los $t_i$ son reales de forma que $t_0 < t_1 < \cdots < t_n$
 y cada punto $\vw_i$ es una aproximación de $\vy(t_i)$,
@@ -75,10 +77,13 @@ de forma que
     \tw_i \approx \vw_i \approx \vy(t_i).
 \end{equation*}
 
+Para ver de un vistazo la notación utilizada durante todo el texto,
+véase el \cref{sec:notation}.
+
 \section{Métodos de paso fijo}
 
 \begin{definition}
-    Un método es \emph{de paso fijo $h$} si la solución
+    Un método de integración es \emph{de paso fijo $h$} si la solución
     $\{(t_i, \vw_i)\}_{i = 0,\ldots,n}$ que genera cumple
     \begin{equation*}
         t_i = t_{i-1} + h \qq{para todo $i = 1,\ldots,n$.}
@@ -207,6 +212,8 @@ en la estimación del error del método de Euler.
 \end{proof}
 
 \begin{theorem}[Convergencia del método de Euler con error de redondeo]
+    \renewcommand{\tw}{\widetilde{w}}
+
     Sean $f : D \subset \R \times \R \to \R$ con $D$ abierto convexo
     e $y : [a, b] \to \R$ una solución del un PVI dado por $f$,
     con $(t, y(t)) \in D$, $\forall t \in [a, b]$,
@@ -214,8 +221,9 @@ en la estimación del error del método de Euler.
     Fijado $h > 0$, consideramos la solución numérica
     \begin{equation}
     \begin{cases}
-        w_0 = y_0 \\
-        w_{i+1} = w_i + hf(t_i, w_i) + \delta_i & \text{para $i = 1,\ldots,n$.}
+        \tw_0 = y_0 + \delta_0 \\
+        \tw_{i+1} = \tw_i + hf(t_i, \tw_i) + \delta_{i+1}
+            & \text{para $i = 0,\ldots,n-1$.}
     \end{cases}
     \end{equation}
     con $\delta_i < \delta$ para todo $i = 0,\ldots,n$.
@@ -225,12 +233,12 @@ en la estimación del error del método de Euler.
         con constante de Lipschitz $L$.
         \item $y''$ existe en todo $(a, b)$ y
         su módulo está acotado por una constante $C \ge 0$.
-        \item $(t_i, w_i) \in D$ para todo $i = 0,\dots,n$.
+        \item $(t_i, \tw_i) \in D$ para todo $i = 0,\dots,n$.
     \end{enumerate}
     entonces
     \begin{equation*}
-        \max_{0 \le i \le n} \abs{y(t_i)-w_i} \le
-        \nume^{(b-a)L}\abs{y(t_0) - w_0} + \qty[\frac{\nume^{(b-a)L}-1}{L}]\qty(
+        \max_{0 \le i \le n} \abs{y(t_i) - \tw_i} \le
+        \nume^{(b-a)L}\abs{y(t_0)-\tw_0} + \qty[\frac{\nume^{(b-a)L}-1}{L}]\qty(
             \frac{1}{2}hC + \frac{\delta}{h}
         ).
     \end{equation*}
@@ -356,7 +364,7 @@ conforme disminuye el tamaño del paso.
     \end{equation*}
 \end{definition}
 
-\begin{definition}
+\begin{definition}\label{def:elt}
     Sea $\vy$ la solución de un PVI.
     Se define \emph{el error local de truncamiento
     de un método en diferencias de paso $h$} como
@@ -393,7 +401,7 @@ conforme disminuye el tamaño del paso.
     En el caso concreto del método de Euler se tiene
     \begin{equation*}
         \ELT_{i+1}(h) =
-        \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - \cdot \vf(t_i,\vy(t_i)) =
+        \frac{\vy(t_{i+1}) - \vy(t_i)}{h} - \vf(t_i,\vy(t_i)) =
         \frac{h}{2} \vy''(\xi_i),
             \qq{$\xi_i \in [t_i, t_{i+1}]$ para todo $i=0,\dots, n-1$}.
     \end{equation*}
@@ -466,7 +474,7 @@ y cualquier método que considere intentará aproximar una solución suya.
 
 Unas pocas cuentas son suficientes para darse cuenta de que
 calcular estas derivadas de manera genérica es realmente costoso,
-y normalmente se suelen hace las cuentas de manera \emph{adhoc}
+y normalmente se suelen hacer las cuentas de manera \emph{adhoc}
 para un problema concreto.
 
 %TODO un ejemplillo aquí taría de puta madre
