@@ -142,10 +142,10 @@ y podríamos obtener \emph{una fórmula para mejorar la solución},
     \vz^h_i(t^h_{i+1}) = \vz^{\hh}_i(t^{\hh}_{i+2}) =
     \frac{2^k\vw^{\hh}_{i+2} - \vw^h_{i+1}}{2^k - 1} + \vo(h^{k+2}),
 \end{equation*}
-y \emph{una fórmula para aproximar el error local de truncamiento},
+y \emph{una fórmula para aproximar el error local},
 \begin{equation*}
     \vz^h_i(t^h_{i+1}) - \vw^h_{i+1} =
-    \frac{2^k}{2^k-1}\qty(\vw^{\hh}_{i+2} - \vw^h_{i+1}) + \vo(h^{k+1}).
+    \frac{2^k}{2^k-1}\qty(\vw^{\hh}_{i+2} - \vw^h_{i+1}) + \vo(h^{k+2}).
 \end{equation*}
 
 %TODO esto lo he quitado de momento.
@@ -184,7 +184,7 @@ asegurándose de que el error local permanece acotado.
         con tamaños de paso $h$ y $\frac{h}{2}$.
         \item Estimamos el máximo error local.
         \begin{equation*}
-            \operatorname{err} = \max_{i = 1,\ldots,n}\qty{\ELT^h_i} \approx
+            \operatorname{err} = \max_{i = 1,\ldots,n}\qty{h\ELT^h_i} \approx
             \max_{i = 1,\ldots,n}\qty{
                 \frac{2^k}{2^k-1}\qty(\vw^{\hh}_{i+2} - \vw^h_{i+1})
             }.
@@ -213,19 +213,20 @@ Si tenemos una estimación del error en el paso anterior,
 ¿podemos estimar cuál tendría que haber sido el paso para tener un error menor?
 Veámoslo.
 
-Si escribimos el nuevo paso como $qh$, donde $q > 0$ sería el coeficiente corrector,
+Si escribimos el nuevo paso como $qh$,
+donde $q > 0$ sería el coeficiente corrector,
 llegamos a la ecuación
 \begin{align*}
     \norm{\vz_i(t_i + h) - \vw^{qh}_{i+1}} =
     \norm{(qh)^{k+1}C\cdot \vz_i^{(k+1)}(t_i) + \vo((qh)^{k+2})} = {} \\
     q^{k+1}\norm{h^{k+1}C\cdot \vz_i^{(k+1)}(t_i) + \vo(h^{k+2})} = {} \\
-    q^{k+1}\norm{\vz_i(t_i + h) - \vw^{qh}_{i+1} + \vo(h^{k+2})} = {} \\
-    q^{k+1}\norm{\ELT^h_{i+1} + \vo(h^{k+2})} \le {} & \varepsilon qh
+    q^{k+1}\norm{\vz_i(t_{i+1}) - \vw^h_{i+1} + \vo(h^{k+2})} \approx {} \\
+    q^{k+1}\operatorname{err} \le {} & \varepsilon qh
 \end{align*}
 Y por tanto concluímos que una buena estimación para el nuevo paso
 viene dada por
 \begin{equation*}
-    q \le \qty(\frac{\varepsilon h}{\ELT^h_{i+1}})^{\frac{1}{k}}.
+    q \le \qty(\frac{\varepsilon h}{\operatorname{err}})^{\frac{1}{k}}.
 \end{equation*}
 
 \begin{remark}
@@ -385,7 +386,7 @@ podemos aproximar el ELT del método de orden $k$ como
 de manera que la aproximación del error local de truncamiento
 al tomar el paso de tamaño $qh$ es
 \begin{equation*}
-    \ELT_{i+1}(qh)\approx C(qh)^k = Cq^nh^k \approx q^k \ELT_{i+1}(h) \approx \frac{q^k}{h}(\bar\vw_{i+1}-\vw_{i+1}),
+    \ELT_{i+1}(qh)\approx C(qh)^k = Cq^kh^k \approx q^k \ELT_{i+1}(h) \approx \frac{q^k}{h}(\bar\vw_{i+1}-\vw_{i+1}),
 \end{equation*}
 donde hemos utilizado que $\ELT_{i+1}(h) \approx Ch^k$
 por ser $\ELT_{i+1}(h)$ una $\vo(h^k)$.

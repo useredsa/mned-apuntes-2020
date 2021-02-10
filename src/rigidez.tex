@@ -70,7 +70,7 @@ no converge paulatinamente hasta ese valor.
 
 \subsection{Definición}
 
-La característica que hemos visto no es atribuíble a la solución
+La característica que hemos visto no es atribuible a la solución
 $y(t) = t - \nume^{-5t}$,
 puesto que podemos cambiar el problema para que siga teniendo la misma solución
 y no se dispare el error.
@@ -357,8 +357,8 @@ es el siguiente punto de una solución.
     cuya única raíz es $z = \frac{1}{1 - (h\lambda)}$.
     Como
     \begin{equation*}
-        \norm{\frac{1}{1 - (h\lambda)}} < 1 \iff
-        \norm{1 - (h\lambda)} > 1,
+        \abs{\frac{1}{1 - (h\lambda)}} < 1 \iff
+        \abs{1 - (h\lambda)} > 1,
     \end{equation*}
     la región de estabilidad son todos los puntos $(h\lambda) \in \C$
     a distancia mayor que $1$ de $1 \in \C$,
@@ -390,7 +390,7 @@ es el siguiente punto de una solución.
             \vf(t, \vy(t)) + \vf(t+h, \vy(t+h))
         ) = \\
         h\vy'(t) + \frac{h^2}{2}\vy''(t) + \frac{h^3}{6}\vy'''(\xi)
-            - \frac{h}{2}\qty\bigg(\vy'(t) - \vy'(t+h)) = \\
+            - \frac{h}{2}\qty\bigg(\vy'(t) + \vy'(t+h)) = \\
         h\vy'(t) + \frac{h^2}{2}\vy''(t) + \frac{h^3}{6}\vy'''(\xi)
             - \frac{h}{2}\qty\bigg(2\vy'(t) + h\vy''(t)
             + \frac{h^2}{2}\vy'''(\xi_2)) = \\
@@ -412,7 +412,7 @@ es el siguiente punto de una solución.
         w_{i+1} = w_i + \frac{1}{2}hf(t_i, w_i) + \frac{1}{2}f(t_{i+1}, w_{i+1}),
     \end{equation*}
     obtenemos el polinomio
-    $Q(z, h\lambda) = \qty(1 - \frac{h\lambda}{2})z - \qty(1 + \frac{h\lambda}{2})$
+    $Q(z, h\lambda) = \qty(1 - \frac{h\lambda}{2})z - \qty(1+\frac{h\lambda}{2})$
     cuya única raíz es
     \begin{equation*}
         z = \frac{1 + \frac{h\lambda}{2}}{1 - \frac{h\lambda}{2}} =
@@ -447,7 +447,7 @@ vamos a definir los polinomios
     Un método a $m$-pasos es una fórmula de diferenciación (BDF) hacia atrás si
     \begin{itemize}
         \item el método es de orden $m$ y
-        \item $\sigma(z) = \beta w^m$ con $\beta \ne 0$.
+        \item $\sigma(z) = \beta z^m$ con $\beta \ne 0$.
     \end{itemize}
 \end{definition}
 
@@ -456,7 +456,7 @@ vamos a definir los polinomios
     siendo $\beta$ en las condiciones de la definición anterior,
     \begin{equation*}
         \beta = \qty(\sum_{i=1}^m \frac{1}{i})^{-1} \qq{y}
-        \rho(z) = \beta\sum_{i=1}^m \frac{1}{j}z^{m-j}(z-1)^j.
+        \rho(z) = \beta\sum_{i=1}^m \frac{1}{i}z^{m-i}(z-1)^i.
     \end{equation*}
 \end{lemma}
 
@@ -472,7 +472,7 @@ Para orden $2$,
     \beta = \qty(1 + \frac{1}{2})^{-1} = \frac{2}{3} \qq{y} \\
     \rho(z) = \frac{2}{3}\qty[z(z-1) + \frac{1}{2}(z-1)^2] =
     \frac{2}{3}\qty[\frac{3}{2}z^2 - 2z + \frac{1}{2}] =
-    z^2 - \frac{4}{3} + \frac{1}{3}.
+    z^2 - \frac{4}{3}z + \frac{1}{3}.
 \end{gather*}
 Lo que nos da proporciona el siguiente método.
 

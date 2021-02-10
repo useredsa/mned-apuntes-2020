@@ -447,10 +447,10 @@ y cualquier método que considere intentará aproximar una solución suya.
     donde
     \begin{align*}
         \vb{T}^{(p)} &=
-            \vw_i + h\cdot \D^{(0)}(t_i, \vw_i)
-            + \frac{h^2}{2}\D^{(1)}(t_i, \vw_i)
+            \D^{(0)}(t_i, \vw_i)
+            + \frac{h}{2}\D^{(1)}(t_i, \vw_i)
             + \cdots
-            + \frac{h^p}{p!}\cdot \D^{(p-1)}(t_i, \vw_i) \\
+            + \frac{h^{p-1}}{p!}\cdot \D^{(p-1)}(t_i, \vw_i) \\
         \D^{(0)}(t_i, \vw_i) &= \vf(t_i, \vw_i), \\
         \D^{(1)}(t_i, \vw_i) &=
             \pdv{\vf(t_i, \vw_i)}{t} +
@@ -489,7 +489,7 @@ El siguiente teorema era de esperar.
 \begin{proof}
     En estas condiciones el ELT no es más que el resto de Lagrange:
     \begin{equation*}
-        \ELT_{i+1}(h) = \frac{h^p}{(p+1)!} \vf^{(p)}(\xi_i, y(\xi_i)),
+        \ELT_{i+1}(h) = \frac{h^p}{(p+1)!} \vy^{(p+1)}(\xi_i),
             \qq{$\xi_i \in [t_i, t_{i+1}]$ para todo $i = 1,\ldots n$.}
     \end{equation*}
     Y si $\vf(t, \vy(t))$ está definida sobre un compacto
@@ -533,7 +533,7 @@ Aproximando esto último por Taylor tenemos
 
 Nótese que suponemos suficiente regularidad en $\vf$
 para que las parciales cruzadas sean iguales.
-Haciendo $a_1 = 1$, $\alpha = \frac{h}{2}$, $\vbeta = \frac{h}{2} \vf(t,y)$
+Haciendo $\alpha = \frac{h}{2}$ y $\vbeta = \frac{h}{2} \vf(t,y)$
 la igualdad anterior se traduce en
 \begin{multline*}
     f(t + \tfrac{h}{2}, y + \tfrac{h}{2}\vf(t, \vy)) = \\
