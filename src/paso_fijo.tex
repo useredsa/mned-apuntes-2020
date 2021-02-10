@@ -457,9 +457,10 @@ y cualquier método que considere intentará aproximar una solución suya.
             \pdv{\vf(t_i, \vw_i)}{\vy}\qty(\vf(t_i, \vw_i)), \\
         \D^{(2)}(t_i, \vw_i) &=
             \pdv[2]{\vf(t_i, \vw_i)}{t} +
-            \pdv{\vf(t_i, \vw_i)}{t}{\vy}\qty(\D^{(1)}(t_i, \vw_i)) +
-            \pdv[2]{\vf(t_i, \vw_i)}{\vy}\qty(
-                \vf(t_i, \vw_i), \vf(t_i, \vw_i)
+            \pdv{\vf(t_i, \vw_i)}{t}{\vy}\qty(\vf(t_i, \vw_i)) +
+            \pdv{\vf(t_i, \vw_i)}{\vy}\qty(
+                \pdv{\vf(t_i, \vw_i)}{t} +
+                \pdv{\vf(t_i, \vw_i)}{\vy}\qty(\D^{(1)}(t_i, \vw_i))
             ) \\
         \D^{(3)}(t_i, \vw_i) &= \cdots
     \end{align*}
