@@ -357,7 +357,7 @@ que produce las aproximaciones
 \begin{equation*}
     \left\{
     \begin{array}{lll}
-    \tilde{\vw_0} = a & & \\
+    \tilde{\vw_0} =  \alpha  & & \\
     \bar\vw_{i+1} = \bar\vw_i + h\tilde{\phi}(t_i, \bar\vw_i, h) & & i >0
     \end{array}
     \right.
@@ -369,7 +369,7 @@ Suponiendo $\vw_i = \bar\vw_i \approx y(t_i)$ y tomando un $h$ fijo tenemos que
 \begin{array}{l}
     \ELT_{i+1}(h) = \frac{y(t_{i+1}) - y(t_i)}{h} - \phi(t_i, y(t_i), h) \approx  \frac{y(t_{i+1}) - \vw_i}{h} - \phi(t_i, \vw_i, h) =\\
     \\
-     =\frac{y(t_{i+1}) - (\vw_i+ - h\phi(t_i, \vw_i, h))}{h} = \frac{1}{h}(y(t+i)-\vw_{i+1})
+     =\frac{y(t_{i+1}) - (\vw_i + h\phi(t_i, \vw_i, h))}{h} = \frac{1}{h}(y(t_{i+1})-\vw_{i+1})
 \end{array}
 \end{equation*}
 Y, análogamente, se tiene que 
